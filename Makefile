@@ -15,11 +15,11 @@ install : $(VENV)
 
 # Execute the main script of your activity (e.g., via Python interpreter).
 run :$(VENV)
-	@$(PYTHON) pacman.py config.txt
+	@$(PYTHON) pacman.py config.json
 
 # Run the main script in debug mode using Python’s built-in debugger (e.g., pdb).
 debug : $(VENV)
-	$(PYTHON) -m pdb pacman.py config.txt
+	$(PYTHON) -m pdb pacman.py config.json
 
 package : $(VENV)
 	$(PYTHON) -m build

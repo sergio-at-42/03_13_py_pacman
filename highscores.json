@@ -1,0 +1,13 @@
+# Highscores
+{
+    "hightscores": [
+        {
+        "player": "Sergio",
+        "score": 1000000000
+        },
+        {
+        "player": "Sana",
+        "score": 2
+        }
+    ]
+}
