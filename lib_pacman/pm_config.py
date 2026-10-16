@@ -1,15 +1,15 @@
 from typing import Any
 import sys
 
-from .maze_error import EntryIn42Error, EntryNotInMaze, ExitegalEntry, \
-    ExitIn42Error, ExitNotInMaze, WidthLessThan0Error, \
-    HeightLessThan0Error, MazeError, WidthSmallFor42Error, \
-    HeightToSmallFor42Error
+# from .maze_error import EntryIn42Error, EntryNotInMaze, ExitegalEntry, \
+#     ExitIn42Error, ExitNotInMaze, WidthLessThan0Error, \
+#     HeightLessThan0Error, MazeError, WidthSmallFor42Error, \
+#     HeightToSmallFor42Error
 
 
 class PmConfig():
 
-    def __init__(self, maze_config: MazeConfig) -> None:
+    def __init__(self) -> None:
         self.highscore_filename: str = "highscores.json"
         self.level: list[int] = []  # array of multiple levels ???
         self.width: int = 16
@@ -42,8 +42,6 @@ class PmConfig():
                     config_line = config_file.readline()
         except FileNotFoundError:
             print("No configuration file found.")
-        self.set_attr_to_dict()
-        return (self)
 
     def file_from_argv(self) -> None:
         try:
@@ -53,11 +51,11 @@ class PmConfig():
         except IndexError:
             print("No configuration file provide.")
             print(f"Usage: {self.argv[0].rpartition("/")[2]} <conf_file>")
-            print("Default values used to create the maze.")
+            print("Default values used to create the Pac-Man.")
         except FileNotFoundError:
             print(f"<{self.argv[1]}> is not a configuration file.")
             print(f"Usage: {self.argv[0].rpartition("/")[2]} <conf_file>")
-            print("Default values used to create the maze.")
+            print("Default values used to create the Pac-Man.")
 
     def set_value_to_attr(self, key: str, value: str) -> bool:
         coord: list[str] = []
@@ -140,28 +138,3 @@ class PmConfig():
             except WidthSmallFor42Error, HeightToSmallFor42Error:
                 pass
         return (value_ok)
-
-    def set_attr_to_dict(self) -> None:
-        self.attr["WIDTH"] = self.width
-        self.attr["HEIGHT"] = self.height
-        self.attr["ENTRY"] = (self.entry.x, self.entry.y)
-        self.attr["EXIT"] = (self.exit.x, self.exit.y)
-        self.attr["OUTPUT_FILE"] = self.output_file
-        self.attr["PERFECT"] = self.perfect
-        self.attr["ARGV"] = (self.argv)
-        self.attr["CONFIGURATION_FILE_NAME"] = (self.config_file_name)
-        self.attr["SEED"] = self.seed
-
-    def config_display(self) -> None:
-        print("Configuration attributes :")
-        print(f"ARGV = {self.argv}")
-        print(f"CONFIGURATION_FILE_NAME = {self.config_file_name}")
-        print(f"WIDTH = {self.width}")
-        print(f"HEIGHT = {self.height}")
-        print(f"ENTRY = {(self.entry.x, self.entry.y)}")
-        print(f"EXIT = {(self.exit.x, self.exit.y)}")
-        print(f"OUTPUT_FILE = {self.output_file}")
-        print(f"PERFECT = {self.perfect}")
-        print(f"SEED = {self.seed}")
-        print("Configuration attributes dictionary :")
-        print(f"obj.config.attr = {self.attr}")
