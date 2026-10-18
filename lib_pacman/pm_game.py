@@ -1,10 +1,14 @@
 import pygame
+from .pm_config import PmConfig
 
 
 class PmGame():
 
     def __init__(self) -> None:
+        self.cfg: PmConfig = PmConfig()
         self.game_loop()
+
+        print(f"{vars(self.cfg)}")
 
     def game_loop(self) -> None:
         self.my_beautiful_loop()

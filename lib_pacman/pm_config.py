@@ -1,10 +1,11 @@
 from typing import Any
 import sys
+import json
 
-# from .maze_error import EntryIn42Error, EntryNotInMaze, ExitegalEntry, \
-#     ExitIn42Error, ExitNotInMaze, WidthLessThan0Error, \
-#     HeightLessThan0Error, MazeError, WidthSmallFor42Error, \
-#     HeightToSmallFor42Error
+from .pm_error import PmError, \
+    WidthLessThan2Error, WidthSmallFor42Error, \
+    HeightLessThan2Error, WidthSmallFor42Error, \
+    LivesLessThan1Error, TimeLessThan0Error
 
 
 class PmConfig():
@@ -23,29 +24,28 @@ class PmConfig():
         self.level_max_time: int = 90
 
         self.pm_icon : str = "\U0001F6BD"
-        self.config_read_file()
+        self.argv: list[str] = sys.argv
+        self.config_file_name: str = ""
+        self.msg_error: str = ""
 
-    # msg_error: str = ""
-    # msg_error_generator: str = ""
-    # pattern42: set[tuple[int, int]] = set()
+        self.config_read_file()
 
     def config_read_file(self) -> None:
         self.file_from_argv()
-        config_line: str = ""
+        config_file: dict[str, Any] = []
         try:
-            with open(self.config_file_name, "r") as config_file:
-                config_line = config_file.readline()
-                while config_line:
-                    key = config_line.partition("=")[0].strip()
-                    value = config_line.partition("=")[2].strip()
-                    self.set_value_to_attr(key, value)
-                    config_line = config_file.readline()
+            with open(self.config_file_name, "r") as config_json_file:
+                config_file = json.load(config_json_file)
+# A supprimer
+                print(config_file)
+                self.set_values(config_file)
         except FileNotFoundError:
             print("No configuration file found.")
+        except json.decoder.JSONDecodeError:
+            print("JSON config file corrupted.")
 
     def file_from_argv(self) -> None:
         try:
-            self.argv = sys.argv
             with open(self.argv[1], "r"):
                 self.config_file_name = self.argv[1]
         except IndexError:
@@ -57,84 +57,39 @@ class PmConfig():
             print(f"Usage: {self.argv[0].rpartition("/")[2]} <conf_file>")
             print("Default values used to create the Pac-Man.")
 
-    def set_value_to_attr(self, key: str, value: str) -> bool:
-        coord: list[str] = []
+    def set_values(self, config_file: dict[str, Any]) -> None:
+        for key, value in config_file.items():
+            if hasattr(self, key):
+                if isinstance(value, type(getattr(self, key))):
+                    if self.verify_value(key, value):
+                        setattr(self, key, value)
+# A supprimer
+        print(self.msg_error)
+
+    def verify_value(self, key: str, value: Any) -> bool:
         value_ok = True
-        key = key.upper()
         try:
             match key:
-                case "WIDTH":
-                    self.width = int(value)
-                    if self.width < 2:
-                        raise WidthLessThan0Error
-                    if self.width < PATTERN_W + 2:
-                        raise WidthSmallFor42Error
-                case "HEIGHT":
-                    self.height = int(value)
-                    if self.height < 2:
-                        raise HeightLessThan0Error
-                    if self.height < PATTERN_H + 2:
-                        raise HeightToSmallFor42Error
-                case "ENTRY":
-                    coord = list(value.partition(","))
-                    self.entry.x = int(coord[0])
-                    self.entry.y = int(coord[2])
-                    if not (0 <= self.entry.x < self.width
-                            and 0 <= self.entry.y < self.height):
-                        raise EntryNotInMaze
-                    if (self.entry.x, self.entry.y) in self.pattern42:
-                        raise EntryIn42Error
-                    if (self.entry.x, self.entry.y) == \
-                            (self.exit.x, self.exit.y):
-                        raise ExitegalEntry
-                case "EXIT":
-                    coord = list(value.partition(","))
-                    self.exit.x = int(coord[0])
-                    self.exit.y = int(coord[2])
-                    if not (0 <= self.exit.x < self.width
-                            and 0 <= self.exit.y < self.height):
-                        raise ExitNotInMaze
-                    if (self.exit.x, self.exit.y) in self.pattern42:
-                        raise ExitIn42Error
-                    if (self.entry.x, self.entry.y) == \
-                            (self.exit.x, self.exit.y):
-                        raise ExitegalEntry
-                case "OUTPUT_FILE":
-                    self.output_file = value.strip()
-                case "PERFECT":
-                    self.perfect = True if value.strip().upper() == "TRUE"\
-                        else False
-                case "SEED":
-                    self.seed = int(value)
+                case "width":
+                    if value < 2:
+                        raise WidthLessThan2Error
+                    # if value < PATTERN_W + 2:
+                    #     raise WidthSmallFor42Error
+                case "height":
+                    if value < 2:
+                        raise HeightLessThan2Error
+                    # if value < PATTERN_H + 2:
+                    #     raise HeightToSmallFor42Error
+                case "lives":
+                    if value < 1:
+                        raise LivesLessThan1Error
+                case "level_max_time":
+                    if value < 0:
+                        raise TimeLessThan0Error
                 case _:
                     value_ok = False
-        except ValueError, ValidationError:
-            self.msg_error += "Value error in your configuration file.\n"
-        except MazeError as e:
+        except PmError as e:
+# A changer pour un log dans un fichier
             self.msg_error += f"{e}\n"
-            try:
-                raise e
-            except WidthLessThan0Error:
-                self.width = 16
-            except HeightLessThan0Error:
-                self.height = 16
-            except EntryNotInMaze:
-                self.entry.x = 0
-                self.entry.y = 0
-            except ExitNotInMaze:
-                self.exit.x = self.width - 1
-                self.exit.y = self.height - 1
-            except ExitegalEntry:
-                self.entry.x = 0
-                self.entry.y = 0
-                self.exit.x = self.width - 1
-                self.exit.y = self.height - 1
-            except EntryIn42Error:
-                self.entry.x = 0
-                self.entry.y = 0
-            except ExitIn42Error:
-                self.exit.x = self.width - 1
-                self.exit.y = self.height - 1
-            except WidthSmallFor42Error, HeightToSmallFor42Error:
-                pass
+            value_ok = False
         return (value_ok)
