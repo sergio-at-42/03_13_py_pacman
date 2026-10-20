@@ -11,15 +11,19 @@ $(VENV):
 # Install activity dependencies using pip, uv, pipx, or any other package manager of your choice.
 install : $(VENV)
 	$(PIP) install --upgrade pip
-	$(PIP) install --requirement requirements.txt
+	$(PIP) install --requirement pacman_requirements.txt
 
-# Execute the main script of your activity (e.g., via Python interpreter).
+# Execute the main script of Pac-Man with config.json.
 run :$(VENV)
-	@$(PYTHON) pacman.py config.txt
+	@$(PYTHON) pacman.py config.json
+
+# Execute the main script of Pac-Man without configuration file.
+noconfig :$(VENV)
+	@$(PYTHON) pacman.py
 
 # Run the main script in debug mode using Python’s built-in debugger (e.g., pdb).
 debug : $(VENV)
-	$(PYTHON) -m pdb pacman.py config.txt
+	$(PYTHON) -m pdb pacman.py config.json
 
 package : $(VENV)
 	$(PYTHON) -m build

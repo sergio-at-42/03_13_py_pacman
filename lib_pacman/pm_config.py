@@ -1,0 +1,88 @@
+from typing import Any
+import sys
+import json
+
+from .pm_error import PmError, \
+    WidthLessThan2Error, WidthSmallFor42Error, \
+    HeightLessThan2Error, WidthSmallFor42Error, \
+    LivesLessThan1Error, TimeLessThan0Error
+
+
+class PmConfig():
+
+    def __init__(self) -> None:
+        self.highscore_filename: str = "highscores.json"
+        self.level: list[int] = []  # array of multiple levels ???
+        self.width: int = 16
+        self.height: int = 16
+        self.lives: int = 3
+        self.pacgum: int = 42
+        self.points_per_pacgum: int = 10
+        self.points_per_super_pacgum: int = 50
+        self.points_per_ghost: int = 200
+        self.seed: int = 42
+        self.level_max_time: int = 90
+
+        self.pm_icon : str = "\U0001F6BD"
+        self.argv: list[str] = sys.argv
+        self.config_file_name: str = ""
+
+        self.config_read_file()
+
+    def config_read_file(self) -> None:
+        self.file_from_argv()
+        config_file: dict[str, Any] = {}
+        try:
+            with open(self.config_file_name, "r") as config_json_file:
+                config_file = json.load(config_json_file)
+                self.set_values(config_file)
+        except FileNotFoundError:
+            PmError("[error]No configuration file found.")
+        except json.decoder.JSONDecodeError:
+            PmError("[error]JSON config file corrupted.")
+
+    def file_from_argv(self) -> None:
+        try:
+            with open(self.argv[1], "r"):
+                self.config_file_name = self.argv[1]
+        except IndexError:
+            PmError("[error]No configuration file provide. "
+                f"Usage: {self.argv[0].rpartition("/")[2]} <conf_file>. "
+                "Default values used to create the Pac-Man.")
+        except FileNotFoundError:
+            PmError(f"[error]<{self.argv[1]}> is not a configuration file. "
+                f"Usage: {self.argv[0].rpartition("/")[2]} <conf_file>. "
+                "Default values used to create the Pac-Man.")
+
+    def set_values(self, config_file: dict[str, Any]) -> None:
+        for key, value in config_file.items():
+            if hasattr(self, key):
+                if isinstance(value, type(getattr(self, key))):
+                    if self.verify_value(key, value):
+                        setattr(self, key, value)
+
+    def verify_value(self, key: str, value: Any) -> bool:
+        value_ok = True
+        try:
+            match key:
+                case "width":
+                    if value < 2:
+                        raise WidthLessThan2Error
+                    # if value < PATTERN_W + 2:
+                    #     raise WidthSmallFor42Error
+                case "height":
+                    if value < 2:
+                        raise HeightLessThan2Error
+                    # if value < PATTERN_H + 2:
+                    #     raise HeightToSmallFor42Error
+                case "lives":
+                    if value < 1:
+                        raise LivesLessThan1Error
+                case "level_max_time":
+                    if value < 0:
+                        raise TimeLessThan0Error
+                case _:
+                    value_ok = False
+        except PmError:
+            value_ok = False
+        return (value_ok)
