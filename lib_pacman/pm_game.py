@@ -1,6 +1,6 @@
 import pygame
 from .pm_config import PmConfig
-
+from .pm_error import PmError
 
 class PmGame():
 
@@ -9,6 +9,7 @@ class PmGame():
         self.game_loop()
 
         print(f"{vars(self.cfg)}")
+        print(PmError.read_log())
 
     def game_loop(self) -> None:
         self.my_beautiful_loop()
