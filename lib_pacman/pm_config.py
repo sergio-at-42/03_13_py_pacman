@@ -26,36 +26,33 @@ class PmConfig():
         self.pm_icon : str = "\U0001F6BD"
         self.argv: list[str] = sys.argv
         self.config_file_name: str = ""
-        self.msg_error: str = ""
 
         self.config_read_file()
 
     def config_read_file(self) -> None:
         self.file_from_argv()
-        config_file: dict[str, Any] = []
+        config_file: dict[str, Any] = {}
         try:
             with open(self.config_file_name, "r") as config_json_file:
                 config_file = json.load(config_json_file)
-# A supprimer
-                print(config_file)
                 self.set_values(config_file)
         except FileNotFoundError:
-            print("No configuration file found.")
+            PmError("[error]No configuration file found.")
         except json.decoder.JSONDecodeError:
-            print("JSON config file corrupted.")
+            PmError("[error]JSON config file corrupted.")
 
     def file_from_argv(self) -> None:
         try:
             with open(self.argv[1], "r"):
                 self.config_file_name = self.argv[1]
         except IndexError:
-            print("No configuration file provide.")
-            print(f"Usage: {self.argv[0].rpartition("/")[2]} <conf_file>")
-            print("Default values used to create the Pac-Man.")
+            PmError("[error]No configuration file provide. "
+                f"Usage: {self.argv[0].rpartition("/")[2]} <conf_file>. "
+                "Default values used to create the Pac-Man.")
         except FileNotFoundError:
-            print(f"<{self.argv[1]}> is not a configuration file.")
-            print(f"Usage: {self.argv[0].rpartition("/")[2]} <conf_file>")
-            print("Default values used to create the Pac-Man.")
+            PmError(f"[error]<{self.argv[1]}> is not a configuration file. "
+                f"Usage: {self.argv[0].rpartition("/")[2]} <conf_file>. "
+                "Default values used to create the Pac-Man.")
 
     def set_values(self, config_file: dict[str, Any]) -> None:
         for key, value in config_file.items():
@@ -63,8 +60,6 @@ class PmConfig():
                 if isinstance(value, type(getattr(self, key))):
                     if self.verify_value(key, value):
                         setattr(self, key, value)
-# A supprimer
-        print(self.msg_error)
 
     def verify_value(self, key: str, value: Any) -> bool:
         value_ok = True
@@ -88,8 +83,6 @@ class PmConfig():
                         raise TimeLessThan0Error
                 case _:
                     value_ok = False
-        except PmError as e:
-# A changer pour un log dans un fichier
-            self.msg_error += f"{e}\n"
+        except PmError:
             value_ok = False
         return (value_ok)

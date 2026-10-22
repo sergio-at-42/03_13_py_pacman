@@ -17,9 +17,13 @@ install : $(VENV)
 	$(PIP) install --requirement pacman_requirements.txt
 # 	$(PIP) -m pip install --force-reinstall $(MAZE_WHL)
 
-# Execute the main script of your activity (e.g., via Python interpreter).
+# Execute the main script of Pac-Man with config.json.
 run :$(VENV)
 	@$(PYTHON) pacman.py config.json
+
+# Execute the main script of Pac-Man without configuration file.
+noconfig :$(VENV)
+	@$(PYTHON) pacman.py
 
 # Run the main script in debug mode using Python’s built-in debugger (e.g., pdb).
 debug : $(VENV)
