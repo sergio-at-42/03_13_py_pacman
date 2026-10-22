@@ -4,6 +4,9 @@ VENV = venv_pacman
 PYTHON = $(VENV)/bin/python3
 # PIP in virtual environment
 PIP = $(VENV)/bin/pip
+# Wheel files
+# MAZE_WHL ?= $(*.whl)
+
 
 $(VENV):
 	python3 -m venv $(VENV)
@@ -12,6 +15,7 @@ $(VENV):
 install : $(VENV)
 	$(PIP) install --upgrade pip
 	$(PIP) install --requirement pacman_requirements.txt
+# 	$(PIP) -m pip install --force-reinstall $(MAZE_WHL)
 
 # Execute the main script of Pac-Man with config.json.
 run :$(VENV)
