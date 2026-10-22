@@ -1,5 +1,6 @@
 import pygame
 from .pm_config import PmConfig
+from .pm_maze import display_maze
 
 
 class PmGame():
@@ -7,6 +8,8 @@ class PmGame():
     def __init__(self) -> None:
         self.cfg: PmConfig = PmConfig()
         self.game_loop()
+        
+        display_maze()
 
     def game_loop(self) -> None:
         # pygame setup

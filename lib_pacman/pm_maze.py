@@ -55,25 +55,23 @@ def draw_maze(screen: pygame.Surface, grid: list[list[int]], cell_size: int = 40
             if cell & W:  
                 draw_line(screen, (px, py), (px, py + cell_size), WallColor, 2)
 
-
-screen = pygame.display.set_mode((width * 40, height * 40 + Margin))
-pygame.init()
-clock = pygame.time.Clock()
-pygame.display.set_caption("Pac-Man")
-run = True
-while run:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
-        elif event.type == KEYDOWN:
-            # Was it the Escape key? If so, stop the loop.
-            if event.key == K_ESCAPE:
+def display_maze() -> None:
+    screen = pygame.display.set_mode((width * 40, height * 40 + Margin))
+    pygame.init()
+    clock = pygame.time.Clock()
+    pygame.display.set_caption("Pac-Man")
+    run = True
+    while run:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
                 run = False
+            elif event.type == KEYDOWN:
+                # Was it the Escape key? If so, stop the loop.
+                if event.key == K_ESCAPE:
+                    run = False
 
-    screen.fill((0, 0, 0))
-    draw_maze(screen, grid)
-    pygame.display.flip()
-    clock.tick(60)
-pygame.quit()
- 
-    
+        screen.fill((0, 0, 0))
+        draw_maze(screen, grid)
+        pygame.display.flip()
+        clock.tick(60)
+    pygame.quit()

@@ -5,7 +5,7 @@ PYTHON = $(VENV)/bin/python3
 # PIP in virtual environment
 PIP = $(VENV)/bin/pip
 # Wheel files
-MAZE_WHL ?= $(wildcard *.whl)
+# MAZE_WHL ?= $(*.whl)
 
 
 $(VENV):
@@ -15,7 +15,7 @@ $(VENV):
 install : $(VENV)
 	$(PIP) install --upgrade pip
 	$(PIP) install --requirement pacman_requirements.txt
-	$(PIP) -m pip install --force-reinstall $(MAZE_WHL)
+# 	$(PIP) -m pip install --force-reinstall $(MAZE_WHL)
 
 # Execute the main script of your activity (e.g., via Python interpreter).
 run :$(VENV)
