@@ -8,12 +8,7 @@ class PmGame():
         self.cfg: PmConfig = PmConfig()
         self.game_loop()
 
-        print(f"{vars(self.cfg)}")
-
     def game_loop(self) -> None:
-        self.my_beautiful_loop()
-
-    def my_beautiful_loop(self) -> None:
         # pygame setup
         pygame.init()
         screen = pygame.display.set_mode((960, 640))
@@ -31,11 +26,11 @@ class PmGame():
             screen.fill("black")
 
             # RENDER YOUR GAME HERE
-            for y in range(0, 640, 10):
-                x = y * 960 / 640
-                # line(0, 640-y, 960 - x, 640)
-                pygame.draw.aaline(screen, "orange", [0, 640-y], [960 - x, 640], True)
-                pygame.draw.aaline(screen, "green", [960, y], [x, 0], True)
+            # for y in range(0, 640, 10):
+            #     x = y * 960 / 640
+            #     # line(0, 640-y, 960 - x, 640)
+            #     pygame.draw.aaline(screen, "orange", [0, 640-y], [960 - x, 640], True)
+            #     pygame.draw.aaline(screen, "green", [960, y], [x, 0], True)
 
             # flip() the display to put your work on screen
             pygame.display.flip()
@@ -43,3 +38,13 @@ class PmGame():
             clock.tick(60)  # limits FPS to 60
 
         pygame.quit()
+
+
+
+
+            # # RENDER YOUR GAME HERE
+            # for y in range(0, 640, 10):
+            #     x = y * 960 / 640
+            #     # line(0, 640-y, 960 - x, 640)
+            #     pygame.draw.aaline(screen, "orange", [0, 640-y], [960 - x, 640], True)
+            #     pygame.draw.aaline(screen, "green", [960, y], [x, 0], True)

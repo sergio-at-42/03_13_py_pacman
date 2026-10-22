@@ -1,4 +1,5 @@
 from mazegenerator import MazeGenerator
+from .pm_error import PmError
 
 # N, E, S, W = 1, 2, 4, 8
 
