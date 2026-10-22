@@ -10,7 +10,7 @@ class PmError(Exception):
     def __init__(self, log_msg: str) -> None:
         super().__init__(log_msg)
         if self.new_pacman:
-            self.new_pacman = not (self.log_new_pacman())
+            self.new_pacman = False
         self.write_log(log_msg)
 
     @classmethod
@@ -37,12 +37,7 @@ class PmError(Exception):
 
     @classmethod
     def log_new_pacman(cls) -> bool:
-        banner_new_pacman: str = ("\n"
-            "🙄🙄🙄🙄🙄🙄🙄🙄🙄🙄🙄🙄🙄🙄🙄🙄🙄🙄🙄🙄🙄🙄🙄\n"
-            "🟡            WELCOME TO PAC-MAN            🟡\n"
-            f"🟡            {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}           🟡\n"
-            "👻👻👻👻👻👻👻👻👻👻👻👻👻👻👻👻👻👻👻👻👻👻👻\n"
-            "\n")
+        banner_new_pacman: str = ("\n[info]New Pac-Man game started 🙄👻\n")
         write_ok: bool = False
         try:
             with open(cls.log_file_name, "a") as log_file:
