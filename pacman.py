@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
-from lib_pacman import PmGame
+from lib_pacman import PmGame, PmError
 
 
 def main() -> None:
-    print("Enjoy with PacMan \U0001F60F\U0001F47B")
-    game:PmGame = PmGame()
-    print("\U0001F3AE Game Over \U0001F579")
+    PmError.log_new_pacman()
+    PmGame()
+    PmError.log_game_over()
 
 
 if __name__ == "__main__":
