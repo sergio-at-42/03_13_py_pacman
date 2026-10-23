@@ -1,5 +1,8 @@
 import pygame
 from .pm_config import PmConfig
+from .pm_ghost import PmGhost
+from pm_ghost_strategy import PmGhostStrategy
+
 from .pm_maze import display_maze
 
 
@@ -7,6 +10,13 @@ class PmGame():
 
     def __init__(self) -> None:
         self.cfg: PmConfig = PmConfig()
+        self.ghost: list[PmGhost] = [
+            PmGhost("blinky", 0xFF0000, (5, 3), PmGhostStrategy()),
+            PmGhost("pinky", 0xFFc0c0, (6, 3), PmGhostStrategy()),
+            PmGhost("inky", 0x0000ff, (7, 3), PmGhostStrategy()),
+            PmGhost("clyde", 0xff7f00, (8, 3), PmGhostStrategy())
+        ]
+
         self.game_loop()
         
         display_maze()
