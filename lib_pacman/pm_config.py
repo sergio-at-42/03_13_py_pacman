@@ -10,23 +10,23 @@ from .pm_error import PmError, \
 
 class PmConfig():
 
+    highscore_filename: str = "highscores.json"
+    level: list[int] = []  # array of multiple levels ???
+    width: int = 16
+    height: int = 16
+    lives: int = 3
+    pacgum: int = 42
+    points_per_pacgum: int = 10
+    points_per_super_pacgum: int = 50
+    points_per_ghost: int = 200
+    seed: int = 42
+    level_max_time: int = 90
+
+    pm_icon : str = "\U0001F6BD"
+    argv: list[str] = sys.argv
+    config_file_name: str = ""
+
     def __init__(self) -> None:
-        self.highscore_filename: str = "highscores.json"
-        self.level: list[int] = []  # array of multiple levels ???
-        self.width: int = 16
-        self.height: int = 16
-        self.lives: int = 3
-        self.pacgum: int = 42
-        self.points_per_pacgum: int = 10
-        self.points_per_super_pacgum: int = 50
-        self.points_per_ghost: int = 200
-        self.seed: int = 42
-        self.level_max_time: int = 90
-
-        self.pm_icon : str = "\U0001F6BD"
-        self.argv: list[str] = sys.argv
-        self.config_file_name: str = ""
-
         self.config_read_file()
 
     def config_read_file(self) -> None:
