@@ -5,7 +5,7 @@ from lib_pacman import PmGame, PmError
 
 def main() -> None:
     PmError.log_new_pacman()
-    game:PmGame = PmGame()
+    PmGame()
     PmError.log_game_over()
 
 
