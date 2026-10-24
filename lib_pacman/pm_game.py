@@ -25,7 +25,14 @@ class PmGame():
         clock = pygame.time.Clock()
         running = True
 
+        i = 0
+        for g in self.ghosts:
+            i += 1
+            g.sprite_pos = (i*100, i*100)
+            g.direction = 2
+        
         j = 0
+        k = -1
 
         while running:
             # poll for events
@@ -43,11 +50,12 @@ class PmGame():
             for g in self.ghosts:
                 i += 1
                 sprite = pygame.image.load(f"lib_pacman/{g.sprite()}").convert_alpha()
-                screen.blit(sprite, (i*100+j, i*100))
-            if j == 800:
-                j = 0
-            else:
-                j += 1
+                screen.blit(sprite, g.sprite_pos)
+            x, y = g.sprite_pos
+            if x == 500 or x == 800:
+                for g in self.ghosts:
+                    g.direction = (2 if g.direction == 8 else 8)
+
 
             # flip() the display to put your work on screen
             pygame.display.flip()
