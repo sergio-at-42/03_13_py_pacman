@@ -1,7 +1,9 @@
 import pygame
 from .pm_error import PmError
 from .pm_config import PmConfig
+from .pm_pacman import PmPacman
 from .pm_ghost import PmGhost, PmBlinky, PmPinky, PmInky, PmClyde
+from .mood import Mood
 
 from .pm_maze import display_maze
 
@@ -10,6 +12,7 @@ class PmGame():
 
     def __init__(self) -> None:
         PmConfig()
+        self.player: PmPacman = PmPacman()
         self.ghosts: list[PmGhost] = [
             PmBlinky(), PmPinky(), PmInky(), PmClyde(), PmGhost()]
 
@@ -25,10 +28,12 @@ class PmGame():
         clock = pygame.time.Clock()
         running = True
 
+        self.player.sprite.pos = (50, 50)
+        self.player.direction = 2
         i = 0
         for g in self.ghosts:
             i += 1
-            g.sprite_pos = (i*100, i*100)
+            g.sprite.pos = (i*100, i*100)
             g.direction = 2
         
         direction: int = 2
@@ -44,22 +49,34 @@ class PmGame():
             screen.fill("blue")
 
             # RENDER YOUR GAME HERE
-            # Affichage du sprite à la position (100, 150)
+            
             i = 0
             for g in self.ghosts:
                 i += 1
-                sprite = pygame.image.load(f"lib_pacman/{g.sprite()}").convert_alpha()
-                screen.blit(sprite, g.sprite_pos)
-            x, y = g.sprite_pos
+                sprite = pygame.image.load(f"lib_pacman/{g.sprite.file()}").convert_alpha()
+                screen.blit(sprite, g.sprite.pos)
+
+            sprite = pygame.image.load(f"lib_pacman/{self.player.sprite.file()}").convert_alpha()
+            screen.blit(sprite, self.player.sprite.pos)
+
+            x, y = g.sprite.pos
             if x <= 500 and y >= 600:
+                self.ghosts[1].mood = Mood.RIDE
+                self.ghosts[4].mood = Mood.RIDE
                 direction = 1
             if x <= 500 and y <= 500:
+                self.ghosts[4].mood = Mood.SCARED
                 direction = 2
             if x >= 800 and y <= 500:
+                self.ghosts[1].mood = Mood.SCARED
+                self.ghosts[4].mood = Mood.RIDE
                 direction = 4
             if x >= 800 and y >= 600:
+                self.ghosts[1].mood = Mood.DEAD
+                self.ghosts[4].mood = Mood.SCARED
                 direction = 8
 
+            self.player.direction = direction
             for g in self.ghosts:
                 g.direction = direction
 
