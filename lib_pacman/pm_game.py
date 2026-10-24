@@ -31,8 +31,7 @@ class PmGame():
             g.sprite_pos = (i*100, i*100)
             g.direction = 2
         
-        j = 0
-        k = -1
+        direction: int = 2
 
         while running:
             # poll for events
@@ -52,9 +51,17 @@ class PmGame():
                 sprite = pygame.image.load(f"lib_pacman/{g.sprite()}").convert_alpha()
                 screen.blit(sprite, g.sprite_pos)
             x, y = g.sprite_pos
-            if x == 500 or x == 800:
-                for g in self.ghosts:
-                    g.direction = (2 if g.direction == 8 else 8)
+            if x <= 500 and y >= 600:
+                direction = 1
+            if x <= 500 and y <= 500:
+                direction = 2
+            if x >= 800 and y <= 500:
+                direction = 4
+            if x >= 800 and y >= 600:
+                direction = 8
+
+            for g in self.ghosts:
+                g.direction = direction
 
 
             # flip() the display to put your work on screen

@@ -23,7 +23,7 @@ class PmGhost():
         self.sps1: str = "images/ghost_1.png"
         self.spw0: str = "images/ghost_0.png"
         self.spw1: str = "images/ghost_1.png"
-        self.sp: bool = False
+        self.anim: int = 0
 
     def chase(self) -> None:
         self.move_to(PmGhostStrategy.ride(self.pos))
@@ -39,17 +39,21 @@ class PmGhost():
 
     def sprite(self) -> str:
         x, y = self.sprite_pos
+        if self.direction == 1:
+            y -= self.speed
+            nesw = "n"
         if self.direction == 2:
             x += self.speed
+            nesw = "e"
+        if self.direction == 4:
+            y += self.speed
+            nesw = "s"
         if self.direction == 8:
             x -= self.speed
+            nesw = "w"
         self.sprite_pos = (x, y)
-        self.sp = (datetime.now().microsecond // 250000) % 2 > 0
-        sprite = getattr(self, f"sp{"e" if self.direction == 2 else "w"}{"1" if self.sp else "0"}")
-        # if self.sp:
-        #     sprite = self.spe1
-        # else:
-        #     sprite = self.spe0
+        self.anim = (datetime.now().microsecond // 250000) % 2
+        sprite = getattr(self, f"sp{nesw}{str(self.anim)}")
         return (sprite)
 
 class PmBlinky(PmGhost):
