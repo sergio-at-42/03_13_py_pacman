@@ -9,7 +9,6 @@ N, E, S, W = 1, 2, 4, 8
 
 
 
-
 class PmGhost():
 
     def __init__(self) -> None:
@@ -19,13 +18,11 @@ class PmGhost():
         self.corner_pos: tuple[int, int] = (7, 7)
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.home_pos
-        # self.sprite_pos:  tuple[int, int] = self.home_pos
+        self.target_pos: tuple[int, int] = self.corner_pos
         self.direction: int = 0
         self.speed: int = 1
         self.mood: Mood = Mood.RIDE
-        # self.scared: bool = False
-        # self.dead: bool = False
-        # self.anim: int = 0
+        self.strategy: PmGhostStrategy = PmGhostStrategy(self)
         self.sprite: PmSpGhost = PmSpGhost(self)
 
     def chase(self) -> None:
@@ -37,9 +34,13 @@ class PmGhost():
     def scatter(self) -> None:
         self.move_to(self.corner_pos)
 
-    def move_to(self, pos: tuple[int, int]) -> None:
+    def move(self, pos: tuple[int, int] = ()) -> None:
+        if pos != ():
+            self.mood = Mood.GO
+            self.ghost.target_pos = pos
         if self.ghost.pos == self.ghost.next_pos:
             pass # calculer la nest_pos et la direction
+
 
 
 class PmBlinky(PmGhost):

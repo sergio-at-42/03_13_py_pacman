@@ -3,8 +3,9 @@ from enum import Enum
 
 class Mood(Enum):
     SLEEP = 0
-    RIDE = 1
-    CHASE = 2
-    SCATTER = 4
-    SCARED = 8
-    DEAD = 16
+    GO = 1
+    RIDE = 2
+    CHASE = 4
+    SCATTER = 8
+    SCARED = 16
+    DEAD = 32
