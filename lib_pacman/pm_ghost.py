@@ -3,10 +3,7 @@ from .pm_config import PmConfig
 # from .pm_ghost_strategy import PmGhostStrategy
 from .pm_sprite import PmSpGhost, PmSpBlinky, PmSpPinky, PmSpInky, PmSpClyde
 from .mood import Mood
-
-N, E, S, W = 1, 2, 4, 8
-
-
+from .direction import Direction
 
 
 class PmGhost():
@@ -19,7 +16,7 @@ class PmGhost():
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = ()
         self.target_pos: tuple[int, int] = ()
-        self.direction: int = 0
+        self.direction: Direction = Direction.STOP
         self.speed: int = 1
         self.mood: Mood = Mood.RIDE
         # self.strategy: PmGhostStrategy = PmGhostStrategy(self)
@@ -44,14 +41,14 @@ class PmGhost():
                 self.ghost.target_pos = PmGame.player.pos
     
             if self.ghost.mood is Mood.SLEEP:
-                self.ghost.direction = 0
+                self.ghost.direction = Direction.STOP
             else:
                 self.bfs(self.ghost.target_pos)
 
     def bfs(self) -> None:
         # trouver next_pos et direction
         self.next_pos = (7, 7)
-        self.direction = 0
+        self.direction = Direction.STOP
 
 class PmBlinky(PmGhost):
     def __init__(self) -> None:

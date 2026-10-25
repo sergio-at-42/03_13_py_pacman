@@ -2,6 +2,8 @@ from datetime import datetime
 from .pm_config import PmConfig
 from .pm_ghost_strategy import PmGhostStrategy
 from .pm_sprite import PmSpPacman
+from .direction import Direction
+
 
 class PmPacman():
 
@@ -11,7 +13,7 @@ class PmPacman():
         self.home_pos: tuple[int, int] = (7, 7)
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.home_pos
-        self.direction: int = 0
+        self.direction: Direction = Direction.STOP
         self.speed: int = 2
         self.dead: bool = False
         self.sprite: PmSpPacman = PmSpPacman(self)

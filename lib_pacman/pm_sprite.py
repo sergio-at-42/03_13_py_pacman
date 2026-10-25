@@ -1,6 +1,6 @@
 from datetime import datetime
 from .mood import Mood
-
+from .direction import Direction
 
 class PmSprite():
     directory: str = "images/"
@@ -25,26 +25,26 @@ class PmSpPacman(PmSprite):
 
     def file(self) -> str:
         sprite: PmSprite = self
-        direction: str = "n"
+        # direction: str = "n"
         anim: int = 0
         x, y = self.pos
-        if self.player.direction == 1:
+        if self.player.direction == Direction.NORTH:
             y -= self.player.speed
-            direction = "n"
-        if self.player.direction == 2:
+            # direction = "n"
+        if self.player.direction == Direction.EST:
             x += self.player.speed
-            direction = "e"
-        if self.player.direction == 4:
+            # direction = "e"
+        if self.player.direction == Direction.SOUTH:
             y += self.player.speed
-            direction = "s"
-        if self.player.direction == 8:
+            # direction = "s"
+        if self.player.direction == Direction.WEST:
             x -= self.player.speed
-            direction = "w"
+            # direction = "w"
         self.pos = (x, y)
         anim = (datetime.now().microsecond // 250000) % self.anim
         if self.player.dead:
             sprite = PmSpEyes(self.player)
-        file = f"{getattr(sprite, f"sp{direction}{str(anim)}")}"
+        file = f"{getattr(sprite, f"sp{self.player.direction.value}{str(anim)}")}"
         return (f"{self.directory}{file}")
 
 
@@ -65,22 +65,22 @@ class PmSpGhost(PmSprite):
 
     def file(self) -> str:
         sprite: PmSprite = self
-        direction: str = "n"
+        # direction: str = "n"
         anim: int = 0
         next_pos = tuple(p * 48 + 8 for p in self.ghost.next_pos)
         x, y = self.pos
-        if self.ghost.direction == 1:
+        if self.ghost.direction == Direction.NORTH:
             y -= self.ghost.speed
-            direction = "n"
-        if self.ghost.direction == 2:
+            # direction = "n"
+        if self.ghost.direction == Direction.EST:
             x += self.ghost.speed
-            direction = "e"
-        if self.ghost.direction == 4:
+            # direction = "e"
+        if self.ghost.direction == Direction.SOUTH:
             y += self.ghost.speed
-            direction = "s"
-        if self.ghost.direction == 8:
+            # direction = "s"
+        if self.ghost.direction == Direction.WEST:
             x -= self.ghost.speed
-            direction = "w"
+            # direction = "w"
         self.pos = (x, y)
         if self.pos == next_pos:
             self.ghost.pos = self.ghost.next_pos
@@ -89,7 +89,8 @@ class PmSpGhost(PmSprite):
             sprite = PmSpScared(self.ghost)
         if self.ghost.mood == Mood.DEAD:
             sprite = PmSpEyes(self.ghost)
-        file = f"{getattr(sprite, f"sp{direction}{str(anim)}")}"
+        print(f"{self.ghost.direction.value}")
+        file = f"{getattr(sprite, f"sp{self.ghost.direction.value}{str(anim)}")}"
         return (f"{self.directory}{file}")
 
 class PmSpBlinky(PmSpGhost):

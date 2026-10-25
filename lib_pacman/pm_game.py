@@ -13,6 +13,7 @@ from .pm_config import PmConfig
 from .pm_pacman import PmPacman
 from .pm_ghost import PmGhost, PmBlinky, PmPinky, PmInky, PmClyde
 from .mood import Mood
+from .direction import Direction
 
 from .maze import Maze
 
@@ -38,14 +39,14 @@ class PmGame():
         screen = pygame.display.set_mode((PmConfig.width * 48, PmConfig.height * 48))
 
         PmGame.player.sprite.pos = (56, 56)
-        PmGame.player.direction = 2
+        PmGame.player.direction = Direction.EST
         i = 0
         for g in PmGame.ghosts:
             i += 1
             g.sprite.pos = (i*48+8, i*48+8)
-            g.direction = 2
+            g.direction = Direction.EST
         
-        direction: int = 2
+        direction: Direction = Direction.EST
 
         clock = pygame.time.Clock()
         running = True
@@ -79,18 +80,18 @@ class PmGame():
             if x <= 248 and y >= 488:
                 PmGame.ghosts[1].mood = Mood.RIDE
                 PmGame.ghosts[4].mood = Mood.RIDE
-                direction = 1
+                direction = Direction.NORTH
             if x <= 248 and y <= 248:
                 PmGame.ghosts[4].mood = Mood.SCARED
-                direction = 2
+                direction = Direction.EST
             if x >= 728 and y <= 248:
                 PmGame.ghosts[1].mood = Mood.SCARED
                 PmGame.ghosts[4].mood = Mood.RIDE
-                direction = 4
+                direction = Direction.SOUTH
             if x >= 728 and y >= 488:
                 PmGame.ghosts[1].mood = Mood.DEAD
                 PmGame.ghosts[4].mood = Mood.SCARED
-                direction = 8
+                direction = Direction.WEST
 
             PmGame.player.direction = direction
             for g in PmGame.ghosts:
