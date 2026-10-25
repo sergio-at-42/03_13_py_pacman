@@ -1,10 +1,13 @@
 from random import randrange
 from .pm_config import PmConfig
-from .pm_game import PmGame
+# from .pm_game import PmGame
 # from .pm_pacman import PmPacman
 # from .pm_ghost import PmGhost, PmBlinky, PmPinky, PmInky, PmClyde
 
 from .mood import Mood
+
+
+################    FICHIER A SUPPRIMER 
 
 
 class PmGhostStrategy():

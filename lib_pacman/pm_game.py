@@ -1,11 +1,20 @@
 import pygame
+from pygame.locals import (
+    K_UP,
+    K_DOWN,
+    K_LEFT,
+    K_RIGHT,
+    K_ESCAPE,
+    KEYDOWN,
+    QUIT,
+)
 from .pm_error import PmError
 from .pm_config import PmConfig
 from .pm_pacman import PmPacman
 from .pm_ghost import PmGhost, PmBlinky, PmPinky, PmInky, PmClyde
 from .mood import Mood
 
-from .pm_maze import display_maze
+from .maze import Maze
 
 
 class PmGame():
@@ -17,37 +26,43 @@ class PmGame():
     def __init__(self) -> None:
         PmConfig()
 
-        #display_maze()
+        Maze()
+        
 
         self.game_loop()
 
     def game_loop(self) -> None:
         # pygame setup
         pygame.init()
-        pygame.display.set_caption("PAC MAN")
-        screen = pygame.display.set_mode((960, 640))
-        clock = pygame.time.Clock()
-        running = True
+        pygame.display.set_caption("Pac-Man")
+        screen = pygame.display.set_mode((PmConfig.width * 48, PmConfig.height * 48))
 
-        PmGame.player.sprite.pos = (50, 50)
+        PmGame.player.sprite.pos = (56, 56)
         PmGame.player.direction = 2
         i = 0
         for g in PmGame.ghosts:
             i += 1
-            g.sprite.pos = (i*100, i*100)
+            g.sprite.pos = (i*48+8, i*48+8)
             g.direction = 2
         
         direction: int = 2
 
+        clock = pygame.time.Clock()
+        running = True
         while running:
             # poll for events
             # pygame.QUIT event means the user clicked X to close your window
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                elif event.type == KEYDOWN:
+                    # Was it the Escape key? If so, stop the loop.
+                    if event.key == K_ESCAPE:
+                        running = False
 
             # fill the screen with a color to wipe away anything from last frame
-            screen.fill("blue")
+            screen.fill((0, 0, 0))
+            Maze.draw_maze(screen, Maze.grid)
 
             # RENDER YOUR GAME HERE
             
@@ -61,18 +76,18 @@ class PmGame():
             screen.blit(sprite, PmGame.player.sprite.pos)
 
             x, y = g.sprite.pos
-            if x <= 500 and y >= 600:
+            if x <= 248 and y >= 488:
                 PmGame.ghosts[1].mood = Mood.RIDE
                 PmGame.ghosts[4].mood = Mood.RIDE
                 direction = 1
-            if x <= 500 and y <= 500:
+            if x <= 248 and y <= 248:
                 PmGame.ghosts[4].mood = Mood.SCARED
                 direction = 2
-            if x >= 800 and y <= 500:
+            if x >= 728 and y <= 248:
                 PmGame.ghosts[1].mood = Mood.SCARED
                 PmGame.ghosts[4].mood = Mood.RIDE
                 direction = 4
-            if x >= 800 and y >= 600:
+            if x >= 728 and y >= 488:
                 PmGame.ghosts[1].mood = Mood.DEAD
                 PmGame.ghosts[4].mood = Mood.SCARED
                 direction = 8
