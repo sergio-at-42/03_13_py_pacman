@@ -89,7 +89,6 @@ class PmSpGhost(PmSprite):
             sprite = PmSpScared(self.ghost)
         if self.ghost.mood == Mood.DEAD:
             sprite = PmSpEyes(self.ghost)
-        print(f"{self.ghost.direction.value}")
         file = f"{getattr(sprite, f"sp{self.ghost.direction.value}{str(anim)}")}"
         return (f"{self.directory}{file}")
 
