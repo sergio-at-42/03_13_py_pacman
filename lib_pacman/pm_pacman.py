@@ -10,7 +10,7 @@ class PmPacman():
     def __init__(self) -> None:
         self.name: str = "Pacman"
         self.color: int = 0x00ffff
-        self.home_pos: tuple[int, int] = (7, 7)
+        self.home_pos: tuple[int, int] = (PmConfig.width // 2, PmConfig.height * 3 // 4)
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.home_pos
         self.direction: Direction = Direction.STOP

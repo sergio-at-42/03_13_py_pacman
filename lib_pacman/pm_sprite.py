@@ -8,6 +8,13 @@ class PmSprite():
     def __init__(self) -> None:
         self.pos: tuple[int, int] = (32, 32)
 
+    @classmethod
+    def convert_pos(self, grid_pos: tuple[int, int]) -> tuple[int, int]:
+        from .maze import Maze
+        grid_x: int = 0
+        grid_y: int = 0
+        grid_x, grid_y = grid_pos
+        return ((grid_x * Maze.cell_size + 8, grid_y * Maze.cell_size + 8))
 
 class PmSpPacman(PmSprite):
     spn0 = "pacman_n0.png"
@@ -18,33 +25,21 @@ class PmSpPacman(PmSprite):
     sps1 = "pacman_s1.png"
     spw0 = "pacman_w0.png"
     spw1 = "pacman_w1.png"
-    anim: int = 2
+    nb_anim: int = 2
 
     def __init__(self, player) -> None:
         self.player = player
 
     def file(self) -> str:
         sprite: PmSprite = self
-        # direction: str = "n"
         anim: int = 0
-        x, y = self.pos
-        if self.player.direction == Direction.NORTH:
-            y -= self.player.speed
-            # direction = "n"
-        if self.player.direction == Direction.EST:
-            x += self.player.speed
-            # direction = "e"
-        if self.player.direction == Direction.SOUTH:
-            y += self.player.speed
-            # direction = "s"
-        if self.player.direction == Direction.WEST:
-            x -= self.player.speed
-            # direction = "w"
-        self.pos = (x, y)
-        anim = (datetime.now().microsecond // 250000) % self.anim
+        self.pos = tuple([
+            self.pos[0] + self.player.direction.move()[0] * self.player.speed,
+            self.pos[1] + self.player.direction.move()[1] * self.player.speed])
+        anim = (datetime.now().microsecond // 250000) % self.nb_anim
         if self.player.dead:
             sprite = PmSpEyes(self.player)
-        file = f"{getattr(sprite, f"sp{self.player.direction.value}{str(anim)}")}"
+        file = f"{getattr(sprite, f"sp{self.player.direction.letter()}{str(anim)}")}"
         return (f"{self.directory}{file}")
 
 
@@ -57,7 +52,7 @@ class PmSpGhost(PmSprite):
     sps1: str = "ghost_1.png"
     spw0: str = "ghost_0.png"
     spw1: str = "ghost_1.png"
-    anim: int = 2
+    nb_anim: int = 2
 
     def __init__(self, ghost) -> None:
         super().__init__()
@@ -65,31 +60,20 @@ class PmSpGhost(PmSprite):
 
     def file(self) -> str:
         sprite: PmSprite = self
-        # direction: str = "n"
         anim: int = 0
-        next_pos = tuple(p * 48 + 8 for p in self.ghost.next_pos)
-        x, y = self.pos
-        if self.ghost.direction == Direction.NORTH:
-            y -= self.ghost.speed
-            # direction = "n"
-        if self.ghost.direction == Direction.EST:
-            x += self.ghost.speed
-            # direction = "e"
-        if self.ghost.direction == Direction.SOUTH:
-            y += self.ghost.speed
-            # direction = "s"
-        if self.ghost.direction == Direction.WEST:
-            x -= self.ghost.speed
-            # direction = "w"
-        self.pos = (x, y)
+        # next_pos = tuple(p * 48 + 8 for p in self.ghost.next_pos)
+        next_pos = self.convert_pos(self.ghost.next_pos)
+        self.pos = tuple([
+            self.pos[0] + self.ghost.direction.move()[0] * self.ghost.speed,
+            self.pos[1] + self.ghost.direction.move()[1] * self.ghost.speed])
         if self.pos == next_pos:
             self.ghost.pos = self.ghost.next_pos
-        anim = (datetime.now().microsecond // 250000) % self.anim
+        anim = (datetime.now().microsecond // 250000) % self.nb_anim
         if self.ghost.mood == Mood.SCARED:
             sprite = PmSpScared(self.ghost)
         if self.ghost.mood == Mood.DEAD:
             sprite = PmSpEyes(self.ghost)
-        file = f"{getattr(sprite, f"sp{self.ghost.direction.value}{str(anim)}")}"
+        file = f"{getattr(sprite, f"sp{self.ghost.direction.letter()}{str(anim)}")}"
         return (f"{self.directory}{file}")
 
 class PmSpBlinky(PmSpGhost):

@@ -21,14 +21,11 @@ from .maze import Maze
 class PmGame():
 
     player: PmPacman = PmPacman()
-    ghosts: list[PmGhost] = [
-        PmBlinky(), PmPinky(), PmInky(), PmClyde(), PmGhost()]
+    ghosts: list[PmGhost] = [PmBlinky(), PmPinky(), PmInky(), PmClyde()]
 
     def __init__(self) -> None:
         PmConfig()
-
         Maze()
-        
 
         self.game_loop()
 
@@ -36,16 +33,26 @@ class PmGame():
         # pygame setup
         pygame.init()
         pygame.display.set_caption("Pac-Man")
-        screen = pygame.display.set_mode((PmConfig.width * 48, PmConfig.height * 48))
+        screen = pygame.display.set_mode((Maze.window_width, Maze.window_height))
+        # Création des deux surfaces
+        score_area = pygame.Surface((Maze.window_width, Maze.surface_score_height))
+        game_area = pygame.Surface((Maze.window_width, Maze.surface_game_height))
+        # couleur
+        score_area.fill((30, 40, 80))
+        game_area.fill((0, 0, 0))
 
-        PmGame.player.sprite.pos = (56, 56)
-        PmGame.player.direction = Direction.EST
+        
+
+        PmGame.player.sprite.pos = PmGame.player.sprite.convert_pos(PmGame.player.home_pos)
+        PmGame.player.direction = Direction.STOP
         i = 0
         for g in PmGame.ghosts:
             i += 1
-            g.sprite.pos = (i*48+8, i*48+8)
-            g.direction = Direction.EST
-        
+            g.sprite.pos = g.sprite.convert_pos(g.home_pos)
+            g.mood = Mood.SLEEP
+            g.direction = Direction.STOP
+
+        # direction pour test
         direction: Direction = Direction.EST
 
         clock = pygame.time.Clock()
@@ -62,8 +69,8 @@ class PmGame():
                         running = False
 
             # fill the screen with a color to wipe away anything from last frame
-            screen.fill((0, 0, 0))
-            Maze.draw_maze(screen, Maze.grid)
+            game_area.fill((0, 0, 0))
+            Maze.draw_maze(game_area)
 
             # RENDER YOUR GAME HERE
             
@@ -71,32 +78,37 @@ class PmGame():
             for g in PmGame.ghosts:
                 i += 1
                 sprite = pygame.image.load(f"lib_pacman/{g.sprite.file()}").convert_alpha()
-                screen.blit(sprite, g.sprite.pos)
+                game_area.blit(sprite, g.sprite.pos)
+                g.move()
 
             sprite = pygame.image.load(f"lib_pacman/{PmGame.player.sprite.file()}").convert_alpha()
-            screen.blit(sprite, PmGame.player.sprite.pos)
+            game_area.blit(sprite, PmGame.player.sprite.pos)
 
-            x, y = g.sprite.pos
-            if x <= 248 and y >= 488:
-                PmGame.ghosts[1].mood = Mood.RIDE
-                PmGame.ghosts[4].mood = Mood.RIDE
-                direction = Direction.NORTH
-            if x <= 248 and y <= 248:
-                PmGame.ghosts[4].mood = Mood.SCARED
-                direction = Direction.EST
-            if x >= 728 and y <= 248:
-                PmGame.ghosts[1].mood = Mood.SCARED
-                PmGame.ghosts[4].mood = Mood.RIDE
-                direction = Direction.SOUTH
-            if x >= 728 and y >= 488:
-                PmGame.ghosts[1].mood = Mood.DEAD
-                PmGame.ghosts[4].mood = Mood.SCARED
-                direction = Direction.WEST
+            # x, y = g.sprite.pos
+            # if x <= 248 and y >= 488:
+            #     PmGame.ghosts[1].mood = Mood.RIDE
+            #     PmGame.ghosts[4].mood = Mood.RIDE
+            #     direction = Direction.NORTH
+            # if x <= 248 and y <= 248:
+            #     PmGame.ghosts[4].mood = Mood.SCARED
+            #     direction = Direction.EST
+            # if x >= 728 and y <= 248:
+            #     PmGame.ghosts[1].mood = Mood.SCARED
+            #     PmGame.ghosts[4].mood = Mood.RIDE
+            #     direction = Direction.SOUTH
+            # if x >= 728 and y >= 488:
+            #     PmGame.ghosts[1].mood = Mood.DEAD
+            #     PmGame.ghosts[4].mood = Mood.SCARED
+            #     direction = Direction.WEST
 
-            PmGame.player.direction = direction
-            for g in PmGame.ghosts:
-                g.direction = direction
+            # PmGame.player.direction = direction
+            # for g in PmGame.ghosts:
+            #     g.direction = direction
 
+
+            # Affichage des deux surfaces dans la fenêtre principale
+            screen.blit(score_area, (0, 0))
+            screen.blit(game_area, (0, Maze.surface_score_height))
 
             # flip() the display to put your work on screen
             pygame.display.flip()
