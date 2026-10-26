@@ -39,7 +39,6 @@ class Game():
         # couleur
         score_area.fill((0, 0, 48))
         game_area.fill((0, 0, 0))
-
         
 
         Game.player.sprite.pos = Game.player.sprite.convert_pos(Game.player.home_pos)
@@ -47,13 +46,10 @@ class Game():
         i = 0
         for g in Game.ghosts:
             i += 1
-            g.mood = Mood.SCATTER
+            g.mood = Mood.CHASE
             g.direction = Direction.STOP
-        Game.ghosts[1].mood = Mood.CHASE
+        Game.ghosts[2].mood = Mood.SCATTER
         Game.ghosts[3].mood = Mood.RIDE
-
-        # direction pour test
-        # direction: Direction = Direction.EST
 
         clock = pygame.time.Clock()
         running = True
@@ -67,6 +63,14 @@ class Game():
                     # Was it the Escape key? If so, stop the loop.
                     if event.key == K_ESCAPE:
                         running = False
+                    elif event.key == K_UP:
+                        Game.player.turn(Direction.NORTH)
+                    elif event.key == K_DOWN:
+                        Game.player.turn(Direction.SOUTH)
+                    elif event.key == K_LEFT:
+                        Game.player.turn(Direction.WEST)
+                    elif event.key == K_RIGHT:
+                        Game.player.turn(Direction.EST)
 
             # fill the screen with a color to wipe away anything from last frame
             game_area.fill((0, 0, 0))
@@ -81,7 +85,8 @@ class Game():
                 g.move()
 
             sprite = pygame.image.load(f"lib_pacman/{Game.player.sprite.file()}").convert_alpha()
-            game_area.blit(sprite, Game.player.sprite.pos)
+            game_area.blit(sprite, Game.player.sprite_pos)
+            Game.player.move()
 
             # Affichage des deux surfaces dans la fenêtre principale
             screen.blit(score_area, (0, 0))

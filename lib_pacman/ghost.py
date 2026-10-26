@@ -58,8 +58,8 @@ class Ghost():
             if self.mood is Mood.SLEEP:
                 self.direction = Direction.STOP
             else:
-                col, row = self.pos
-                next_directions = 15 - Maze.grid[row][col] - self.direction.inverse()
+                # col, row = self.pos
+                next_directions = Maze.cell_exit(self.pos) - self.direction.inverse()
                 if next_directions in (1, 2, 4, 8):
                     self.direction = Direction(next_directions)
                 elif next_directions == 0:
@@ -73,7 +73,7 @@ class Ghost():
         visited_cells: set[tuple[int, int]] = set()
         visited_cells.add(self.pos)
         col, row = self.pos
-        start_cell = 15 - Maze.grid[row][col] - self.direction.inverse()
+        start_cell = Maze.cell_exit(self.pos) - self.direction.inverse()
         if start_cell & Direction.NORTH.value:
             next_cells[Direction.NORTH.move_from(self.pos)] = Direction.NORTH
         if start_cell & Direction.EST.value:
@@ -82,14 +82,14 @@ class Ghost():
             next_cells[Direction.SOUTH.move_from(self.pos)] = Direction.SOUTH
         if start_cell & Direction.WEST.value:
             next_cells[Direction.WEST.move_from(self.pos)] = Direction.WEST
-        
+
         search_pos: tuple[int, int] = list(next_cells.keys())[0]
         
         while search_pos != self.target_pos and len(next_cells) != 0:
             # print(next_cells)
             visited_cells.add(search_pos)
-            col, row = search_pos
-            search_pos_exit = 15 - Maze.grid[row][col]
+            # col, row = search_pos
+            search_pos_exit = Maze.cell_exit(search_pos)
             if search_pos_exit & Direction.NORTH.value:
                 next_pos = Direction.NORTH.move_from(search_pos)
                 if next_pos not in visited_cells:

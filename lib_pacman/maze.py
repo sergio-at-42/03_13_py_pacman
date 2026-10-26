@@ -39,6 +39,26 @@ class Maze():
                     f"Failed to load maze: {e}")
 
     @classmethod
+    def cell_exit(cls, pos: tuple[int, int]) -> int:
+        x: int = 0
+        y: int = 0
+        cell: int = 0
+        x, y = pos
+        cell = cls.grid[y][x]
+        if cell & 32:
+            cell -= 32
+        if cell & 16:
+            cell -= 16
+        return (15 - cell)
+
+    @classmethod
+    def convert_pos(cls, grid_pos: tuple[int, int]) -> tuple[int, int]:
+        grid_x: int = 0
+        grid_y: int = 0
+        grid_x, grid_y = grid_pos
+        return ((grid_x * cls.cell_size + 8, grid_y * cls.cell_size + 8))
+
+    @classmethod
     def add_pacgum(cls) -> None:
         for y, row in enumerate(cls.grid):
             for x, cell in enumerate(row):

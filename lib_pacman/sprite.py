@@ -6,8 +6,8 @@ from .mood import Mood
 class Sprite():
     directory: str = "images/"
 
-    def __init__(self) -> None:
-        self.pos: tuple[int, int] = (32, 32)
+    # def __init__(self) -> None:
+        # self.pos: tuple[int, int] = (32, 32)
 
     @classmethod
     def convert_pos(self, grid_pos: tuple[int, int]) -> tuple[int, int]:
@@ -32,11 +32,10 @@ class SpPacman(Sprite):
 
     def file(self) -> str:
         sprite: Sprite = self
-        anim: int = 0
-        self.pos = tuple([
-            self.pos[0] + self.player.direction.move()[0] * self.player.speed,
-            self.pos[1] + self.player.direction.move()[1] * self.player.speed])
-        anim = (datetime.now().microsecond // 250000) % self.nb_anim
+        anim: int = (datetime.now().microsecond // 250000) % self.nb_anim
+        # self.pos = tuple([
+        #     self.pos[0] + self.player.direction.move()[0] * self.player.speed,
+        #     self.pos[1] + self.player.direction.move()[1] * self.player.speed])
         if self.player.dead:
             sprite = SpEyes(self.player)
         file = f"{getattr(sprite, f"sp{self.player.direction.letter()}{str(anim)}")}"
