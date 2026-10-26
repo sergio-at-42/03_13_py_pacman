@@ -30,7 +30,10 @@ class Maze():
         try:
             gen = MazeGenerator(size=(PmConfig.width, PmConfig.height), perfect=False, seed=PmConfig.seed)
             Maze.grid = gen.maze
-            print(Maze.grid)
+            for y, row in enumerate(Maze.grid):
+                for x, cell in enumerate(row):
+                    print(f"{cell:X}", end="")
+                print()
         except Exception as e:
             PmError("[error]No configuration file provide. "
                     f"Failed to load maze: {e}")

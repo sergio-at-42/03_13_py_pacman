@@ -27,19 +27,16 @@ class PmGhost():
 
     def move(self, pos: tuple[int, int] = ()) -> None:
         from .pm_game import PmGame
-        # next_pos = tuple(p * 48 + 8 for p in self.ghost.next_pos)
-        # next_pos = self.convert_pos(self.ghost.next_pos)
         self.between_pos = (self.between_pos 
                             + abs(self.direction.move()[0] * self.speed)
                             + abs(self.direction.move()[1] * self.speed))
-        if self.between_pos < Maze.cell_size:
-            self.sprite_pos = tuple([
-                            self.sprite_pos[0] + self.direction.move()[0] * self.speed,
-                            self.sprite_pos[1] + self.direction.move()[1] * self.speed])
-        else:
-            self.pos = self.next_pos
-            self.sprite_pos = self.convert_pos(self.pos)
+        if self.between_pos >= Maze.cell_size:
             self.between_pos = 0
+            self.pos = self.next_pos
+        self.sprite_pos = self.convert_pos(self.pos)
+        self.sprite_pos = tuple([
+                            self.sprite_pos[0] + self.direction.move()[0] * self.between_pos,
+                            self.sprite_pos[1] + self.direction.move()[1] * self.between_pos])
 
         if pos != ():
             self.mood = Mood.GO
@@ -61,7 +58,7 @@ class PmGhost():
             if self.mood is Mood.SLEEP:
                 self.direction = Direction.STOP
             else:
-                row, col = self.pos
+                col, row = self.pos
                 next_directions = 15 - Maze.grid[row][col] - self.direction.inverse()
                 if next_directions in (1, 2, 4, 8):
                     self.direction = Direction(next_directions)
@@ -87,15 +84,9 @@ class PmGhost():
             next_cells[Direction.WEST.move_from(self.pos)] = Direction.WEST
         
         search_pos: tuple[int, int] = list(next_cells.keys())[0]
-        # cell_exit: Direction = Direction.STOP
         
-        # direction: int = self.direction.inverse()
-        while search_pos != self.target_pos:
-            # for search_pos, direction in next_cells.items():
-            
-            # if search_pos == self.target_pos:
-            #     self.direction = next_cells[search_pos]
-            # else:
+        while search_pos != self.target_pos and len(next_cells) != 0:
+            # print(next_cells)
             visited_cells.add(search_pos)
             col, row = search_pos
             search_pos_exit = 15 - Maze.grid[row][col]
@@ -116,9 +107,16 @@ class PmGhost():
                 if next_pos not in visited_cells:
                     next_cells[next_pos] = next_cells[search_pos]
             del next_cells[search_pos]
-            search_pos = list(next_cells.keys())[0]
-        self.direction = next_cells[search_pos]
-        # self.next_pos = self.direction.move_from(self.pos)
+            if len(next_cells) != 0:
+                search_pos = list(next_cells.keys())[0]
+            else:
+                search_pos = self.target_pos
+        if len(next_cells) == 0:
+            self.direction = Direction(self.direction.inverse())
+        else:
+            self.direction = next_cells[search_pos]
+            
+        # self.direction = next_cells[search_pos]
 
     def convert_pos(self, grid_pos: tuple[int, int]) -> tuple[int, int]:
         grid_x: int = 0

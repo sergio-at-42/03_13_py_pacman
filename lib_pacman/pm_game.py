@@ -50,6 +50,8 @@ class PmGame():
             i += 1
             g.mood = Mood.SCATTER
             g.direction = Direction.STOP
+        PmGame.ghosts[1].mood = Mood.CHASE
+        PmGame.ghosts[3].mood = Mood.RIDE
 
         # direction pour test
         # direction: Direction = Direction.EST
