@@ -48,12 +48,11 @@ class PmGame():
         i = 0
         for g in PmGame.ghosts:
             i += 1
-            g.sprite.pos = g.sprite.convert_pos(g.home_pos)
-            g.mood = Mood.SLEEP
+            g.mood = Mood.SCATTER
             g.direction = Direction.STOP
 
         # direction pour test
-        direction: Direction = Direction.EST
+        # direction: Direction = Direction.EST
 
         clock = pygame.time.Clock()
         running = True
@@ -73,12 +72,11 @@ class PmGame():
             Maze.draw_maze(game_area)
 
             # RENDER YOUR GAME HERE
-            
             i = 0
             for g in PmGame.ghosts:
                 i += 1
                 sprite = pygame.image.load(f"lib_pacman/{g.sprite.file()}").convert_alpha()
-                game_area.blit(sprite, g.sprite.pos)
+                game_area.blit(sprite, g.sprite_pos)
                 g.move()
 
             sprite = pygame.image.load(f"lib_pacman/{PmGame.player.sprite.file()}").convert_alpha()
@@ -114,6 +112,7 @@ class PmGame():
             pygame.display.flip()
 
             clock.tick(60)  # limits FPS to 60
+
 
         pygame.quit()
 

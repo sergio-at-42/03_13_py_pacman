@@ -22,6 +22,7 @@ class PmConfig():
     seed: int = 42
     level_max_time: int = 90
 
+    sprite_42: str = "images/ghost_0.png"
     pm_icon : str = "\U0001F6BD"
     argv: list[str] = sys.argv
     config_file_name: str = ""

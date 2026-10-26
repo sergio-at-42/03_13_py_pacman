@@ -1,4 +1,6 @@
 from datetime import datetime
+from.maze import Maze
+from .pm_config import PmConfig
 from .mood import Mood
 from .direction import Direction
 
@@ -10,7 +12,6 @@ class PmSprite():
 
     @classmethod
     def convert_pos(self, grid_pos: tuple[int, int]) -> tuple[int, int]:
-        from .maze import Maze
         grid_x: int = 0
         grid_y: int = 0
         grid_x, grid_y = grid_pos
@@ -60,15 +61,7 @@ class PmSpGhost(PmSprite):
 
     def file(self) -> str:
         sprite: PmSprite = self
-        anim: int = 0
-        # next_pos = tuple(p * 48 + 8 for p in self.ghost.next_pos)
-        next_pos = self.convert_pos(self.ghost.next_pos)
-        self.pos = tuple([
-            self.pos[0] + self.ghost.direction.move()[0] * self.ghost.speed,
-            self.pos[1] + self.ghost.direction.move()[1] * self.ghost.speed])
-        if self.pos == next_pos:
-            self.ghost.pos = self.ghost.next_pos
-        anim = (datetime.now().microsecond // 250000) % self.nb_anim
+        anim: int = (datetime.now().microsecond // 250000) % self.nb_anim
         if self.ghost.mood == Mood.SCARED:
             sprite = PmSpScared(self.ghost)
         if self.ghost.mood == Mood.DEAD:

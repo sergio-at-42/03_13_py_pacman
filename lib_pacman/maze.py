@@ -1,7 +1,6 @@
 from .pm_error import PmError
 from .pm_config import PmConfig
 from .direction import Direction
-from .pm_sprite import PmSprite, PmSpGhost
 
 from mazegenerator import MazeGenerator
 import pygame
@@ -31,6 +30,7 @@ class Maze():
         try:
             gen = MazeGenerator(size=(PmConfig.width, PmConfig.height), perfect=False, seed=PmConfig.seed)
             Maze.grid = gen.maze
+            print(Maze.grid)
         except Exception as e:
             PmError("[error]No configuration file provide. "
                     f"Failed to load maze: {e}")
@@ -44,7 +44,7 @@ class Maze():
         x, y = pos
         cell_42 = pygame.Rect(x, y, cls.cell_size, cls.cell_size)
         pygame.draw.rect(area, cls.ft_color, cell_42, cls.wall_thickness)
-        sprite = pygame.image.load(f"lib_pacman/{PmSprite.directory}{PmSpGhost.spn0}").convert_alpha()
+        sprite = pygame.image.load(f"lib_pacman/{PmConfig.sprite_42}").convert_alpha()
         area.blit(sprite, (x+8, y+8))
 
     @classmethod

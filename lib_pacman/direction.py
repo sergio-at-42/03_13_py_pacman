@@ -21,6 +21,9 @@ class Direction(Enum):
                 move_to = (-1, 0)
         return (move_to)
 
+    def move_from(self, pos: tuple[int, int]) -> tuple[int, int]:
+        return ((pos[0] + self.move()[0], pos[1] + self.move()[1]))
+
     def letter(self) -> str:
         lower_letter: str = "e"
         match self.value:
