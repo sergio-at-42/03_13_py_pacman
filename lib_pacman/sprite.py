@@ -1,10 +1,9 @@
 from datetime import datetime
 from.maze import Maze
-from .pm_config import PmConfig
 from .mood import Mood
-from .direction import Direction
 
-class PmSprite():
+
+class Sprite():
     directory: str = "images/"
 
     def __init__(self) -> None:
@@ -17,7 +16,7 @@ class PmSprite():
         grid_x, grid_y = grid_pos
         return ((grid_x * Maze.cell_size + 8, grid_y * Maze.cell_size + 8))
 
-class PmSpPacman(PmSprite):
+class SpPacman(Sprite):
     spn0 = "pacman_n0.png"
     spn1 = "pacman_n1.png"
     spe0 = "pacman_e0.png"
@@ -32,19 +31,19 @@ class PmSpPacman(PmSprite):
         self.player = player
 
     def file(self) -> str:
-        sprite: PmSprite = self
+        sprite: Sprite = self
         anim: int = 0
         self.pos = tuple([
             self.pos[0] + self.player.direction.move()[0] * self.player.speed,
             self.pos[1] + self.player.direction.move()[1] * self.player.speed])
         anim = (datetime.now().microsecond // 250000) % self.nb_anim
         if self.player.dead:
-            sprite = PmSpEyes(self.player)
+            sprite = SpEyes(self.player)
         file = f"{getattr(sprite, f"sp{self.player.direction.letter()}{str(anim)}")}"
         return (f"{self.directory}{file}")
 
 
-class PmSpGhost(PmSprite):
+class SpGhost(Sprite):
     spn0: str = "ghost_0.png"
     spn1: str = "ghost_1.png"
     spe0: str = "ghost_0.png"
@@ -60,16 +59,16 @@ class PmSpGhost(PmSprite):
         self.ghost = ghost
 
     def file(self) -> str:
-        sprite: PmSprite = self
+        sprite: Sprite = self
         anim: int = (datetime.now().microsecond // 250000) % self.nb_anim
         if self.ghost.mood == Mood.SCARED:
-            sprite = PmSpScared(self.ghost)
+            sprite = SpScared(self.ghost)
         if self.ghost.mood == Mood.DEAD:
-            sprite = PmSpEyes(self.ghost)
+            sprite = SpEyes(self.ghost)
         file = f"{getattr(sprite, f"sp{self.ghost.direction.letter()}{str(anim)}")}"
         return (f"{self.directory}{file}")
 
-class PmSpBlinky(PmSpGhost):
+class SpBlinky(SpGhost):
     spn0 = "blinky_n0.png"
     spn1 = "blinky_n1.png"
     spe0 = "blinky_e0.png"
@@ -80,7 +79,7 @@ class PmSpBlinky(PmSpGhost):
     spw1 = "blinky_w1.png"
 
 
-class PmSpPinky(PmSpGhost):
+class SpPinky(SpGhost):
     spn0 = "pinky_n0.png"
     spn1 = "pinky_n1.png"
     spe0 = "pinky_e0.png"
@@ -91,7 +90,7 @@ class PmSpPinky(PmSpGhost):
     spw1 = "pinky_w1.png"
 
 
-class PmSpInky(PmSpGhost):
+class SpInky(SpGhost):
     spn0 = "inky_n0.png"
     spn1 = "inky_n1.png"
     spe0 = "inky_e0.png"
@@ -102,7 +101,7 @@ class PmSpInky(PmSpGhost):
     spw1 = "inky_w1.png"
 
 
-class PmSpClyde(PmSpGhost):
+class SpClyde(SpGhost):
     spn0 = "clyde_n0.png"
     spn1 = "clyde_n1.png"
     spe0 = "clyde_e0.png"
@@ -113,7 +112,7 @@ class PmSpClyde(PmSpGhost):
     spw1 = "clyde_w1.png"
 
 
-class PmSpScared(PmSpGhost):
+class SpScared(SpGhost):
     spn0 = "scared_0.png"
     spn1 = "scared_1.png"
     spe0 = "scared_0.png"
@@ -124,7 +123,7 @@ class PmSpScared(PmSpGhost):
     spw1 = "scared_1.png"
 
 
-class PmSpEyes(PmSpGhost):
+class SpEyes(SpGhost):
     spn0 = "eyes_0.png"
     spn1 = "eyes_1.png"
     spe0 = "eyes_0.png"

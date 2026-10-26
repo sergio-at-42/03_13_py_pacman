@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
-from lib_pacman import PmGame, PmError
+from lib_pacman import Game, Error
 
 
 def main() -> None:
-    PmError.log_new_pacman()
-    PmGame()
-    PmError.log_game_over()
+    Error.log_new_pacman()
+    Game()
+    Error.log_game_over()
 
 
 if __name__ == "__main__":

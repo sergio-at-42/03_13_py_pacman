@@ -1,25 +1,24 @@
-from datetime import datetime
-from .pm_config import PmConfig
-from .pm_ghost_strategy import PmGhostStrategy
-from .pm_sprite import PmSpPacman
+from .config import Config
+from .ghost_strategy import GhostStrategy
+from .sprite import SpPacman
 from .direction import Direction
 
 
-class PmPacman():
+class Pacman():
 
     def __init__(self) -> None:
         self.name: str = "Pacman"
         self.color: int = 0x00ffff
-        self.home_pos: tuple[int, int] = (PmConfig.width // 2, PmConfig.height * 3 // 4)
+        self.home_pos: tuple[int, int] = (Config.width // 2, Config.height * 3 // 4)
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.home_pos
         self.direction: Direction = Direction.STOP
         self.speed: int = 2
         self.dead: bool = False
-        self.sprite: PmSpPacman = PmSpPacman(self)
+        self.sprite: SpPacman = SpPacman(self)
 
     def chase(self) -> None:
-        self.move_to(PmGhostStrategy.ride(self.pos))
+        self.move_to(GhostStrategy.ride(self.pos))
 
     def escape(self) -> None:
         self.move_to(self.home_pos)
