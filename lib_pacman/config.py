@@ -2,13 +2,13 @@ from typing import Any
 import sys
 import json
 
-from .pm_error import PmError, \
+from .error import Error, \
     WidthLessThan2Error, WidthSmallFor42Error, \
     HeightLessThan2Error, WidthSmallFor42Error, \
     LivesLessThan1Error, TimeLessThan0Error
 
 
-class PmConfig():
+class Config():
 
     highscore_filename: str = "highscores.json"
     level: list[int] = []  # array of multiple levels ???
@@ -38,20 +38,20 @@ class PmConfig():
                 config_file = json.load(config_json_file)
                 self.set_values(config_file)
         except FileNotFoundError:
-            PmError("[error]No configuration file found.")
+            Error("[error]No configuration file found.")
         except json.decoder.JSONDecodeError:
-            PmError("[error]JSON config file corrupted.")
+            Error("[error]JSON config file corrupted.")
 
     def file_from_argv(self) -> None:
         try:
             with open(self.argv[1], "r"):
                 self.config_file_name = self.argv[1]
         except IndexError:
-            PmError("[error]No configuration file provide. "
+            Error("[error]No configuration file provide. "
                 f"Usage: {self.argv[0].rpartition("/")[2]} <conf_file>. "
                 "Default values used to create the Pac-Man.")
         except FileNotFoundError:
-            PmError(f"[error]<{self.argv[1]}> is not a configuration file. "
+            Error(f"[error]<{self.argv[1]}> is not a configuration file. "
                 f"Usage: {self.argv[0].rpartition("/")[2]} <conf_file>. "
                 "Default values used to create the Pac-Man.")
 
@@ -84,6 +84,6 @@ class PmConfig():
                         raise TimeLessThan0Error
                 case _:
                     value_ok = False
-        except PmError:
+        except Error:
             value_ok = False
         return (value_ok)

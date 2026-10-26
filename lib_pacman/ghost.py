@@ -1,13 +1,13 @@
 from random import randrange
-from .pm_config import PmConfig
+from .config import Config
 from .maze import Maze
-# from .pm_ghost_strategy import PmGhostStrategy
-from .pm_sprite import PmSpGhost, PmSpBlinky, PmSpPinky, PmSpInky, PmSpClyde
+# from .pm_ghost_strategy import GhostStrategy
+from .sprite import SpGhost, SpBlinky, SpPinky, SpInky, SpClyde
 from .mood import Mood
 from .direction import Direction
 
 
-class PmGhost():
+class Ghost():
 
     def __init__(self) -> None:
         self.name: str = "Gogo"
@@ -20,13 +20,13 @@ class PmGhost():
         self.direction: Direction = Direction.STOP
         self.speed: float = 1
         self.mood: Mood = Mood.RIDE
-        # self.strategy: PmGhostStrategy = PmGhostStrategy(self)
+        # self.strategy: GhostStrategy = GhostStrategy(self)
         self.between_pos: float = 0
         self.sprite_pos: tuple[int, int] = (40, 40)
-        self.sprite: PmSpGhost = PmSpGhost(self)
+        self.sprite: SpGhost = SpGhost(self)
 
     def move(self, pos: tuple[int, int] = ()) -> None:
-        from .pm_game import PmGame
+        from .game import Game
         self.between_pos = (self.between_pos 
                             + abs(self.direction.move()[0] * self.speed)
                             + abs(self.direction.move()[1] * self.speed))
@@ -45,7 +45,7 @@ class PmGhost():
         if self.pos == self.next_pos:
             # self.strategy.next_move()
             if self.mood is Mood.RIDE:
-                self.target_pos = (randrange(PmConfig.width), randrange(PmConfig.height))
+                self.target_pos = (randrange(Config.width), randrange(Config.height))
             elif self.mood is Mood.SCATTER:
                 self.target_pos = self.corner_pos
             elif self.mood is Mood.DEAD:
@@ -53,7 +53,7 @@ class PmGhost():
             elif self.mood is Mood.SCARED:
                 pass
             elif self.mood is Mood.CHASE:
-                self.target_pos = PmGame.player.pos
+                self.target_pos = Game.player.pos
     
             if self.mood is Mood.SLEEP:
                 self.direction = Direction.STOP
@@ -125,68 +125,68 @@ class PmGhost():
         return ((grid_x * Maze.cell_size + 8, grid_y * Maze.cell_size + 8))
 
 
-class PmBlinky(PmGhost):
+class Blinky(Ghost):
     def __init__(self) -> None:
         super().__init__()
         self.name = "blinky"
         self.color: int = 0xff0000
-        self.home_pos: tuple[int, int] = (PmConfig.width // 2 - 3, PmConfig.height // 2 - 2)
+        self.home_pos: tuple[int, int] = (Config.width // 2 - 3, Config.height // 2 - 2)
         self.corner_pos: tuple[int, int] = (0, 0)
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.pos
         self.speed = 1.5
-        self.sprite = PmSpBlinky(self)
+        self.sprite = SpBlinky(self)
 
 
-class PmPinky(PmGhost):
+class Pinky(Ghost):
     def __init__(self) -> None:
         super().__init__()
         self.name = "pinky"
         self.color: int = 0xffc0c0
-        self.home_pos: tuple[int, int] = (PmConfig.width // 2 - 2, PmConfig.height // 2 - 2)
-        self.corner_pos: tuple[int, int] = (PmConfig.width-1, 0)
+        self.home_pos: tuple[int, int] = (Config.width // 2 - 2, Config.height // 2 - 2)
+        self.corner_pos: tuple[int, int] = (Config.width-1, 0)
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.pos
         self.speed = 1
-        self.sprite = PmSpPinky(self)
+        self.sprite = SpPinky(self)
 
 
-class PmInky(PmGhost):
+class Inky(Ghost):
     def __init__(self) -> None:
         super().__init__()
         self.name = "inky"
         self.color: int = 0x0000ff
-        self.home_pos: tuple[int, int] = (PmConfig.width // 2 + 0, PmConfig.height // 2 - 2)
-        self.corner_pos: tuple[int, int] = (PmConfig.width-1, PmConfig.height-1)
+        self.home_pos: tuple[int, int] = (Config.width // 2 + 0, Config.height // 2 - 2)
+        self.corner_pos: tuple[int, int] = (Config.width-1, Config.height-1)
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.pos
-        self.sprite = PmSpInky(self)
+        self.sprite = SpInky(self)
 
 
-class PmClyde(PmGhost):
+class Clyde(Ghost):
     def __init__(self) -> None:
         super().__init__()
         self.name = "clyde"
         self.color: int = 0xff7f00
-        self.home_pos: tuple[int, int] = (PmConfig.width // 2 + 1, PmConfig.height // 2 - 2)
-        self.corner_pos: tuple[int, int] = (0, PmConfig.height-1)
+        self.home_pos: tuple[int, int] = (Config.width // 2 + 1, Config.height // 2 - 2)
+        self.corner_pos: tuple[int, int] = (0, Config.height-1)
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.pos
         self.speed = 1.3
-        self.sprite = PmSpClyde(self)
+        self.sprite = SpClyde(self)
 
 
 
 
     # def move(self, pos: tuple[int, int] = ()) -> None:
-    #     from .pm_game import PmGame
+    #     from .pm_game import Game
     #     if pos != ():
     #         self.mood = Mood.GO
     #         self.ghost.target_pos = pos
     #     if self.ghost.pos == self.ghost.next_pos:
     #         # self.strategy.next_move()
     #         if self.ghost.mood is Mood.RIDE:
-    #             self.ghost.target_pos = (randrange(PmConfig.width), randrange(PmConfig.height))
+    #             self.ghost.target_pos = (randrange(Config.width), randrange(Config.height))
     #         elif self.ghost.mood is Mood.SCATTER:
     #             self.ghost.target_pos = self.ghost.corner_pos
     #         elif self.ghost.mood is Mood.DEAD:
@@ -194,7 +194,7 @@ class PmClyde(PmGhost):
     #         elif self.ghost.mood is Mood.SCARED:
     #             pass
     #         elif self.ghost.mood is Mood.CHASE:
-    #             self.ghost.target_pos = PmGame.player.pos
+    #             self.ghost.target_pos = Game.player.pos
     
     #         if self.ghost.mood is Mood.SLEEP:
     #             self.ghost.direction = Direction.STOP

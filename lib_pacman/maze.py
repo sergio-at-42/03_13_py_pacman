@@ -1,5 +1,5 @@
-from .pm_error import PmError
-from .pm_config import PmConfig
+from .error import Error
+from .config import Config
 from .direction import Direction
 
 from mazegenerator import MazeGenerator
@@ -19,8 +19,8 @@ class Maze():
     grid: list[list[int]] = []
     cell_size: int = 48
     surface_score_height = cell_size * 2
-    surface_game_height = PmConfig.height * cell_size
-    window_width = PmConfig.width * cell_size
+    surface_game_height = Config.height * cell_size
+    window_width = Config.width * cell_size
     window_height = surface_score_height + surface_game_height
     wall_thickness = 8
     wall_color = (60, 90, 200)
@@ -28,14 +28,14 @@ class Maze():
 
     def __init__(self) -> None:
         try:
-            gen = MazeGenerator(size=(PmConfig.width, PmConfig.height), perfect=False, seed=PmConfig.seed)
+            gen = MazeGenerator(size=(Config.width, Config.height), perfect=False, seed=Config.seed)
             Maze.grid = gen.maze
             for y, row in enumerate(Maze.grid):
                 for x, cell in enumerate(row):
                     print(f"{cell:X}", end="")
                 print()
         except Exception as e:
-            PmError("[error]No configuration file provide. "
+            Error("[error]No configuration file provide. "
                     f"Failed to load maze: {e}")
 
     @classmethod
@@ -47,7 +47,7 @@ class Maze():
         x, y = pos
         cell_42 = pygame.Rect(x, y, cls.cell_size, cls.cell_size)
         pygame.draw.rect(area, cls.ft_color, cell_42, cls.wall_thickness)
-        sprite = pygame.image.load(f"lib_pacman/{PmConfig.sprite_42}").convert_alpha()
+        sprite = pygame.image.load(f"lib_pacman/{Config.sprite_42}").convert_alpha()
         area.blit(sprite, (x+8, y+8))
 
     @classmethod
