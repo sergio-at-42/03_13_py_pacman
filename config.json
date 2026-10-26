@@ -1,7 +1,7 @@
 {
 "highscore_filename": "highscores_from_file.json",
 "level array of multiple levels": ["???"],
-"width": 16,
+"width": 32,
 "height": 16,
 "lives": -3,
 "pacgum": 42,
