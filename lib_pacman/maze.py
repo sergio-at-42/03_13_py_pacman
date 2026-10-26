@@ -19,24 +19,35 @@ class Maze():
     grid: list[list[int]] = []
     cell_size: int = 48
     surface_score_height = cell_size * 2
-    surface_game_height = Config.height * cell_size
-    window_width = Config.width * cell_size
-    window_height = surface_score_height + surface_game_height
+    surface_game_height = 0
+    window_width = 0
+    window_height = 0
     wall_thickness = 8
-    wall_color = (60, 90, 200)
-    ft_color = (0, 0, 255)
+    wall_color = (64, 96, 255)
+    ft_color = (0, 0, 127)
 
     def __init__(self) -> None:
+        Maze.surface_game_height = Config.height * Maze.cell_size
+        Maze.window_width = Config.width * Maze.cell_size
+        Maze.window_height = Maze.surface_score_height + Maze.surface_game_height
         try:
             gen = MazeGenerator(size=(Config.width, Config.height), perfect=False, seed=Config.seed)
             Maze.grid = gen.maze
-            for y, row in enumerate(Maze.grid):
-                for x, cell in enumerate(row):
-                    print(f"{cell:X}", end="")
-                print()
+            Maze.add_pacgum()
         except Exception as e:
             Error("[error]No configuration file provide. "
                     f"Failed to load maze: {e}")
+
+    @classmethod
+    def add_pacgum(cls) -> None:
+        for y, row in enumerate(cls.grid):
+            for x, cell in enumerate(row):
+                if cell != 15:
+                    cls.grid[y][x] += 16
+        cls.grid[0][0] += 16
+        cls.grid[0][Config.width - 1] += 16
+        cls.grid[Config.height - 1][Config.width - 1] += 16
+        cls.grid[Config.height - 1][0] += 16
 
     @classmethod
     def draw_wall(cls, area: pygame.Surface, start: tuple[int, int], end: tuple[int, int]) -> None:
@@ -46,9 +57,21 @@ class Maze():
     def draw_42(cls, area: pygame.Surface, pos: tuple[int, int]) -> None:
         x, y = pos
         cell_42 = pygame.Rect(x, y, cls.cell_size, cls.cell_size)
-        pygame.draw.rect(area, cls.ft_color, cell_42, cls.wall_thickness)
+        pygame.draw.rect(area, cls.ft_color, cell_42)
         sprite = pygame.image.load(f"lib_pacman/{Config.sprite_42}").convert_alpha()
-        area.blit(sprite, (x+8, y+8))
+        area.blit(sprite, (x + 8, y + 8))
+
+    @classmethod
+    def draw_pacgum(cls, area: pygame.Surface, pos: tuple[int, int]) -> None:
+        x, y = pos
+        sprite = pygame.image.load(f"lib_pacman/{Config.sprite_pacgum}").convert_alpha()
+        area.blit(sprite, (x + 8, y + 8))
+
+    @classmethod
+    def draw_super_pacgum(cls, area: pygame.Surface, pos: tuple[int, int]) -> None:
+        x, y = pos
+        sprite = pygame.image.load(f"lib_pacman/{Config.sprite_super}").convert_alpha()
+        area.blit(sprite, (x + 8, y + 8))
 
     @classmethod
     def draw_maze(cls, area: pygame.Surface) -> None:
@@ -57,7 +80,7 @@ class Maze():
                 px = x * cls.cell_size
                 py = y * cls.cell_size
                 if cell == 15:
-                    cls.draw_42(area, (px, py))
+                    cls.draw_42(area, (px, py))                
                 if cell & Direction.NORTH.value:
                     cls.draw_wall(area, (px, py), (px + cls.cell_size, py))
                 if cell & Direction.EST.value:
@@ -66,3 +89,7 @@ class Maze():
                     cls.draw_wall(area, (px, py + cls.cell_size), (px + cls.cell_size, py + cls.cell_size))
                 if cell & Direction.WEST.value:
                     cls.draw_wall(area, (px, py), (px, py + cls.cell_size))
+                if cell & 16:
+                    cls.draw_pacgum(area, (px, py))
+                if cell & 32:
+                    cls.draw_super_pacgum(area, (px, py))

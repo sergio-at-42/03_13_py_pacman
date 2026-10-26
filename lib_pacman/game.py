@@ -31,13 +31,13 @@ class Game():
     def game_loop(self) -> None:
         # pygame setup
         pygame.init()
-        pygame.display.set_caption("Pac-Man")
+        pygame.display.set_caption("Pac-Man since 1980")
         screen = pygame.display.set_mode((Maze.window_width, Maze.window_height))
         # Création des deux surfaces
         score_area = pygame.Surface((Maze.window_width, Maze.surface_score_height))
         game_area = pygame.Surface((Maze.window_width, Maze.surface_game_height))
         # couleur
-        score_area.fill((30, 40, 80))
+        score_area.fill((0, 0, 48))
         game_area.fill((0, 0, 0))
 
         
