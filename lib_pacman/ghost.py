@@ -25,7 +25,7 @@ class Ghost():
         self.sprite_pos: tuple[int, int] = (40, 40)
         self.sprite: SpGhost = SpGhost(self)
 
-    def move(self, pos: tuple[int, int] = ()) -> None:
+    def move(self, pos: tuple[int, int] = (0, 0)) -> None:
         from .game import Game
         self.between_pos = (self.between_pos 
                             + abs(self.direction.move()[0] * self.speed)
@@ -34,11 +34,11 @@ class Ghost():
             self.between_pos = 0
             self.pos = self.next_pos
         self.sprite_pos = self.convert_pos(self.pos)
-        self.sprite_pos = tuple([
-                            self.sprite_pos[0] + self.direction.move()[0] * self.between_pos,
-                            self.sprite_pos[1] + self.direction.move()[1] * self.between_pos])
+        self.sprite_pos = (
+            int(self.sprite_pos[0] + self.direction.move()[0] * self.between_pos),
+            int(self.sprite_pos[1] + self.direction.move()[1] * self.between_pos))
 
-        if pos != ():
+        if pos != (0, 0):
             self.mood = Mood.GO
             self.target_pos = pos
 
@@ -58,7 +58,6 @@ class Ghost():
             if self.mood is Mood.SLEEP:
                 self.direction = Direction.STOP
             else:
-                # col, row = self.pos
                 next_directions = Maze.cell_exit(self.pos) - self.direction.inverse()
                 if next_directions in (1, 2, 4, 8):
                     self.direction = Direction(next_directions)
@@ -69,10 +68,9 @@ class Ghost():
             self.next_pos = self.direction.move_from(self.pos)
 
     def bfs(self) -> None:
-        next_cells: dict[tuple[int, int]: Direction] = {}
+        next_cells: dict[tuple[int, int], Direction] = {}
         visited_cells: set[tuple[int, int]] = set()
         visited_cells.add(self.pos)
-        col, row = self.pos
         start_cell = Maze.cell_exit(self.pos) - self.direction.inverse()
         if start_cell & Direction.NORTH.value:
             next_cells[Direction.NORTH.move_from(self.pos)] = Direction.NORTH

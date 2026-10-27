@@ -39,6 +39,6 @@ class Pacman():
             self.next_pos = self.direction.move_from(self.pos)
 
         self.sprite_pos = Maze.convert_pos(self.pos)
-        self.sprite_pos = tuple([
-            self.sprite_pos[0] + self.direction.move()[0] * self.between_pos,
-            self.sprite_pos[1] + self.direction.move()[1] * self.between_pos])
+        self.sprite_pos = (
+            int(self.sprite_pos[0] + self.direction.move()[0] * self.between_pos),
+            int(self.sprite_pos[1] + self.direction.move()[1] * self.between_pos))
