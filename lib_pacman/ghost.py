@@ -1,4 +1,4 @@
-from random import randrange
+from random import randint, randrange
 from .config import Config
 from .maze import Maze
 # from .pm_ghost_strategy import GhostStrategy
@@ -20,6 +20,7 @@ class Ghost():
         self.direction: Direction = Direction.STOP
         self.speed: float = 1
         self.mood: Mood = Mood.RIDE
+        self.mood_time: int = randint(960, 1440)
         # self.strategy: GhostStrategy = GhostStrategy(self)
         self.between_pos: float = 0
         self.sprite_pos: tuple[int, int] = (40, 40)
@@ -27,6 +28,13 @@ class Ghost():
 
     def move(self, pos: tuple[int, int] = (0, 0)) -> None:
         from .game import Game
+        self.mood_time -= 1
+        if self.mood_time <= 0:
+            if self.mood != Mood.CHASE:
+                self.mood = Mood.CHASE
+            else:
+                self.mood = Mood.SCATTER
+            self.mood_time = randint(960, 1440)
         self.between_pos = (self.between_pos 
                             + abs(self.direction.move()[0] * self.speed)
                             + abs(self.direction.move()[1] * self.speed))
@@ -51,7 +59,7 @@ class Ghost():
             elif self.mood is Mood.DEAD:
                 self.target_pos = self.home_pos
             elif self.mood is Mood.SCARED:
-                pass
+                self.target_pos = (randrange(Config.width), randrange(Config.height))
             elif self.mood is Mood.CHASE:
                 self.target_pos = Game.player.pos
     

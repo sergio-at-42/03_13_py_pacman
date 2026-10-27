@@ -6,6 +6,8 @@ from pygame.locals import (
     K_RIGHT,
     K_ESCAPE,
     KEYDOWN,
+    K_SPACE,
+    K_x,
     QUIT,
 )
 from .config import Config
@@ -21,6 +23,7 @@ class Game():
 
     player: Pacman = Pacman()
     ghosts: list[Ghost] = [Blinky(), Pinky(), Inky(), Clyde()]
+    bombs: list[tuple[int, int]] = []
 
     def __init__(self) -> None:
         Config()
@@ -41,15 +44,13 @@ class Game():
         game_area.fill((0, 0, 0))
         
 
-        Game.player.sprite.pos = Game.player.sprite.convert_pos(Game.player.home_pos)
+        Game.player.sprite_pos = Game.player.sprite.convert_pos(Game.player.home_pos)
         Game.player.direction = Direction.STOP
         i = 0
         for g in Game.ghosts:
             i += 1
             g.mood = Mood.CHASE
             g.direction = Direction.STOP
-        Game.ghosts[2].mood = Mood.SCATTER
-        Game.ghosts[3].mood = Mood.RIDE
 
         clock = pygame.time.Clock()
         running = True
@@ -71,12 +72,20 @@ class Game():
                         Game.player.turn(Direction.WEST)
                     elif event.key == K_RIGHT:
                         Game.player.turn(Direction.EST)
+                    elif event.key == K_SPACE:
+                        Game.player.turbo()
+                    elif event.key == K_x:
+                        self.bombs.append(Game.player.sprite_pos)
 
             # fill the screen with a color to wipe away anything from last frame
             game_area.fill((0, 0, 0))
             Maze.draw_maze(game_area)
 
             # RENDER YOUR GAME HERE
+            for b in Game.bombs:
+                sprite = pygame.image.load(f"lib_pacman/{Game.player.bomb()}").convert_alpha()
+                game_area.blit(sprite, b)
+
             i = 0
             for g in Game.ghosts:
                 i += 1

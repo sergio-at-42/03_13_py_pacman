@@ -1,3 +1,5 @@
+from random import randint
+
 from .error import Error
 from .config import Config
 from .direction import Direction
@@ -60,14 +62,25 @@ class Maze():
 
     @classmethod
     def add_pacgum(cls) -> None:
+        x:int = 0
+        y:int = 0
+        cls.grid[0][0] += 32
+        cls.grid[0][Config.width - 1] += 32
+        cls.grid[Config.height - 1][Config.width - 1] += 32
+        cls.grid[Config.height - 1][0] += 32
+        # Add pacgums in few cells of the maze
+        # for _ in range(Config.pacgum):
+        #     x = 4
+        #     y = 5
+        #     while Maze.grid[y][x] >= 15:
+        #         x = randint(0, 15)
+        #         y = randint(0, 15)
+        #     Maze.grid[y][x] += 16
+        # Add pacgums in all the cells of the maze
         for y, row in enumerate(cls.grid):
             for x, cell in enumerate(row):
                 if cell != 15:
                     cls.grid[y][x] += 16
-        cls.grid[0][0] += 16
-        cls.grid[0][Config.width - 1] += 16
-        cls.grid[Config.height - 1][Config.width - 1] += 16
-        cls.grid[Config.height - 1][0] += 16
 
     @classmethod
     def draw_wall(cls, area: pygame.Surface, start: tuple[int, int], end: tuple[int, int]) -> None:
