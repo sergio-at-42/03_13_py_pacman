@@ -22,10 +22,13 @@ class Ghost():
         self.normal_speed: float = 1
         self.mood: Mood = Mood.RIDE
         self.mood_time: int = randint(960, 1440)
-        # self.strategy: GhostStrategy = GhostStrategy(self)
         self.between_pos: float = 0
         self.sprite_pos: tuple[int, int] = (40, 40)
         self.sprite: SpGhost = SpGhost(self)
+
+    def strategy(self) -> tuple[int, int]:
+        from .game import Game
+        return (Game.player.pos)
 
     def move(self, pos: tuple[int, int] = (-1, -1)) -> None:
         from .game import Game
@@ -53,7 +56,6 @@ class Ghost():
             self.target_pos = pos
 
         if self.pos == self.next_pos:
-            # self.strategy.next_move()
             if self.mood is Mood.RIDE:
                 self.target_pos = (randrange(Config.width), randrange(Config.height))
             elif self.mood is Mood.SCATTER:
@@ -66,7 +68,7 @@ class Ghost():
                 px, py = Game.player.pos
                 self.target_pos = (abs(Config.width - 1 - px), abs(Config.height - 1 - py))
             elif self.mood is Mood.CHASE:
-                self.target_pos = Game.player.pos
+                self.target_pos = self.strategy()
 
             if self.mood is Mood.SLEEP:
                 self.direction = Direction.STOP
@@ -148,6 +150,10 @@ class Blinky(Ghost):
         self.normal_speed = 1.5
         self.sprite = SpBlinky(self)
 
+    def strategy(self) -> tuple[int, int]:
+        from .game import Game
+        return (Game.player.pos)
+
 
 class Pinky(Ghost):
     def __init__(self) -> None:
@@ -160,6 +166,14 @@ class Pinky(Ghost):
         self.next_pos: tuple[int, int] = self.pos
         self.normal_speed = 1
         self.sprite = SpPinky(self)
+
+    def strategy(self) -> tuple[int, int]:
+        from .game import Game
+        px, py = Game.player.pos
+        dx, dy = Game.player.direction.move()
+        px = px + dx * 4
+        py = py + dy * 4
+        return (Maze.limit((px, py)))
 
 
 class Inky(Ghost):
@@ -174,6 +188,14 @@ class Inky(Ghost):
         self.normal_speed: float = 1
         self.sprite = SpInky(self)
 
+    def strategy(self) -> tuple[int, int]:
+        from .game import Game
+        px, py = Game.player.pos
+        dx, dy = Game.player.direction.move()
+        px = px + dx * 2
+        py = py + dy * 2
+        return (Maze.limit((px, py)))
+
 
 class Clyde(Ghost):
     def __init__(self) -> None:
@@ -186,6 +208,16 @@ class Clyde(Ghost):
         self.next_pos: tuple[int, int] = self.pos
         self.normal_speed = 1.3
         self.sprite = SpClyde(self)
+
+    def strategy(self) -> tuple[int, int]:
+        from .game import Game
+        px, py = Game.player.pos
+        gx, gy = self.pos
+        if abs(px - gx) + abs(py - gy) > 8:
+            return (Game.player.pos)
+        return (self.corner_pos)
+
+
 
 
 

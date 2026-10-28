@@ -34,6 +34,21 @@ class Maze():
                     f"Failed to load maze: {e}")
 
     @classmethod
+    def limit(cls, pos: tuple[int, int]) -> tuple[int, int]:
+        x: int = 0
+        y: int = 0
+        x, y = pos
+        if x < 0:
+            x = 0
+        elif x >= Config.width:
+            x = Config.width - 1
+        if y < 0:
+            y = 0
+        elif y >= Config.width:
+            y = Config.width - 1
+        return ((x, y))
+
+    @classmethod
     def cell_exit(cls, pos: tuple[int, int]) -> int:
         x: int = 0
         y: int = 0
