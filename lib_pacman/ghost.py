@@ -19,6 +19,7 @@ class Ghost():
         self.target_pos: tuple[int, int] = self.corner_pos
         self.direction: Direction = Direction.STOP
         self.speed: float = 1
+        self.normal_speed: float = 1
         self.mood: Mood = Mood.RIDE
         self.mood_time: int = randint(960, 1440)
         # self.strategy: GhostStrategy = GhostStrategy(self)
@@ -26,15 +27,16 @@ class Ghost():
         self.sprite_pos: tuple[int, int] = (40, 40)
         self.sprite: SpGhost = SpGhost(self)
 
-    def move(self, pos: tuple[int, int] = (0, 0)) -> None:
+    def move(self, pos: tuple[int, int] = (-1, -1)) -> None:
         from .game import Game
         self.mood_time -= 1
-        if self.mood_time <= 0:
+        if self.mood_time == 0:
             if self.mood != Mood.CHASE:
                 self.mood = Mood.CHASE
             else:
                 self.mood = Mood.SCATTER
             self.mood_time = randint(960, 1440)
+            self.speed = self.normal_speed
         self.between_pos = (self.between_pos 
                             + abs(self.direction.move()[0] * self.speed)
                             + abs(self.direction.move()[1] * self.speed))
@@ -46,7 +48,7 @@ class Ghost():
             int(self.sprite_pos[0] + self.direction.move()[0] * self.between_pos),
             int(self.sprite_pos[1] + self.direction.move()[1] * self.between_pos))
 
-        if pos != (0, 0):
+        if pos != (-1, -1):
             self.mood = Mood.GO
             self.target_pos = pos
 
@@ -57,12 +59,15 @@ class Ghost():
             elif self.mood is Mood.SCATTER:
                 self.target_pos = self.corner_pos
             elif self.mood is Mood.DEAD:
+                if self.pos == self.home_pos:
+                    self.mood_time = 1
                 self.target_pos = self.home_pos
             elif self.mood is Mood.SCARED:
-                self.target_pos = (randrange(Config.width), randrange(Config.height))
+                px, py = Game.player.pos
+                self.target_pos = (abs(Config.width - 1 - px), abs(Config.height - 1 - py))
             elif self.mood is Mood.CHASE:
                 self.target_pos = Game.player.pos
-    
+
             if self.mood is Mood.SLEEP:
                 self.direction = Direction.STOP
             else:
@@ -140,7 +145,7 @@ class Blinky(Ghost):
         self.corner_pos: tuple[int, int] = (0, 0)
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.pos
-        self.speed = 1.5
+        self.normal_speed = 1.5
         self.sprite = SpBlinky(self)
 
 
@@ -153,7 +158,7 @@ class Pinky(Ghost):
         self.corner_pos: tuple[int, int] = (Config.width-1, 0)
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.pos
-        self.speed = 1
+        self.normal_speed = 1
         self.sprite = SpPinky(self)
 
 
@@ -166,6 +171,7 @@ class Inky(Ghost):
         self.corner_pos: tuple[int, int] = (Config.width-1, Config.height-1)
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.pos
+        self.normal_speed: float = 1
         self.sprite = SpInky(self)
 
 
@@ -178,7 +184,7 @@ class Clyde(Ghost):
         self.corner_pos: tuple[int, int] = (0, Config.height-1)
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.pos
-        self.speed = 1.3
+        self.normal_speed = 1.3
         self.sprite = SpClyde(self)
 
 

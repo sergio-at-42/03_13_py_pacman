@@ -20,18 +20,11 @@ class Maze():
 
     grid: list[list[int]] = []
     cell_size: int = 48
-    surface_score_height = cell_size * 2
-    surface_game_height = 0
-    window_width = 0
-    window_height = 0
     wall_thickness = 8
     wall_color = (64, 96, 255)
     ft_color = (0, 0, 127)
 
     def __init__(self) -> None:
-        Maze.surface_game_height = Config.height * Maze.cell_size
-        Maze.window_width = Config.width * Maze.cell_size
-        Maze.window_height = Maze.surface_score_height + Maze.surface_game_height
         try:
             gen = MazeGenerator(size=(Config.width, Config.height), perfect=False, seed=Config.seed)
             Maze.grid = gen.maze
