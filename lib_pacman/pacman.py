@@ -1,30 +1,70 @@
 from .config import Config
-from .ghost_strategy import GhostStrategy
+from .maze import Maze
 from .sprite import SpPacman
 from .direction import Direction
+from .mood import Mood
 
 
 class Pacman():
 
     def __init__(self) -> None:
         self.name: str = "Pacman"
+        self.score: int = 0
         self.color: int = 0x00ffff
         self.home_pos: tuple[int, int] = (Config.width // 2, Config.height * 3 // 4)
         self.pos: tuple[int, int] = self.home_pos
-        self.next_pos: tuple[int, int] = self.home_pos
+        self.next_pos: tuple[int, int] = self.pos
         self.direction: Direction = Direction.STOP
-        self.speed: int = 2
+        self.next_direction: Direction = Direction.STOP
+        self.normal_speed: float = 2
+        self.speed: float = self.normal_speed
+        self.turbo_speed: float = 4
+        self.turbo_time: int = 0
         self.dead: bool = False
+        self.between_pos: float = 0
+        self.sprite_pos: tuple[int, int] = (40, 40)
         self.sprite: SpPacman = SpPacman(self)
 
-    def chase(self) -> None:
-        self.move_to(GhostStrategy.ride(self.pos))
+    def turn(self, direction: Direction) -> None:
+        if Maze.cell_exit(self.next_pos) & direction.value:
+            self.next_direction = direction
+        elif self.between_pos == 0:
+            self.next_direction = Direction.STOP
+            self.next_pos = self.pos
 
-    def escape(self) -> None:
-        self.move_to(self.home_pos)
+    def move(self) -> None:
+        from .game import Game
+        self.speed: float = self.normal_speed
+        if self.turbo_time:
+            self.turbo_time -= 1
+            self.speed = self.turbo_speed
+        self.between_pos = (self.between_pos 
+                            + abs(self.direction.move()[0] * self.speed)
+                            + abs(self.direction.move()[1] * self.speed))
+        if self.between_pos >= Maze.cell_size or self.direction is Direction.STOP:
+            self.between_pos = 0
+            self.pos = self.next_pos
+            self.turn(self.next_direction)
+            self.direction = self.next_direction
+            self.next_pos = self.direction.move_from(self.pos)
+            col, row = self.pos
+            if Maze.grid[row][col] & 32:
+                self.score += Config.points_per_super_pacgum
+                Maze.grid[row][col] -= 32
+                for g in Game.ghosts:
+                    g.mood = Mood.SCARED
+                    g.mood_time = 480
+            if Maze.grid[row][col] & 16:
+                self.score += Config.points_per_pacgum
+                Maze.grid[row][col] -= 16
 
-    def scatter(self) -> None:
-        self.move_to(self.corner_pos)
+        self.sprite_pos = Maze.convert_pos(self.pos)
+        self.sprite_pos = (
+            int(self.sprite_pos[0] + self.direction.move()[0] * self.between_pos),
+            int(self.sprite_pos[1] + self.direction.move()[1] * self.between_pos))
 
-    def move_to(self, pos: tuple[int, int]) -> None:
-        self.next_pos = (0, 0)
+    def turbo(self) -> None:
+        self.turbo_time = 30
+
+    def bomb(self) -> str:
+        return ("images/poop.png")

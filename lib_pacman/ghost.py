@@ -1,4 +1,4 @@
-from random import randrange
+from random import randint, randrange
 from .config import Config
 from .maze import Maze
 # from .pm_ghost_strategy import GhostStrategy
@@ -19,14 +19,24 @@ class Ghost():
         self.target_pos: tuple[int, int] = self.corner_pos
         self.direction: Direction = Direction.STOP
         self.speed: float = 1
+        self.normal_speed: float = 1
         self.mood: Mood = Mood.RIDE
+        self.mood_time: int = randint(960, 1440)
         # self.strategy: GhostStrategy = GhostStrategy(self)
         self.between_pos: float = 0
         self.sprite_pos: tuple[int, int] = (40, 40)
         self.sprite: SpGhost = SpGhost(self)
 
-    def move(self, pos: tuple[int, int] = ()) -> None:
+    def move(self, pos: tuple[int, int] = (-1, -1)) -> None:
         from .game import Game
+        self.mood_time -= 1
+        if self.mood_time == 0:
+            if self.mood != Mood.CHASE:
+                self.mood = Mood.CHASE
+            else:
+                self.mood = Mood.SCATTER
+            self.mood_time = randint(960, 1440)
+            self.speed = self.normal_speed
         self.between_pos = (self.between_pos 
                             + abs(self.direction.move()[0] * self.speed)
                             + abs(self.direction.move()[1] * self.speed))
@@ -34,11 +44,11 @@ class Ghost():
             self.between_pos = 0
             self.pos = self.next_pos
         self.sprite_pos = self.convert_pos(self.pos)
-        self.sprite_pos = tuple([
-                            self.sprite_pos[0] + self.direction.move()[0] * self.between_pos,
-                            self.sprite_pos[1] + self.direction.move()[1] * self.between_pos])
+        self.sprite_pos = (
+            int(self.sprite_pos[0] + self.direction.move()[0] * self.between_pos),
+            int(self.sprite_pos[1] + self.direction.move()[1] * self.between_pos))
 
-        if pos != ():
+        if pos != (-1, -1):
             self.mood = Mood.GO
             self.target_pos = pos
 
@@ -49,17 +59,19 @@ class Ghost():
             elif self.mood is Mood.SCATTER:
                 self.target_pos = self.corner_pos
             elif self.mood is Mood.DEAD:
+                if self.pos == self.home_pos:
+                    self.mood_time = 1
                 self.target_pos = self.home_pos
             elif self.mood is Mood.SCARED:
-                pass
+                px, py = Game.player.pos
+                self.target_pos = (abs(Config.width - 1 - px), abs(Config.height - 1 - py))
             elif self.mood is Mood.CHASE:
                 self.target_pos = Game.player.pos
-    
+
             if self.mood is Mood.SLEEP:
                 self.direction = Direction.STOP
             else:
-                col, row = self.pos
-                next_directions = 15 - Maze.grid[row][col] - self.direction.inverse()
+                next_directions = Maze.cell_exit(self.pos) - self.direction.inverse()
                 if next_directions in (1, 2, 4, 8):
                     self.direction = Direction(next_directions)
                 elif next_directions == 0:
@@ -69,11 +81,10 @@ class Ghost():
             self.next_pos = self.direction.move_from(self.pos)
 
     def bfs(self) -> None:
-        next_cells: dict[tuple[int, int]: Direction] = {}
+        next_cells: dict[tuple[int, int], Direction] = {}
         visited_cells: set[tuple[int, int]] = set()
         visited_cells.add(self.pos)
-        col, row = self.pos
-        start_cell = 15 - Maze.grid[row][col] - self.direction.inverse()
+        start_cell = Maze.cell_exit(self.pos) - self.direction.inverse()
         if start_cell & Direction.NORTH.value:
             next_cells[Direction.NORTH.move_from(self.pos)] = Direction.NORTH
         if start_cell & Direction.EST.value:
@@ -82,14 +93,14 @@ class Ghost():
             next_cells[Direction.SOUTH.move_from(self.pos)] = Direction.SOUTH
         if start_cell & Direction.WEST.value:
             next_cells[Direction.WEST.move_from(self.pos)] = Direction.WEST
-        
+
         search_pos: tuple[int, int] = list(next_cells.keys())[0]
         
         while search_pos != self.target_pos and len(next_cells) != 0:
             # print(next_cells)
             visited_cells.add(search_pos)
-            col, row = search_pos
-            search_pos_exit = 15 - Maze.grid[row][col]
+            # col, row = search_pos
+            search_pos_exit = Maze.cell_exit(search_pos)
             if search_pos_exit & Direction.NORTH.value:
                 next_pos = Direction.NORTH.move_from(search_pos)
                 if next_pos not in visited_cells:
@@ -134,7 +145,7 @@ class Blinky(Ghost):
         self.corner_pos: tuple[int, int] = (0, 0)
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.pos
-        self.speed = 1.5
+        self.normal_speed = 1.5
         self.sprite = SpBlinky(self)
 
 
@@ -147,7 +158,7 @@ class Pinky(Ghost):
         self.corner_pos: tuple[int, int] = (Config.width-1, 0)
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.pos
-        self.speed = 1
+        self.normal_speed = 1
         self.sprite = SpPinky(self)
 
 
@@ -160,6 +171,7 @@ class Inky(Ghost):
         self.corner_pos: tuple[int, int] = (Config.width-1, Config.height-1)
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.pos
+        self.normal_speed: float = 1
         self.sprite = SpInky(self)
 
 
@@ -172,7 +184,7 @@ class Clyde(Ghost):
         self.corner_pos: tuple[int, int] = (0, Config.height-1)
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.pos
-        self.speed = 1.3
+        self.normal_speed = 1.3
         self.sprite = SpClyde(self)
 
 
