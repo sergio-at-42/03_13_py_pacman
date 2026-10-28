@@ -26,6 +26,8 @@ class Game():
     surface_game_height = 0
     window_width = 0
     window_height = 0
+    level:int = 0
+    level_time:int
     player: Pacman = Pacman()
     ghosts: list[Ghost] = [Blinky(), Pinky(), Inky(), Clyde()]
     bombs: list[tuple[int, int]] = []

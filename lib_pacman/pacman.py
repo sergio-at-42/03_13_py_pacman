@@ -10,8 +10,9 @@ class Pacman():
     def __init__(self) -> None:
         self.name: str = "Pacman"
         self.score: int = 0
+        self.live: int = 0
         self.color: int = 0x00ffff
-        self.home_pos: tuple[int, int] = (Config.width // 2, Config.height * 3 // 4)
+        self.home_pos: tuple[int, int] = (Config.width // 2 - 1, Config.height // 2)
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.pos
         self.direction: Direction = Direction.STOP

@@ -141,8 +141,8 @@ class Blinky(Ghost):
         super().__init__()
         self.name = "blinky"
         self.color: int = 0xff0000
-        self.home_pos: tuple[int, int] = (Config.width // 2 - 3, Config.height // 2 - 2)
         self.corner_pos: tuple[int, int] = (0, 0)
+        self.home_pos: tuple[int, int] = self.corner_pos #(Config.width // 2 - 3, Config.height // 2 - 2)
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.pos
         self.normal_speed = 1.5
@@ -154,8 +154,8 @@ class Pinky(Ghost):
         super().__init__()
         self.name = "pinky"
         self.color: int = 0xffc0c0
-        self.home_pos: tuple[int, int] = (Config.width // 2 - 2, Config.height // 2 - 2)
         self.corner_pos: tuple[int, int] = (Config.width-1, 0)
+        self.home_pos: tuple[int, int] = self.corner_pos #(Config.width // 2 - 2, Config.height // 2 - 2)
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.pos
         self.normal_speed = 1
@@ -167,8 +167,8 @@ class Inky(Ghost):
         super().__init__()
         self.name = "inky"
         self.color: int = 0x0000ff
-        self.home_pos: tuple[int, int] = (Config.width // 2 + 0, Config.height // 2 - 2)
         self.corner_pos: tuple[int, int] = (Config.width-1, Config.height-1)
+        self.home_pos: tuple[int, int] = self.corner_pos #(Config.width // 2 + 0, Config.height // 2 - 2)
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.pos
         self.normal_speed: float = 1
@@ -180,8 +180,8 @@ class Clyde(Ghost):
         super().__init__()
         self.name = "clyde"
         self.color: int = 0xff7f00
-        self.home_pos: tuple[int, int] = (Config.width // 2 + 1, Config.height // 2 - 2)
         self.corner_pos: tuple[int, int] = (0, Config.height-1)
+        self.home_pos: tuple[int, int] = self.corner_pos #(Config.width // 2 + 1, Config.height // 2 - 2)
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.pos
         self.normal_speed = 1.3
