@@ -62,6 +62,8 @@ class SpGhost(Sprite):
         anim: int = (datetime.now().microsecond // 250000) % self.nb_anim
         if self.ghost.mood == Mood.SCARED:
             sprite = SpScared(self.ghost)
+            if self.ghost.mood_time <= 180 and (self.ghost.mood_time // 20) % 2 == 0:
+                sprite = SpEndScared(self.ghost)
         if self.ghost.mood == Mood.DEAD:
             sprite = SpEyes(self.ghost)
         file = f"{getattr(sprite, f"sp{self.ghost.direction.letter()}{str(anim)}")}"
@@ -120,6 +122,17 @@ class SpScared(SpGhost):
     sps1 = "scared_1.png"
     spw0 = "scared_0.png"
     spw1 = "scared_1.png"
+
+
+class SpEndScared(SpGhost):
+    spn0: str = "ghost_0.png"
+    spn1: str = "ghost_1.png"
+    spe0: str = "ghost_0.png"
+    spe1: str = "ghost_1.png"
+    sps0: str = "ghost_0.png"
+    sps1: str = "ghost_1.png"
+    spw0: str = "ghost_0.png"
+    spw1: str = "ghost_1.png"
 
 
 class SpEyes(SpGhost):

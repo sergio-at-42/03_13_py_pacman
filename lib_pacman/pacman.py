@@ -53,8 +53,7 @@ class Pacman():
                 self.score += Config.points_per_super_pacgum
                 Maze.grid[row][col] -= 32
                 for g in Game.ghosts:
-                    g.mood = Mood.SCARED
-                    g.mood_time = 480
+                    g.change_mood(Mood.SCARED)
             if Maze.grid[row][col] & 16:
                 self.score += Config.points_per_pacgum
                 Maze.grid[row][col] -= 16

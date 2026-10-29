@@ -16,6 +16,7 @@ class Config():
     height: int = 16
     lives: int = 3
     pacgum: int = 42
+    spacgum: int = 4
     points_per_pacgum: int = 10
     points_per_super_pacgum: int = 50
     points_per_ghost: int = 200

@@ -9,6 +9,11 @@ from pygame.locals import (
     K_SPACE,
     K_x,
     K_d,
+    K_h,
+    K_r,
+    K_s,
+    K_c,
+    K_f,
     QUIT,
 )
 from .config import Config
@@ -164,5 +169,20 @@ class Game():
                         Game.bombs.append(Game.player.sprite_pos)
                     elif event.key == K_d:
                         for g in Game.ghosts:
-                            g.mood = Mood.DEAD
+                            g.change_mood(Mood.DEAD)
+                    elif event.key == K_h:
+                        for g in Game.ghosts:
+                            g.move(g.home_pos)
+                    elif event.key == K_r:
+                        for g in Game.ghosts:
+                            g.change_mood(Mood.RIDE)
+                    elif event.key == K_s:
+                        for g in Game.ghosts:
+                            g.change_mood(Mood.SLEEP)
+                    elif event.key == K_c:
+                        for g in Game.ghosts:
+                            g.change_mood(Mood.CHASE)
+                    elif event.key == K_f:
+                        for g in Game.ghosts:
+                            g.change_mood(Mood.SCARED)
         return (running)

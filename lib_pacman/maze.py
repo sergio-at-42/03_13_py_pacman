@@ -23,6 +23,8 @@ class Maze():
     wall_thickness = 8
     wall_color = (64, 96, 255)
     ft_color = (0, 0, 127)
+    nb_gum: int = 0
+    nb_sgum: int = 0
 
     def __init__(self) -> None:
         try:
@@ -77,6 +79,8 @@ class Maze():
         cls.grid[0][Config.width - 1] += 32
         cls.grid[Config.height - 1][Config.width - 1] += 32
         cls.grid[Config.height - 1][0] += 32
+        cls.nb_sgum = 4
+        cls.nb_gum = 0
 
         # Add pacgums in few cells of the maze
         # for _ in range(Config.pacgum):
@@ -86,12 +90,14 @@ class Maze():
         #         x = randint(0, 15)
         #         y = randint(0, 15)
         #     Maze.grid[y][x] += 16
+        #     cls.nb_gum += 1
 
         # Add pacgums in all the cells of the maze
         for y, row in enumerate(cls.grid):
             for x, cell in enumerate(row):
                 if cell != 15:
                     cls.grid[y][x] += 16
+                    cls.nb_gum += 1
 
     @classmethod
     def draw_wall(cls, area: pygame.Surface, start: tuple[int, int], end: tuple[int, int]) -> None:
