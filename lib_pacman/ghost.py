@@ -32,25 +32,18 @@ class Ghost():
 
     def move(self, pos: tuple[int, int] = (-1, -1)) -> None:
         from .game import Game
+        # mood management of the ghost
         self.mood_time -= 1
         if self.mood_time == 0:
             if self.mood != Mood.CHASE:
                 self.mood = Mood.CHASE
+                self.mood_time = randint(960, 1440) # 16 to 24 seconds
             else:
                 self.mood = Mood.SCATTER
-            self.mood_time = randint(960, 1440)
+                self.mood_time = randint(600, 960) # 10 to 16 seconds
             self.speed = self.normal_speed
-        self.between_pos = (self.between_pos 
-                            + abs(self.direction.move()[0] * self.speed)
-                            + abs(self.direction.move()[1] * self.speed))
-        if self.between_pos >= Maze.cell_size:
-            self.between_pos = 0
-            self.pos = self.next_pos
-        self.sprite_pos = self.convert_pos(self.pos)
-        self.sprite_pos = (
-            int(self.sprite_pos[0] + self.direction.move()[0] * self.between_pos),
-            int(self.sprite_pos[1] + self.direction.move()[1] * self.between_pos))
-
+        
+        # determine the target position based on the ghost's mood
         if pos != (-1, -1):
             self.mood = Mood.GO
             self.target_pos = pos
@@ -61,12 +54,15 @@ class Ghost():
             elif self.mood is Mood.SCATTER:
                 self.target_pos = self.corner_pos
             elif self.mood is Mood.DEAD:
+                self.mood_time = -1
+                self.speed = 4
+                self.target_pos = self.home_pos
                 if self.pos == self.home_pos:
                     self.mood_time = 1
-                self.target_pos = self.home_pos
             elif self.mood is Mood.SCARED:
                 px, py = Game.player.pos
                 self.target_pos = (abs(Config.width - 1 - px), abs(Config.height - 1 - py))
+                self.speed = 0.7
             elif self.mood is Mood.CHASE:
                 self.target_pos = self.strategy()
 
@@ -81,6 +77,20 @@ class Ghost():
                 else:
                     self.bfs()
             self.next_pos = self.direction.move_from(self.pos)
+
+        # compute the position in pixel between the origin of the cell and the ghost position in the cell
+        self.between_pos = (self.between_pos 
+                            + abs(self.direction.move()[0] * self.speed)
+                            + abs(self.direction.move()[1] * self.speed))
+        # verify if the ghost enter in a new cell
+        if self.between_pos >= Maze.cell_size:
+            self.between_pos = 0
+            self.pos = self.next_pos
+        # convertion of the cell position in sprite position for the ghost
+        self.sprite_pos = self.convert_pos(self.pos)
+        self.sprite_pos = (
+            int(self.sprite_pos[0] + self.direction.move()[0] * self.between_pos),
+            int(self.sprite_pos[1] + self.direction.move()[1] * self.between_pos))
 
     def bfs(self) -> None:
         next_cells: dict[tuple[int, int], Direction] = {}
@@ -129,8 +139,6 @@ class Ghost():
         else:
             self.direction = next_cells[search_pos]
             
-        # self.direction = next_cells[search_pos]
-
     def convert_pos(self, grid_pos: tuple[int, int]) -> tuple[int, int]:
         grid_x: int = 0
         grid_y: int = 0
@@ -152,6 +160,12 @@ class Blinky(Ghost):
 
     def strategy(self) -> tuple[int, int]:
         from .game import Game
+        px, py = Game.player.pos
+        gx, gy = self.pos
+        if abs(px - gx) + abs(py - gy) <= 4:
+            self.speed = 2
+        else:
+            self.speed = self.normal_speed
         return (Game.player.pos)
 
 

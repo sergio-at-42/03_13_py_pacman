@@ -72,10 +72,12 @@ class Maze():
     def add_pacgum(cls) -> None:
         x:int = 0
         y:int = 0
+        # Add super-pacgums in the 4 corners
         cls.grid[0][0] += 32
         cls.grid[0][Config.width - 1] += 32
         cls.grid[Config.height - 1][Config.width - 1] += 32
         cls.grid[Config.height - 1][0] += 32
+
         # Add pacgums in few cells of the maze
         # for _ in range(Config.pacgum):
         #     x = 4
@@ -84,6 +86,7 @@ class Maze():
         #         x = randint(0, 15)
         #         y = randint(0, 15)
         #     Maze.grid[y][x] += 16
+
         # Add pacgums in all the cells of the maze
         for y, row in enumerate(cls.grid):
             for x, cell in enumerate(row):

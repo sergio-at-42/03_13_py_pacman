@@ -31,6 +31,7 @@ class Game():
     player: Pacman = Pacman()
     ghosts: list[Ghost] = [Blinky(), Pinky(), Inky(), Clyde()]
     bombs: list[tuple[int, int]] = []
+    cheat: bool = True # A deplacer dans la classe qui gere le main menu et la partie
 
     def __init__(self) -> None:
         Config()
@@ -81,30 +82,31 @@ class Game():
 
             # poll for events
             # pygame.QUIT event means the user clicked X to close your window
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
-                elif event.type == KEYDOWN:
-                    # Was it the Escape key? If so, stop the loop.
-                    if event.key == K_ESCAPE:
-                        running = False
-                    elif event.key == K_UP:
-                        Game.player.turn(Direction.NORTH)
-                    elif event.key == K_DOWN:
-                        Game.player.turn(Direction.SOUTH)
-                    elif event.key == K_LEFT:
-                        Game.player.turn(Direction.WEST)
-                    elif event.key == K_RIGHT:
-                        Game.player.turn(Direction.EST)
-                    elif event.key == K_SPACE:
-                        Game.player.turbo()
-                    elif event.key == K_x:
-                        self.bombs.append(Game.player.sprite_pos)
-                    elif event.key == K_d:
-                        for g in self.ghosts:
-                            g.mood = Mood.DEAD
-                            g.mood_time = -1
-                            g.speed = 4
+            running = self.events()
+            # for event in pygame.event.get():
+            #     if event.type == pygame.QUIT:
+            #         running = False
+            #     elif event.type == KEYDOWN:
+            #         # Was it the Escape key? If so, stop the loop.
+            #         if event.key == K_ESCAPE:
+            #             running = False
+            #         elif event.key == K_UP:
+            #             Game.player.turn(Direction.NORTH)
+            #         elif event.key == K_DOWN:
+            #             Game.player.turn(Direction.SOUTH)
+            #         elif event.key == K_LEFT:
+            #             Game.player.turn(Direction.WEST)
+            #         elif event.key == K_RIGHT:
+            #             Game.player.turn(Direction.EST)
+            #         elif event.key == K_SPACE:
+            #             Game.player.turbo()
+            #         elif event.key == K_x:
+            #             self.bombs.append(Game.player.sprite_pos)
+            #         elif event.key == K_d:
+            #             for g in self.ghosts:
+            #                 g.mood = Mood.DEAD
+            #                 g.mood_time = -1
+            #                 g.speed = 4
 
             # fill the screen with a color to wipe away anything from last frame
             game_area.fill((0, 0, 0))
@@ -136,3 +138,31 @@ class Game():
             clock.tick(60)  # limits FPS to 60
 
         pygame.quit()
+
+    def events(self) -> bool:
+        running:bool = True
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == KEYDOWN:
+                # Was it the Escape key? If so, stop the loop.
+                if event.key == K_ESCAPE:
+                    running = False
+                elif event.key == K_UP:
+                    Game.player.turn(Direction.NORTH)
+                elif event.key == K_DOWN:
+                    Game.player.turn(Direction.SOUTH)
+                elif event.key == K_LEFT:
+                    Game.player.turn(Direction.WEST)
+                elif event.key == K_RIGHT:
+                    Game.player.turn(Direction.EST)
+                # events with cheat mode activated
+                if Game.cheat:
+                    if event.key == K_SPACE:
+                        Game.player.turbo()
+                    elif event.key == K_x:
+                        Game.bombs.append(Game.player.sprite_pos)
+                    elif event.key == K_d:
+                        for g in Game.ghosts:
+                            g.mood = Mood.DEAD
+        return (running)
