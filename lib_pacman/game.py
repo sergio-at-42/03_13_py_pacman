@@ -27,16 +27,20 @@ from .maze import Maze
 
 class Game():
 
-    surface_score_height = 0
-    surface_game_height = 0
-    window_width = 0
-    window_height = 0
-    level:int = 0
-    level_time:int
+    surface_score_height:int = 0
+    surface_game_height:int = 0
+    window_width:int = 0
+    window_height:int = 0
+    screen:pygame.Surface
     player: Pacman = Pacman()
     ghosts: list[Ghost] = [Blinky(), Pinky(), Inky(), Clyde()]
     bombs: list[tuple[int, int]] = []
-    cheat: bool = True # A deplacer dans la classe qui gere le main menu et la partie
+    resume:bool = False
+
+    # A deplacer dans la classe qui gere le main menu et la partie
+    level:int = 0
+    level_time:int = 0
+    cheat: bool = True
 
     def __init__(self) -> None:
         Config()
@@ -46,18 +50,32 @@ class Game():
         Game.window_width = Config.width * Maze.cell_size
         Game.window_height = Game.surface_score_height + Game.surface_game_height
 
+        # pygame setup
+        pygame.init()
+        pygame.display.set_caption("Pac-Man since 1980")
+        Game.screen = pygame.display.set_mode((Game.window_width, Game.window_height))
+
         self.game_loop()
 
     def game_loop(self) -> None:
         line_score: str = ""
 
-        # pygame setup
-        pygame.init()
-        pygame.display.set_caption("Pac-Man since 1980")
-        screen = pygame.display.set_mode((Game.window_width, Game.window_height))
+        # # pygame setup
+        # pygame.init()
+        # pygame.display.set_caption("Pac-Man since 1980")
+        # screen = pygame.display.set_mode((Game.window_width, Game.window_height))
         # Création des deux surfaces
         score_area = pygame.Surface((Game.window_width, Game.surface_score_height))
         game_area = pygame.Surface((Game.window_width, Game.surface_game_height))
+
+        # RESUME Area creation
+        resume_area = pygame.Surface((Game.window_width, Game.surface_game_height), pygame.SRCALPHA)
+        resume_area.fill((0, 0, 128, 192))
+        font = pygame.font.Font(None, 48)
+        text = font.render(f"Press < ESC > to exit the game", True, (255, 255, 0))
+        resume_area.blit(text, (Game.window_width // 6, Game.surface_game_height // 4))
+        text = font.render(f"Press any other key to continue", True, (255, 255, 0))
+        resume_area.blit(text, (Game.window_width // 6, Game.surface_game_height // 4 * 2))
 
         # couleur
         score_area.fill((0, 0, 48))
@@ -134,11 +152,16 @@ class Game():
             Game.player.move()
 
             # Affichage des deux surfaces dans la fenêtre principale
-            screen.blit(score_area, (0, 0))
-            screen.blit(game_area, (0, Game.surface_score_height))
+            Game.screen.blit(score_area, (0, 0))
+            Game.screen.blit(game_area, (0, Game.surface_score_height))
+            if Game.resume:
+                Game.screen.blit(resume_area, (0, Game.surface_score_height))
 
             # flip() the display to put your work on screen
             pygame.display.flip()
+
+            if Game.resume:
+                running = self.resume_loop()
 
             clock.tick(60)  # limits FPS to 60
 
@@ -152,7 +175,7 @@ class Game():
             elif event.type == KEYDOWN:
                 # Was it the Escape key? If so, stop the loop.
                 if event.key == K_ESCAPE:
-                    running = False
+                    Game.resume = True
                 elif event.key == K_UP:
                     Game.player.turn(Direction.NORTH)
                 elif event.key == K_DOWN:
@@ -185,4 +208,18 @@ class Game():
                     elif event.key == K_f:
                         for g in Game.ghosts:
                             g.change_mood(Mood.SCARED)
+        return (running)
+
+    def resume_loop(self) -> bool:
+        running:bool = True
+        key_down:bool = False
+        Game.resume = False
+        while not key_down and running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                elif event.type == KEYDOWN:
+                    key_down = True
+                    if event.key == K_ESCAPE:
+                        running = False
         return (running)
