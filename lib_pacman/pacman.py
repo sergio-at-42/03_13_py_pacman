@@ -52,6 +52,7 @@ class Pacman():
             if Maze.grid[row][col] & 32:
                 self.score += Config.points_per_super_pacgum
                 Maze.grid[row][col] -= 32
+                Game.joy.rumble(1, 1, 1000)
                 for g in Game.ghosts:
                     g.change_mood(Mood.SCARED)
             if Maze.grid[row][col] & 16:

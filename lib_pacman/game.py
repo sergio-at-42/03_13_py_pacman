@@ -32,6 +32,7 @@ class Game():
     window_width:int = 0
     window_height:int = 0
     screen:pygame.Surface
+    joy: pygame.joystick
     player: Pacman = Pacman()
     ghosts: list[Ghost] = [Blinky(), Pinky(), Inky(), Clyde()]
     bombs: list[tuple[int, int]] = []
@@ -54,7 +55,9 @@ class Game():
         pygame.init()
         pygame.display.set_caption("Pac-Man since 1980")
         Game.screen = pygame.display.set_mode((Game.window_width, Game.window_height))
-
+        # joystick init
+        pygame.joystick.init()
+        Game.joy = pygame.joystick.Joystick(0)
         self.game_loop()
 
     def game_loop(self) -> None:
@@ -81,7 +84,6 @@ class Game():
         score_area.fill((0, 0, 48))
         game_area.fill((0, 0, 0))
         
-
         Game.player.sprite_pos = Game.player.sprite.convert_pos(Game.player.home_pos)
         Game.player.direction = Direction.STOP
         i = 0
@@ -131,6 +133,8 @@ class Game():
             #                 g.mood_time = -1
             #                 g.speed = 4
 
+            # running = self.events_joystick()
+
             # fill the screen with a color to wipe away anything from last frame
             game_area.fill((0, 0, 0))
             Maze.draw_maze(game_area)
@@ -172,42 +176,59 @@ class Game():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            elif event.type == KEYDOWN:
+            elif event.type == KEYDOWN \
+                or event.type == pygame.JOYAXISMOTION \
+                or event.type == pygame.JOYBUTTONDOWN:
                 # Was it the Escape key? If so, stop the loop.
-                if event.key == K_ESCAPE:
+                if getattr(event, "key", None) == K_ESCAPE \
+                    or getattr(event, "button", None) == 11:
                     Game.resume = True
-                elif event.key == K_UP:
+                elif getattr(event, "key", None) == K_UP \
+                    or (getattr(event, "axis", None) == 1 and getattr(event, "value", None) < -0.9):
                     Game.player.turn(Direction.NORTH)
-                elif event.key == K_DOWN:
+                elif getattr(event, "key", None) == K_DOWN \
+                    or (getattr(event, "axis", None) == 1 and getattr(event, "value", None) > 0.9):
                     Game.player.turn(Direction.SOUTH)
-                elif event.key == K_LEFT:
+                elif getattr(event, "key", None) == K_LEFT \
+                    or (getattr(event, "axis", None) == 0 and getattr(event, "value", None) < -0.9):
                     Game.player.turn(Direction.WEST)
-                elif event.key == K_RIGHT:
+                elif getattr(event, "key", None) == K_RIGHT \
+                    or (getattr(event, "axis", None) == 0 and getattr(event, "value", None) > 0.9):
                     Game.player.turn(Direction.EST)
                 # events with cheat mode activated
                 if Game.cheat:
-                    if event.key == K_SPACE:
+                    if getattr(event, "key", None) == K_SPACE \
+                        or getattr(event, "button", None) == 0:
                         Game.player.turbo()
-                    elif event.key == K_x:
+                    elif getattr(event, "key", None) == K_x \
+                        or getattr(event, "button", None) == 1:
                         Game.bombs.append(Game.player.sprite_pos)
-                    elif event.key == K_d:
-                        for g in Game.ghosts:
-                            g.change_mood(Mood.DEAD)
-                    elif event.key == K_h:
-                        for g in Game.ghosts:
-                            g.move(g.home_pos)
-                    elif event.key == K_r:
-                        for g in Game.ghosts:
-                            g.change_mood(Mood.RIDE)
-                    elif event.key == K_s:
-                        for g in Game.ghosts:
-                            g.change_mood(Mood.SLEEP)
-                    elif event.key == K_c:
-                        for g in Game.ghosts:
-                            g.change_mood(Mood.CHASE)
-                    elif event.key == K_f:
+                    elif getattr(event, "key", None) == K_f \
+                        or getattr(event, "button", None) == 3:
                         for g in Game.ghosts:
                             g.change_mood(Mood.SCARED)
+                    elif getattr(event, "key", None) == K_d \
+                        or getattr(event, "button", None) == 2:
+                        for g in Game.ghosts:
+                            g.change_mood(Mood.DEAD)
+                    elif getattr(event, "key", None) == K_h \
+                        or getattr(event, "button", None) == 6:
+                        for g in Game.ghosts:
+                            g.move(g.home_pos)
+                    elif getattr(event, "key", None) == K_r \
+                        or getattr(event, "button", None) == 7:
+                        for g in Game.ghosts:
+                            g.change_mood(Mood.RIDE)
+                    elif getattr(event, "key", None) == K_s \
+                        or getattr(event, "button", None) == 5:
+                        for g in Game.ghosts:
+                            g.change_mood(Mood.SLEEP)
+                    elif getattr(event, "key", None) == K_c \
+                        or getattr(event, "button", None) == 8:
+                        for g in Game.ghosts:
+                            g.change_mood(Mood.CHASE)
+                if event.type == pygame.JOYBUTTONDOWN:
+                    Game.joy.rumble(0, 1, 100)
         return (running)
 
     def resume_loop(self) -> bool:
@@ -218,8 +239,11 @@ class Game():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-                elif event.type == KEYDOWN:
+                elif event.type == KEYDOWN or event.type == pygame.JOYBUTTONDOWN:
                     key_down = True
-                    if event.key == K_ESCAPE:
+                    if getattr(event, "key", False) == K_ESCAPE or getattr(event, "button", False) == 11:
                         running = False
+                # elif event.type == pygame.JOYBUTTONDOWN:
+                #     if event.button == 11: # HOME button
+                #                     Game.resume = True
         return (running)
