@@ -106,34 +106,7 @@ class Game():
             y += font.get_linesize()
 
             # poll for events
-            # pygame.QUIT event means the user clicked X to close your window
             running = self.events()
-            # for event in pygame.event.get():
-            #     if event.type == pygame.QUIT:
-            #         running = False
-            #     elif event.type == KEYDOWN:
-            #         # Was it the Escape key? If so, stop the loop.
-            #         if event.key == K_ESCAPE:
-            #             running = False
-            #         elif event.key == K_UP:
-            #             Game.player.turn(Direction.NORTH)
-            #         elif event.key == K_DOWN:
-            #             Game.player.turn(Direction.SOUTH)
-            #         elif event.key == K_LEFT:
-            #             Game.player.turn(Direction.WEST)
-            #         elif event.key == K_RIGHT:
-            #             Game.player.turn(Direction.EST)
-            #         elif event.key == K_SPACE:
-            #             Game.player.turbo()
-            #         elif event.key == K_x:
-            #             self.bombs.append(Game.player.sprite_pos)
-            #         elif event.key == K_d:
-            #             for g in self.ghosts:
-            #                 g.mood = Mood.DEAD
-            #                 g.mood_time = -1
-            #                 g.speed = 4
-
-            # running = self.events_joystick()
 
             # fill the screen with a color to wipe away anything from last frame
             game_area.fill((0, 0, 0))
@@ -172,11 +145,14 @@ class Game():
         pygame.quit()
 
     def events(self) -> bool:
+        # poll for events
+        # pygame.QUIT event means the user clicked X to close your window
         running:bool = True
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == KEYDOWN \
+                or event.type == pygame.JOYHATMOTION \
                 or event.type == pygame.JOYAXISMOTION \
                 or event.type == pygame.JOYBUTTONDOWN:
                 # Was it the Escape key? If so, stop the loop.
@@ -184,17 +160,21 @@ class Game():
                     or getattr(event, "button", None) == 11:
                     Game.resume = True
                 elif getattr(event, "key", None) == K_UP \
+                    or (getattr(event, "hat", None) == 0 and getattr(event, "value", None) == (0, 1)) \
                     or (getattr(event, "axis", None) == 1 and getattr(event, "value", None) < -0.9):
-                    Game.player.turn(Direction.NORTH)
+                    Game.player.next_direction = Direction.NORTH
                 elif getattr(event, "key", None) == K_DOWN \
+                    or (getattr(event, "hat", None) == 0 and getattr(event, "value", None) == (0, -1)) \
                     or (getattr(event, "axis", None) == 1 and getattr(event, "value", None) > 0.9):
-                    Game.player.turn(Direction.SOUTH)
+                    Game.player.next_direction = Direction.SOUTH
                 elif getattr(event, "key", None) == K_LEFT \
+                    or (getattr(event, "hat", None) == 0 and getattr(event, "value", None) == (-1, 0)) \
                     or (getattr(event, "axis", None) == 0 and getattr(event, "value", None) < -0.9):
-                    Game.player.turn(Direction.WEST)
+                    Game.player.next_direction = Direction.WEST
                 elif getattr(event, "key", None) == K_RIGHT \
+                    or (getattr(event, "hat", None) == 0 and getattr(event, "value", None) == (1, 0)) \
                     or (getattr(event, "axis", None) == 0 and getattr(event, "value", None) > 0.9):
-                    Game.player.turn(Direction.EST)
+                    Game.player.next_direction = Direction.EST
                 # events with cheat mode activated
                 if Game.cheat:
                     if getattr(event, "key", None) == K_SPACE \
@@ -241,9 +221,6 @@ class Game():
                     running = False
                 elif event.type == KEYDOWN or event.type == pygame.JOYBUTTONDOWN:
                     key_down = True
-                    if getattr(event, "key", False) == K_ESCAPE or getattr(event, "button", False) == 11:
+                    if getattr(event, "key", None) == K_ESCAPE or getattr(event, "button", None) == 11:
                         running = False
-                # elif event.type == pygame.JOYBUTTONDOWN:
-                #     if event.button == 11: # HOME button
-                #                     Game.resume = True
         return (running)

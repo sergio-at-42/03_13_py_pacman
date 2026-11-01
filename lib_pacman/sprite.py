@@ -17,14 +17,16 @@ class Sprite():
         return ((grid_x * Maze.cell_size + 8, grid_y * Maze.cell_size + 8))
 
 class SpPacman(Sprite):
-    spn0 = "pacman_n0.png"
-    spn1 = "pacman_n1.png"
-    spe0 = "pacman_e0.png"
-    spe1 = "pacman_e1.png"
-    sps0 = "pacman_s0.png"
-    sps1 = "pacman_s1.png"
-    spw0 = "pacman_w0.png"
-    spw1 = "pacman_w1.png"
+    spx0: str = "pacman_x0.png"
+    spx1: str = "pacman_x1.png"
+    spn0: str = "pacman_n0.png"
+    spn1: str = "pacman_n1.png"
+    spe0: str = "pacman_e0.png"
+    spe1: str = "pacman_e1.png"
+    sps0: str = "pacman_s0.png"
+    sps1: str = "pacman_s1.png"
+    spw0: str = "pacman_w0.png"
+    spw1: str = "pacman_w1.png"
     nb_anim: int = 2
 
     def __init__(self, player) -> None:
@@ -33,9 +35,6 @@ class SpPacman(Sprite):
     def file(self) -> str:
         sprite: Sprite = self
         anim: int = (datetime.now().microsecond // 250000) % self.nb_anim
-        # self.pos = tuple([
-        #     self.pos[0] + self.player.direction.move()[0] * self.player.speed,
-        #     self.pos[1] + self.player.direction.move()[1] * self.player.speed])
         if self.player.dead:
             sprite = SpEyes(self.player)
         file = f"{getattr(sprite, f"sp{self.player.direction.letter()}{str(anim)}")}"
@@ -43,6 +42,8 @@ class SpPacman(Sprite):
 
 
 class SpGhost(Sprite):
+    spx0: str = "ghost_0.png"
+    spx1: str = "ghost_1.png"
     spn0: str = "ghost_0.png"
     spn1: str = "ghost_1.png"
     spe0: str = "ghost_0.png"
@@ -70,61 +71,73 @@ class SpGhost(Sprite):
         return (f"{self.directory}{file}")
 
 class SpBlinky(SpGhost):
-    spn0 = "blinky_n0.png"
-    spn1 = "blinky_n1.png"
-    spe0 = "blinky_e0.png"
-    spe1 = "blinky_e1.png"
-    sps0 = "blinky_s0.png"
-    sps1 = "blinky_s1.png"
-    spw0 = "blinky_w0.png"
-    spw1 = "blinky_w1.png"
+    spx0: str = "blinky_x0.png"
+    spx1: str = "blinky_x1.png"
+    spn0: str = "blinky_n0.png"
+    spn1: str = "blinky_n1.png"
+    spe0: str = "blinky_e0.png"
+    spe1: str = "blinky_e1.png"
+    sps0: str = "blinky_s0.png"
+    sps1: str = "blinky_s1.png"
+    spw0: str = "blinky_w0.png"
+    spw1: str = "blinky_w1.png"
 
 
 class SpPinky(SpGhost):
-    spn0 = "pinky_n0.png"
-    spn1 = "pinky_n1.png"
-    spe0 = "pinky_e0.png"
-    spe1 = "pinky_e1.png"
-    sps0 = "pinky_s0.png"
-    sps1 = "pinky_s1.png"
-    spw0 = "pinky_w0.png"
-    spw1 = "pinky_w1.png"
+    spx0: str = "pinky_x0.png"
+    spx1: str = "pinky_x1.png"
+    spn0: str = "pinky_n0.png"
+    spn1: str = "pinky_n1.png"
+    spe0: str = "pinky_e0.png"
+    spe1: str = "pinky_e1.png"
+    sps0: str = "pinky_s0.png"
+    sps1: str = "pinky_s1.png"
+    spw0: str = "pinky_w0.png"
+    spw1: str = "pinky_w1.png"
 
 
 class SpInky(SpGhost):
-    spn0 = "inky_n0.png"
-    spn1 = "inky_n1.png"
-    spe0 = "inky_e0.png"
-    spe1 = "inky_e1.png"
-    sps0 = "inky_s0.png"
-    sps1 = "inky_s1.png"
-    spw0 = "inky_w0.png"
-    spw1 = "inky_w1.png"
+    spx0: str = "inky_x0.png"
+    spx1: str = "inky_x1.png"
+    spn0: str = "inky_n0.png"
+    spn1: str = "inky_n1.png"
+    spe0: str = "inky_e0.png"
+    spe1: str = "inky_e1.png"
+    sps0: str = "inky_s0.png"
+    sps1: str = "inky_s1.png"
+    spw0: str = "inky_w0.png"
+    spw1: str = "inky_w1.png"
 
 
 class SpClyde(SpGhost):
-    spn0 = "clyde_n0.png"
-    spn1 = "clyde_n1.png"
-    spe0 = "clyde_e0.png"
-    spe1 = "clyde_e1.png"
-    sps0 = "clyde_s0.png"
-    sps1 = "clyde_s1.png"
-    spw0 = "clyde_w0.png"
-    spw1 = "clyde_w1.png"
+    spx0: str = "clyde_x0.png"
+    spx1: str = "clyde_x1.png"
+    spn0: str = "clyde_n0.png"
+    spn1: str = "clyde_n1.png"
+    spe0: str = "clyde_e0.png"
+    spe1: str = "clyde_e1.png"
+    sps0: str = "clyde_s0.png"
+    sps1: str = "clyde_s1.png"
+    spw0: str = "clyde_w0.png"
+    spw1: str = "clyde_w1.png"
 
 
 class SpScared(SpGhost):
-    spn0 = "scared_0.png"
-    spn1 = "scared_1.png"
-    spe0 = "scared_0.png"
-    spe1 = "scared_1.png"
-    sps0 = "scared_0.png"
-    sps1 = "scared_1.png"
-    spw0 = "scared_0.png"
-    spw1 = "scared_1.png"
+    spx0: str = "scared_0.png"
+    spx1: str = "scared_1.png"
+    spn0: str = "scared_0.png"
+    spn1: str = "scared_1.png"
+    spe0: str = "scared_0.png"
+    spe1: str = "scared_1.png"
+    sps0: str = "scared_0.png"
+    sps1: str = "scared_1.png"
+    spw0: str = "scared_0.png"
+    spw1: str = "scared_1.png"
 
 
 class SpEndScared(SpGhost):
+    spx0: str = "ghost_0.png"
+    spx1: str = "ghost_1.png"
     spn0: str = "ghost_0.png"
     spn1: str = "ghost_1.png"
     spe0: str = "ghost_0.png"
@@ -136,11 +149,13 @@ class SpEndScared(SpGhost):
 
 
 class SpEyes(SpGhost):
-    spn0 = "eyes_0.png"
-    spn1 = "eyes_1.png"
-    spe0 = "eyes_0.png"
-    spe1 = "eyes_1.png"
-    sps0 = "eyes_0.png"
-    sps1 = "eyes_1.png"
-    spw0 = "eyes_0.png"
-    spw1 = "eyes_1.png"
+    spx0: str = "eyes_0.png"
+    spx1: str = "eyes_1.png"
+    spn0: str = "eyes_0.png"
+    spn1: str = "eyes_1.png"
+    spe0: str = "eyes_0.png"
+    spe1: str = "eyes_1.png"
+    sps0: str = "eyes_0.png"
+    sps1: str = "eyes_1.png"
+    spw0: str = "eyes_0.png"
+    spw1: str = "eyes_1.png"

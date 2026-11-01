@@ -26,28 +26,38 @@ class Pacman():
         self.sprite_pos: tuple[int, int] = (40, 40)
         self.sprite: SpPacman = SpPacman(self)
 
-    def turn(self, direction: Direction) -> None:
-        if Maze.cell_exit(self.next_pos) & direction.value:
-            self.next_direction = direction
-        elif self.between_pos == 0:
-            self.next_direction = Direction.STOP
-            self.next_pos = self.pos
-
     def move(self) -> None:
         from .game import Game
-        self.speed: float = self.normal_speed
+        # set speed
+        self.speed = self.normal_speed
         if self.turbo_time:
             self.turbo_time -= 1
             self.speed = self.turbo_speed
+        # determine the next position and the direction based on the next direction
+        if self.between_pos == 0:
+            if Maze.cell_exit(self.pos) & self.next_direction.value:
+                self.direction = self.next_direction
+                self.next_pos = self.direction.move_from(self.pos)
+            elif Maze.cell_exit(self.pos) & self.direction.value:
+                self.next_pos = self.direction.move_from(self.pos)
+            else:
+                self.speed = 0
+        # cas of U-turn between 2 cells
+        elif self.next_direction == self.direction.inverse():
+            self.direction = self.next_direction
+            pos: tuple[int, int] = self.pos
+            self.pos = self.next_pos
+            self.next_pos = pos
+            self.between_pos = 48 - self.between_pos
+        # set number of pixel between 2 cells positions
         self.between_pos = (self.between_pos 
                             + abs(self.direction.move()[0] * self.speed)
                             + abs(self.direction.move()[1] * self.speed))
-        if self.between_pos >= Maze.cell_size or self.direction is Direction.STOP:
+        # set new position when arrival in a new cell
+        if self.between_pos >= Maze.cell_size: # or self.direction is Direction.STOP:
             self.between_pos = 0
             self.pos = self.next_pos
-            self.turn(self.next_direction)
-            self.direction = self.next_direction
-            self.next_pos = self.direction.move_from(self.pos)
+            # processing of cell content
             col, row = self.pos
             if Maze.grid[row][col] & 32:
                 self.score += Config.points_per_super_pacgum
@@ -58,11 +68,12 @@ class Pacman():
             if Maze.grid[row][col] & 16:
                 self.score += Config.points_per_pacgum
                 Maze.grid[row][col] -= 16
-
-        self.sprite_pos = Maze.convert_pos(self.pos)
+        # set new position in pixels
+        px, py = Maze.convert_pos(self.pos)
+        mx, my = self.direction.move()
         self.sprite_pos = (
-            int(self.sprite_pos[0] + self.direction.move()[0] * self.between_pos),
-            int(self.sprite_pos[1] + self.direction.move()[1] * self.between_pos))
+            int(px + mx * self.between_pos),
+            int(py + my * self.between_pos))
 
     def turbo(self) -> None:
         self.turbo_time = 30

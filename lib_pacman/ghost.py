@@ -92,11 +92,11 @@ class Ghost():
             elif self.mood is Mood.RIDE:
                 self.target_pos = (randrange(Config.width), randrange(Config.height))
             # compute the next cell to go
-            next_directions = Maze.cell_exit(self.pos) - self.direction.inverse()
+            next_directions: int = Maze.cell_exit(self.pos) - self.direction.inverse().value
             if next_directions in (1, 2, 4, 8):
                 self.direction = Direction(next_directions)
             elif next_directions == 0:
-                self.direction = Direction(self.direction.inverse())
+                self.direction = self.direction.inverse()
             else:
                 self.bfs()
             self.next_pos = self.direction.move_from(self.pos)
@@ -119,7 +119,7 @@ class Ghost():
         next_cells: dict[tuple[int, int], Direction] = {}
         visited_cells: set[tuple[int, int]] = set()
         visited_cells.add(self.pos)
-        start_cell = Maze.cell_exit(self.pos) - self.direction.inverse()
+        start_cell = Maze.cell_exit(self.pos) - self.direction.inverse().value
         if start_cell & Direction.NORTH.value:
             next_cells[Direction.NORTH.move_from(self.pos)] = Direction.NORTH
         if start_cell & Direction.EST.value:
@@ -158,7 +158,7 @@ class Ghost():
             else:
                 search_pos = self.target_pos
         if len(next_cells) == 0:
-            self.direction = Direction(self.direction.inverse())
+            self.direction = self.direction.inverse()
         else:
             self.direction = next_cells[search_pos]
             
