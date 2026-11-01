@@ -1,6 +1,7 @@
 from .config import Config
 from .maze import Maze
-from .sprite import SpPacman
+from .sprite import SpritePacman
+from .sprite_image import SpPacman
 from .direction import Direction
 from .mood import Mood
 
@@ -23,8 +24,8 @@ class Pacman():
         self.turbo_time: int = 0
         self.dead: bool = False
         self.between_pos: float = 0
+        self.sprite: SpritePacman = SpritePacman(SpPacman, self)
         self.sprite_pos: tuple[int, int] = (40, 40)
-        self.sprite: SpPacman = SpPacman(self)
 
     def move(self) -> None:
         from .game import Game
@@ -79,4 +80,4 @@ class Pacman():
         self.turbo_time = 30
 
     def bomb(self) -> str:
-        return ("images/poop.png")
+        return ("lib_pacman/images/poop.png")

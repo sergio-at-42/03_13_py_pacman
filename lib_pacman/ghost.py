@@ -1,8 +1,8 @@
 from random import randint, randrange
 from .config import Config
 from .maze import Maze
-# from .pm_ghost_strategy import GhostStrategy
-from .sprite import SpGhost, SpBlinky, SpPinky, SpInky, SpClyde
+from .sprite import SpriteGhost
+from .sprite_image import SpGhost, SpBlinky, SpPinky, SpInky, SpClyde
 from .mood import Mood
 from .direction import Direction
 
@@ -23,8 +23,8 @@ class Ghost():
         self.mood: Mood = Mood.RIDE
         self.mood_time: int = randint(960, 1440)
         self.between_pos: float = 0
+        self.sprite: SpriteGhost = SpriteGhost(SpGhost, self)
         self.sprite_pos: tuple[int, int] = (40, 40)
-        self.sprite: SpGhost = SpGhost(self)
 
     def strategy(self) -> tuple[int, int]:
         from .game import Game
@@ -179,7 +179,7 @@ class Blinky(Ghost):
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.pos
         self.normal_speed = 1.5
-        self.sprite = SpBlinky(self)
+        self.sprite = SpriteGhost(SpBlinky, self)
 
     def strategy(self) -> tuple[int, int]:
         from .game import Game
@@ -206,7 +206,7 @@ class Pinky(Ghost):
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.pos
         self.normal_speed = 1
-        self.sprite = SpPinky(self)
+        self.sprite = SpriteGhost(SpPinky, self)
 
     def strategy(self) -> tuple[int, int]:
         from .game import Game
@@ -227,7 +227,7 @@ class Inky(Ghost):
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.pos
         self.normal_speed: float = 1
-        self.sprite = SpInky(self)
+        self.sprite = SpriteGhost(SpInky, self)
 
     def strategy(self) -> tuple[int, int]:
         from .game import Game
@@ -248,7 +248,7 @@ class Clyde(Ghost):
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.pos
         self.normal_speed = 1.3
-        self.sprite = SpClyde(self)
+        self.sprite = SpriteGhost(SpClyde, self)
 
     def strategy(self) -> tuple[int, int]:
         from .game import Game

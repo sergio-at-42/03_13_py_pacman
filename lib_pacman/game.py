@@ -33,8 +33,8 @@ class Game():
     window_height:int = 0
     screen:pygame.Surface
     joy: pygame.joystick
-    player: Pacman = Pacman()
-    ghosts: list[Ghost] = [Blinky(), Pinky(), Inky(), Clyde()]
+    player: Pacman
+    ghosts: list[Ghost]
     bombs: list[tuple[int, int]] = []
     resume:bool = False
 
@@ -64,7 +64,7 @@ class Game():
         line_score: str = ""
 
         # set main game screen background
-        background = pygame.image.load(f"lib_pacman/{Config.game_area_bg}")
+        background = pygame.image.load(f"{Config.game_area_bg}")
 
         # Création des deux surfaces
         score_area = pygame.Surface((Game.window_width, Game.surface_score_height), pygame.SRCALPHA)
@@ -79,11 +79,13 @@ class Game():
         text = font.render(f"Press any other key to continue", True, (255, 255, 0))
         resume_area.blit(text, (Game.window_width // 6, Game.surface_game_height // 4 * 2))
 
-        # initialise the sart position for Pacman
+        # initialise Pacman
+        Game.player = Pacman()
         Game.player.sprite_pos = Game.player.sprite.convert_pos(Game.player.home_pos)
         Game.player.direction = Direction.STOP
 
-        # initialise the first mood for ghosts
+        # initialise ghosts
+        Game.ghosts = [Blinky(), Pinky(), Inky(), Clyde()]
         for g in Game.ghosts:
             g.mood = Mood.CHASE
 
@@ -112,17 +114,20 @@ class Game():
 
             # display bombs
             for b in Game.bombs:
-                sprite = pygame.image.load(f"lib_pacman/{Game.player.bomb()}").convert_alpha()
+                sprite = pygame.image.load(f"{Game.player.bomb()}").convert_alpha()
                 game_area.blit(sprite, b)
             # display ghosts
             for g in Game.ghosts:
                 g.move()
-                sprite = pygame.image.load(f"lib_pacman/{g.sprite.file()}").convert_alpha()
+                sprite = pygame.image.load(f"{g.sprite.file()}").convert_alpha()
                 game_area.blit(sprite, g.sprite_pos)
             # display pacman
             Game.player.move()
-            sprite = pygame.image.load(f"lib_pacman/{Game.player.sprite.file()}").convert_alpha()
+            sprite = pygame.image.load(f"{Game.player.sprite.file()}").convert_alpha()
             game_area.blit(sprite, Game.player.sprite_pos)
+
+            # manage colisions between pacman and ghosts
+            # blocks_hit_list = pygame.sprite.spritecollide(player, block_list, False, pygame.sprite.collide_rect_ratio(0.75))
 
             # Display the 2 areas in the main window
             Game.screen.blit(score_area, (0, 0))

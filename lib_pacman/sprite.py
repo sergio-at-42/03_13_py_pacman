@@ -1,13 +1,18 @@
 from datetime import datetime
+import pygame
+from .sprite_image import SpPacman, SpGhost, SpScared, SpEndScared, SpEyes
 from.maze import Maze
 from .mood import Mood
 
 
-class Sprite():
-    directory: str = "images/"
+class Sprite(pygame.sprite.Sprite):
+    directory: str = "lib_pacman/images/"
 
-    # def __init__(self) -> None:
-        # self.pos: tuple[int, int] = (32, 32)
+    def __init__(self) -> None:
+        # Call the parent class (Sprite) constructor
+       pygame.sprite.Sprite.__init__(self)
+       self.image = pygame.image.load(f"{self.directory}tardis.png").convert_alpha()
+       self.rect = self.image.get_rect()
 
     @classmethod
     def convert_pos(self, grid_pos: tuple[int, int]) -> tuple[int, int]:
@@ -16,146 +21,40 @@ class Sprite():
         grid_x, grid_y = grid_pos
         return ((grid_x * Maze.cell_size + 8, grid_y * Maze.cell_size + 8))
 
-class SpPacman(Sprite):
-    spx0: str = "pacman_x0.png"
-    spx1: str = "pacman_x1.png"
-    spn0: str = "pacman_n0.png"
-    spn1: str = "pacman_n1.png"
-    spe0: str = "pacman_e0.png"
-    spe1: str = "pacman_e1.png"
-    sps0: str = "pacman_s0.png"
-    sps1: str = "pacman_s1.png"
-    spw0: str = "pacman_w0.png"
-    spw1: str = "pacman_w1.png"
-    nb_anim: int = 2
-
-    def __init__(self, player) -> None:
-        self.player = player
+class SpritePacman(Sprite):
+    def __init__(self, player_images: type[SpPacman], player) -> None:
+        from .pacman import Pacman
+        super().__init__()
+        self.player_images: SpGhost = player_images()
+        self.player: Pacman = player
 
     def file(self) -> str:
-        sprite: Sprite = self
-        anim: int = (datetime.now().microsecond // 250000) % self.nb_anim
         if self.player.dead:
             sprite = SpEyes(self.player)
+        else:
+            sprite: SpPacman = self.player_images
+        anim: int = (datetime.now().microsecond // 250000) % sprite.nb_anim
         file = f"{getattr(sprite, f"sp{self.player.direction.letter()}{str(anim)}")}"
         return (f"{self.directory}{file}")
 
 
-class SpGhost(Sprite):
-    spx0: str = "ghost_0.png"
-    spx1: str = "ghost_1.png"
-    spn0: str = "ghost_0.png"
-    spn1: str = "ghost_1.png"
-    spe0: str = "ghost_0.png"
-    spe1: str = "ghost_1.png"
-    sps0: str = "ghost_0.png"
-    sps1: str = "ghost_1.png"
-    spw0: str = "ghost_0.png"
-    spw1: str = "ghost_1.png"
-    nb_anim: int = 2
-
-    def __init__(self, ghost) -> None:
+class SpriteGhost(Sprite):
+    def __init__(self, ghost_images: type[SpGhost], ghost) -> None:
+        from .ghost import Ghost
         super().__init__()
-        self.ghost = ghost
+        self.ghost_images: SpGhost = ghost_images()
+        self.ghost: Ghost = ghost
 
     def file(self) -> str:
-        sprite: Sprite = self
-        anim: int = (datetime.now().microsecond // 250000) % self.nb_anim
         if self.ghost.mood == Mood.SCARED:
-            sprite = SpScared(self.ghost)
             if self.ghost.mood_time <= 180 and (self.ghost.mood_time // 20) % 2 == 0:
-                sprite = SpEndScared(self.ghost)
-        if self.ghost.mood == Mood.DEAD:
-            sprite = SpEyes(self.ghost)
+                sprite = SpEndScared()
+            else:
+                sprite = SpScared()
+        elif self.ghost.mood == Mood.DEAD:
+            sprite = SpEyes()
+        else:
+            sprite: SpGhost = self.ghost_images
+        anim: int = (datetime.now().microsecond // 250000) % sprite.nb_anim
         file = f"{getattr(sprite, f"sp{self.ghost.direction.letter()}{str(anim)}")}"
         return (f"{self.directory}{file}")
-
-class SpBlinky(SpGhost):
-    spx0: str = "blinky_x0.png"
-    spx1: str = "blinky_x1.png"
-    spn0: str = "blinky_n0.png"
-    spn1: str = "blinky_n1.png"
-    spe0: str = "blinky_e0.png"
-    spe1: str = "blinky_e1.png"
-    sps0: str = "blinky_s0.png"
-    sps1: str = "blinky_s1.png"
-    spw0: str = "blinky_w0.png"
-    spw1: str = "blinky_w1.png"
-
-
-class SpPinky(SpGhost):
-    spx0: str = "pinky_x0.png"
-    spx1: str = "pinky_x1.png"
-    spn0: str = "pinky_n0.png"
-    spn1: str = "pinky_n1.png"
-    spe0: str = "pinky_e0.png"
-    spe1: str = "pinky_e1.png"
-    sps0: str = "pinky_s0.png"
-    sps1: str = "pinky_s1.png"
-    spw0: str = "pinky_w0.png"
-    spw1: str = "pinky_w1.png"
-
-
-class SpInky(SpGhost):
-    spx0: str = "inky_x0.png"
-    spx1: str = "inky_x1.png"
-    spn0: str = "inky_n0.png"
-    spn1: str = "inky_n1.png"
-    spe0: str = "inky_e0.png"
-    spe1: str = "inky_e1.png"
-    sps0: str = "inky_s0.png"
-    sps1: str = "inky_s1.png"
-    spw0: str = "inky_w0.png"
-    spw1: str = "inky_w1.png"
-
-
-class SpClyde(SpGhost):
-    spx0: str = "clyde_x0.png"
-    spx1: str = "clyde_x1.png"
-    spn0: str = "clyde_n0.png"
-    spn1: str = "clyde_n1.png"
-    spe0: str = "clyde_e0.png"
-    spe1: str = "clyde_e1.png"
-    sps0: str = "clyde_s0.png"
-    sps1: str = "clyde_s1.png"
-    spw0: str = "clyde_w0.png"
-    spw1: str = "clyde_w1.png"
-
-
-class SpScared(SpGhost):
-    spx0: str = "scared_0.png"
-    spx1: str = "scared_1.png"
-    spn0: str = "scared_0.png"
-    spn1: str = "scared_1.png"
-    spe0: str = "scared_0.png"
-    spe1: str = "scared_1.png"
-    sps0: str = "scared_0.png"
-    sps1: str = "scared_1.png"
-    spw0: str = "scared_0.png"
-    spw1: str = "scared_1.png"
-
-
-class SpEndScared(SpGhost):
-    spx0: str = "ghost_0.png"
-    spx1: str = "ghost_1.png"
-    spn0: str = "ghost_0.png"
-    spn1: str = "ghost_1.png"
-    spe0: str = "ghost_0.png"
-    spe1: str = "ghost_1.png"
-    sps0: str = "ghost_0.png"
-    sps1: str = "ghost_1.png"
-    spw0: str = "ghost_0.png"
-    spw1: str = "ghost_1.png"
-
-
-class SpEyes(SpGhost):
-    spx0: str = "eyes_0.png"
-    spx1: str = "eyes_1.png"
-    spn0: str = "eyes_0.png"
-    spn1: str = "eyes_1.png"
-    spe0: str = "eyes_0.png"
-    spe1: str = "eyes_1.png"
-    sps0: str = "eyes_0.png"
-    sps1: str = "eyes_1.png"
-    spw0: str = "eyes_0.png"
-    spw1: str = "eyes_1.png"

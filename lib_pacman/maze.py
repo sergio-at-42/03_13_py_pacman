@@ -108,19 +108,19 @@ class Maze():
         x, y = pos
         cell_42 = pygame.Rect(x, y, cls.cell_size, cls.cell_size)
         pygame.draw.rect(area, cls.ft_color, cell_42)
-        sprite = pygame.image.load(f"lib_pacman/{Config.sprite_42}").convert_alpha()
+        sprite = pygame.image.load(f"{Config.sprite_42}").convert_alpha()
         area.blit(sprite, (x + 8, y + 8))
 
     @classmethod
     def draw_pacgum(cls, area: pygame.Surface, pos: tuple[int, int]) -> None:
         x, y = pos
-        sprite = pygame.image.load(f"lib_pacman/{Config.sprite_pacgum}").convert_alpha()
+        sprite = pygame.image.load(f"{Config.sprite_pacgum}").convert_alpha()
         area.blit(sprite, (x + 8, y + 8))
 
     @classmethod
     def draw_super_pacgum(cls, area: pygame.Surface, pos: tuple[int, int]) -> None:
         x, y = pos
-        sprite = pygame.image.load(f"lib_pacman/{Config.sprite_super}").convert_alpha()
+        sprite = pygame.image.load(f"{Config.sprite_super}").convert_alpha()
         area.blit(sprite, (x + 8, y + 8))
 
     @classmethod
