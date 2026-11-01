@@ -79,13 +79,13 @@ class Game():
         text = font.render(f"Press any other key to continue", True, (255, 255, 0))
         resume_area.blit(text, (Game.window_width // 6, Game.surface_game_height // 4 * 2))
 
+        # initialise the sart position for Pacman
         Game.player.sprite_pos = Game.player.sprite.convert_pos(Game.player.home_pos)
         Game.player.direction = Direction.STOP
-        i = 0
+
+        # initialise the first mood for ghosts
         for g in Game.ghosts:
-            i += 1
             g.mood = Mood.CHASE
-            g.direction = Direction.STOP
 
         clock = pygame.time.Clock()
         running = True
@@ -110,21 +110,19 @@ class Game():
             game_area.fill((0, 0, 48, 127))
             Maze.draw_maze(game_area)
 
-            # RENDER YOUR GAME HERE
+            # display bombs
             for b in Game.bombs:
                 sprite = pygame.image.load(f"lib_pacman/{Game.player.bomb()}").convert_alpha()
                 game_area.blit(sprite, b)
-
-            i = 0
+            # display ghosts
             for g in Game.ghosts:
-                i += 1
+                g.move()
                 sprite = pygame.image.load(f"lib_pacman/{g.sprite.file()}").convert_alpha()
                 game_area.blit(sprite, g.sprite_pos)
-                g.move()
-
+            # display pacman
+            Game.player.move()
             sprite = pygame.image.load(f"lib_pacman/{Game.player.sprite.file()}").convert_alpha()
             game_area.blit(sprite, Game.player.sprite_pos)
-            Game.player.move()
 
             # Display the 2 areas in the main window
             Game.screen.blit(score_area, (0, 0))
