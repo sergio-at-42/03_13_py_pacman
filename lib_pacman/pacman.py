@@ -19,7 +19,7 @@ class Pacman():
         self.next_direction: Direction = Direction.STOP
         self.normal_speed: float = 2
         self.speed: float = self.normal_speed
-        self.turbo_speed: float = 4
+        self.turbo_speed: float = 2
         self.turbo_time: int = 0
         self.dead: bool = False
         self.between_pos: float = 0
@@ -32,7 +32,7 @@ class Pacman():
         self.speed = self.normal_speed
         if self.turbo_time:
             self.turbo_time -= 1
-            self.speed = self.turbo_speed
+            self.speed = self.normal_speed * self.turbo_speed
         # determine the next position and the direction based on the next direction
         if self.between_pos == 0:
             if Maze.cell_exit(self.pos) & self.next_direction.value:

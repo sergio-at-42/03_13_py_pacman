@@ -63,13 +63,12 @@ class Game():
     def game_loop(self) -> None:
         line_score: str = ""
 
-        # # pygame setup
-        # pygame.init()
-        # pygame.display.set_caption("Pac-Man since 1980")
-        # screen = pygame.display.set_mode((Game.window_width, Game.window_height))
+        # set main game screen background
+        background = pygame.image.load(f"lib_pacman/{Config.game_area_bg}")
+
         # Création des deux surfaces
-        score_area = pygame.Surface((Game.window_width, Game.surface_score_height))
-        game_area = pygame.Surface((Game.window_width, Game.surface_game_height))
+        score_area = pygame.Surface((Game.window_width, Game.surface_score_height), pygame.SRCALPHA)
+        game_area = pygame.Surface((Game.window_width, Game.surface_game_height), pygame.SRCALPHA)
 
         # RESUME Area creation
         resume_area = pygame.Surface((Game.window_width, Game.surface_game_height), pygame.SRCALPHA)
@@ -80,10 +79,6 @@ class Game():
         text = font.render(f"Press any other key to continue", True, (255, 255, 0))
         resume_area.blit(text, (Game.window_width // 6, Game.surface_game_height // 4 * 2))
 
-        # couleur
-        score_area.fill((0, 0, 48))
-        game_area.fill((0, 0, 0))
-        
         Game.player.sprite_pos = Game.player.sprite.convert_pos(Game.player.home_pos)
         Game.player.direction = Direction.STOP
         i = 0
@@ -95,11 +90,13 @@ class Game():
         clock = pygame.time.Clock()
         running = True
         while running:
+            # display main game screen for background
+            Game.screen.blit(background, (0, 0))
 
             # DISPLAY SCORE AREA
-            score_area.fill((0, 0, 48))
-            font = pygame.font.Font(None, 32)
+            score_area.fill((0, 0, 48, 0))
             y=8
+            font = pygame.font.Font(None, 32)
             line_score = f"SCORE {Game.player.score}"
             text = font.render(line_score, True, (255, 255, 0))
             score_area.blit(text, (Game.window_width // 4, y))
@@ -108,8 +105,9 @@ class Game():
             # poll for events
             running = self.events()
 
+            # DISPLAY GAME AREA
             # fill the screen with a color to wipe away anything from last frame
-            game_area.fill((0, 0, 0))
+            game_area.fill((0, 0, 48, 127))
             Maze.draw_maze(game_area)
 
             # RENDER YOUR GAME HERE
@@ -128,15 +126,16 @@ class Game():
             game_area.blit(sprite, Game.player.sprite_pos)
             Game.player.move()
 
-            # Affichage des deux surfaces dans la fenêtre principale
+            # Display the 2 areas in the main window
             Game.screen.blit(score_area, (0, 0))
             Game.screen.blit(game_area, (0, Game.surface_score_height))
+            # Display the resume area
             if Game.resume:
                 Game.screen.blit(resume_area, (0, Game.surface_score_height))
 
             # flip() the display to put your work on screen
             pygame.display.flip()
-
+            # waiting loop for resume
             if Game.resume:
                 running = self.resume_loop()
 

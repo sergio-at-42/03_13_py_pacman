@@ -26,6 +26,7 @@ class Config():
     sprite_42: str = "images/ghost_0.png"
     sprite_pacgum: str = "images/pacgum.png"
     sprite_super: str = "images/super.png"
+    game_area_bg: str = "images/pac-man-background.jpg"
     pm_icon : str = "\U0001F6BD"
     argv: list[str] = sys.argv
     config_file_name: str = ""
