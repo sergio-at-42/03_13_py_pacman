@@ -18,6 +18,8 @@ class Maze():
     wall_color = (64, 96, 255)
     ft_color = (0, 0, 127)
     sprites: dict[str, pygame.Surface] = {}
+    nb_gum: int = 0
+    nb_sgum: int = 0
 
     def __init__(self, excluded: set[tuple[int, int]]) -> None:
             Maze.grid = Maze.load_maze()
@@ -32,6 +34,21 @@ class Maze():
             return gen.maze
         except Exception as e:
             raise MazeLoadError(f"Failed to load maze: {e}") from e
+
+    @classmethod
+    def limit(cls, pos: tuple[int, int]) -> tuple[int, int]:
+        x: int = 0
+        y: int = 0
+        x, y = pos
+        if x < 0:
+            x = 0
+        elif x >= Config.width:
+            x = Config.width - 1
+        if y < 0:
+            y = 0
+        elif y >= Config.width:
+            y = Config.width - 1
+        return ((x, y))
 
     @classmethod
     def cell_exit(cls, pos: tuple[int, int]) -> int:
@@ -82,6 +99,35 @@ class Maze():
                 f"lib_pacman/{Config.sprite_pacgum}"
             ).convert_alpha()
 
+    @classmethod
+    def add_pacgum(cls) -> None:
+        x:int = 0
+        y:int = 0
+        # Add super-pacgums in the 4 corners
+        cls.grid[0][0] += 32
+        cls.grid[0][Config.width - 1] += 32
+        cls.grid[Config.height - 1][Config.width - 1] += 32
+        cls.grid[Config.height - 1][0] += 32
+        cls.nb_sgum = 4
+        cls.nb_gum = 0
+
+        # Add pacgums in few cells of the maze
+        # for _ in range(Config.pacgum):
+        #     x = 4
+        #     y = 5
+        #     while Maze.grid[y][x] >= 15:
+        #         x = randint(0, 15)
+        #         y = randint(0, 15)
+        #     Maze.grid[y][x] += 16
+        #     cls.nb_gum += 1
+
+        # Add pacgums in all the cells of the maze
+        for y, row in enumerate(cls.grid):
+            for x, cell in enumerate(row):
+                if cell != 15:
+                    cls.grid[y][x] += 16
+                    cls.nb_gum += 1
+
             cls.sprites["super_pacgum"] = pygame.image.load(
                 f"lib_pacman/{Config.sprite_super}"
             ).convert_alpha()
@@ -89,6 +135,7 @@ class Maze():
             cls.sprites["42"] = pygame.image.load(
                 f"lib_pacman/{Config.sprite_42}"
             ).convert_alpha()
+
     @classmethod
     def draw_wall(cls, area: pygame.Surface, start: tuple[int, int], end: tuple[int, int]) -> None:
         """Draw a wall between start and end on the given area."""
@@ -100,7 +147,7 @@ class Maze():
         x, y = pos
         cell_42 = pygame.Rect(x, y, cls.cell_size, cls.cell_size)
         pygame.draw.rect(area, cls.ft_color, cell_42)
-        sprite = pygame.image.load(f"lib_pacman/{Config.sprite_42}").convert_alpha()
+        sprite = pygame.image.load(f"{Config.sprite_42}").convert_alpha()
         area.blit(sprite, (x + 8, y + 8))
 
     @classmethod
@@ -108,6 +155,7 @@ class Maze():
         """Draw a pacgum on the given area."""
         x, y = pos
         sprite = cls.sprites["pacgum"]
+        # sprite = pygame.image.load(f"{Config.sprite_pacgum}").convert_alpha()
         area.blit(sprite, (x + 8, y + 8))
 
     @classmethod
@@ -115,6 +163,7 @@ class Maze():
         """Draw a super-pacgum on the given area."""
         x, y = pos
         sprite = cls.sprites["super_pacgum"]
+        # sprite = pygame.image.load(f"{Config.sprite_super}").convert_alpha()
         area.blit(sprite, (x + 8, y + 8))
 
     @classmethod

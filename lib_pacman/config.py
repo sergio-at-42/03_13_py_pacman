@@ -16,15 +16,17 @@ class Config():
     height: int = 16
     lives: int = 3
     pacgum: int = 42
+    spacgum: int = 4
     points_per_pacgum: int = 10
     points_per_super_pacgum: int = 50
     points_per_ghost: int = 200
     seed: int = 42
     level_max_time: int = 90
 
-    sprite_42: str = "images/ghost_0.png"
-    sprite_pacgum: str = "images/pacgum.png"
-    sprite_super: str = "images/super.png"
+    sprite_42: str = "lib_pacman/images/tardis.png"
+    sprite_pacgum: str = "lib_pacman/images/pacgum.png"
+    sprite_super: str = "lib_pacman/images/super.png"
+    game_area_bg: str = "lib_pacman/images/pac-man-background.jpg"
     pm_icon : str = "\U0001F6BD"
     argv: list[str] = sys.argv
     config_file_name: str = ""

@@ -9,23 +9,23 @@ class Direction(Enum):
     WEST = 8
 
     def move(self) -> tuple[int, int]:
-        move_to: tuple[int, int] = (0, 0)
+        move: tuple[int, int] = (0, 0)
         match self.value:
             case 1:
-                move_to = (0, -1)
+                move = (0, -1)
             case 2:
-                move_to = (1, 0)
+                move = (1, 0)
             case 4:
-                move_to = (0, 1)
+                move = (0, 1)
             case 8:
-                move_to = (-1, 0)
-        return (move_to)
+                move = (-1, 0)
+        return (move)
 
     def move_from(self, pos: tuple[int, int]) -> tuple[int, int]:
         return ((pos[0] + self.move()[0], pos[1] + self.move()[1]))
 
     def letter(self) -> str:
-        lower_letter: str = "e"
+        lower_letter: str = "x"
         match self.value:
             case 1:
                 lower_letter = "n"
@@ -37,15 +37,15 @@ class Direction(Enum):
                 lower_letter = "w"
         return (lower_letter)
 
-    def inverse(self) -> int:
-        inverse_direction: int = 0
+    def inverse(self) -> "Direction":
+        inverse_direction: Direction = Direction.STOP # 0
         match self.value:
             case 1:
-                inverse_direction = 4
+                inverse_direction = Direction.SOUTH # 4
             case 2:
-                inverse_direction = 8
+                inverse_direction = Direction.WEST # 8
             case 4:
-                inverse_direction = 1
+                inverse_direction = Direction.NORTH # 1
             case 8:
-                inverse_direction = 2
+                inverse_direction = Direction.EST # 2
         return (inverse_direction)
