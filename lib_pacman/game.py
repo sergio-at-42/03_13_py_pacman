@@ -21,6 +21,7 @@ from .pacman import Pacman
 from .ghost import Ghost, Blinky, Pinky, Inky, Clyde
 from .bomb import Bomb
 from .mood import Mood
+from .pacgum import Pacgum
 from .direction import Direction
 
 from .maze import Maze
@@ -46,8 +47,7 @@ class Game():
 
     def __init__(self) -> None:
         Config()
-        excluded = {Game.player.home_pos} | {g.home_pos for g in Game.ghosts}
-        Maze(excluded)
+        Maze()
         Game.surface_score_height = Maze.cell_size * 2
         Game.surface_game_height = Config.height * Maze.cell_size
         Game.window_width = Config.width * Maze.cell_size
@@ -72,10 +72,6 @@ class Game():
         score_area = pygame.Surface((Game.window_width, Game.surface_score_height), pygame.SRCALPHA)
         game_area = pygame.Surface((Game.window_width, Game.surface_game_height), pygame.SRCALPHA)
 
-        # # couleur
-        # score_area.fill((0, 0, 48))
-        # game_area.fill((0, 0, 0))
-        
         #load sprites
         Maze.load_sprites()
         # RESUME Area creation
@@ -96,6 +92,11 @@ class Game():
         Game.ghosts = [Blinky(), Pinky(), Inky(), Clyde()]
         for g in Game.ghosts:
             g.mood = Mood.CHASE
+
+        # initialise pacgums
+        excluded = {Game.player.home_pos} | {g.home_pos for g in Game.ghosts}
+        Maze.pellets = Pacgum.place_pacgums(Maze.grid, excluded)
+
 
         clock = pygame.time.Clock()
         running = True

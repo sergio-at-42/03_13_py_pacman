@@ -59,16 +59,25 @@ class Pacman():
             self.between_pos = 0
             self.pos = self.next_pos
             # processing of cell content
-            col, row = self.pos
-            if Maze.grid[row][col] & 32:
+            if self.pos in Maze.pellets.super_pacgums:
                 self.score += Config.points_per_super_pacgum
-                Maze.grid[row][col] -= 32
+                Maze.pellets.super_pacgums.discard(self.pos)
                 Game.joy.rumble(1, 1, 1000)
                 for g in Game.ghosts:
                     g.change_mood(Mood.SCARED)
-            if Maze.grid[row][col] & 16:
+            if self.pos in Maze.pellets.pacgums:
                 self.score += Config.points_per_pacgum
-                Maze.grid[row][col] -= 16
+                Maze.pellets.pacgums.discard(self.pos)
+            # col, row = self.pos
+            # if Maze.grid[row][col] & 32:
+            #     self.score += Config.points_per_super_pacgum
+            #     Maze.grid[row][col] -= 32
+            #     Game.joy.rumble(1, 1, 1000)
+            #     for g in Game.ghosts:
+            #         g.change_mood(Mood.SCARED)
+            # if Maze.grid[row][col] & 16:
+            #     self.score += Config.points_per_pacgum
+            #     Maze.grid[row][col] -= 16
         # set new position in pixels
         px, py = Maze.convert_pos(self.pos)
         mx, my = self.direction.move()
