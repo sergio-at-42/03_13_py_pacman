@@ -3,7 +3,7 @@ import random
 from .error import MazeLoadError
 from .config import Config
 from .direction import Direction
-from .pacgum import Pacgum, place_pacgums
+from .pacgum import Pacgum
 
 from mazegenerator import MazeGenerator
 import pygame
@@ -21,10 +21,10 @@ class Maze():
     nb_gum: int = 0
     nb_sgum: int = 0
 
-    def __init__(self, excluded: set[tuple[int, int]]) -> None:
+    def __init__(self) -> None:
             Maze.grid = Maze.load_maze()
-            rng = random.Random(Config.seed)
-            Maze.pellets = place_pacgums(Maze.grid, Config.pacgum, excluded, rng)
+            # rng = random.Random(Config.seed)
+            # Maze.pellets = Pacgum.place_pacgums(Maze.grid, Config.pacgum, excluded, rng)
        
     @classmethod
     def load_maze(cls) -> list[list[int]]:
@@ -71,69 +71,19 @@ class Maze():
         grid_x, grid_y = grid_pos
         return ((grid_x * cls.cell_size + 8, grid_y * cls.cell_size + 8))
 
-    # @classmethod
-    # def add_pacgum(cls) -> None:
-    #     x:int = 0
-    #     y:int = 0
-    #     cls.grid[0][0] += 32
-    #     cls.grid[0][Config.width - 1] += 32
-    #     cls.grid[Config.height - 1][Config.width - 1] += 32
-    #     cls.grid[Config.height - 1][0] += 32
-    #     # Add pacgums in few cells of the maze
-    #     # for _ in range(Config.pacgum):
-    #     #     x = 4
-    #     #     y = 5
-    #     #     while Maze.grid[y][x] >= 15:
-    #     #         x = randint(0, 15)
-    #     #         y = randint(0, 15)
-    #     #     Maze.grid[y][x] += 16
-    #     # Add pacgums in all the cells of the maze
-    #     for y, row in enumerate(cls.grid):
-    #         for x, cell in enumerate(row):
-    #             if cell != 15:
-    #                 cls.grid[y][x] += 16
     @classmethod
     def load_sprites(cls) -> None:
         if not cls.sprites:
             cls.sprites["pacgum"] = pygame.image.load(
-                f"lib_pacman/{Config.sprite_pacgum}"
+                f"{Config.sprite_pacgum}"
             ).convert_alpha()
 
-    @classmethod
-    def add_pacgum(cls) -> None:
-        x:int = 0
-        y:int = 0
-        # Add super-pacgums in the 4 corners
-        cls.grid[0][0] += 32
-        cls.grid[0][Config.width - 1] += 32
-        cls.grid[Config.height - 1][Config.width - 1] += 32
-        cls.grid[Config.height - 1][0] += 32
-        cls.nb_sgum = 4
-        cls.nb_gum = 0
-
-        # Add pacgums in few cells of the maze
-        # for _ in range(Config.pacgum):
-        #     x = 4
-        #     y = 5
-        #     while Maze.grid[y][x] >= 15:
-        #         x = randint(0, 15)
-        #         y = randint(0, 15)
-        #     Maze.grid[y][x] += 16
-        #     cls.nb_gum += 1
-
-        # Add pacgums in all the cells of the maze
-        for y, row in enumerate(cls.grid):
-            for x, cell in enumerate(row):
-                if cell != 15:
-                    cls.grid[y][x] += 16
-                    cls.nb_gum += 1
-
             cls.sprites["super_pacgum"] = pygame.image.load(
-                f"lib_pacman/{Config.sprite_super}"
+                f"{Config.sprite_super}"
             ).convert_alpha()
 
             cls.sprites["42"] = pygame.image.load(
-                f"lib_pacman/{Config.sprite_42}"
+                f"{Config.sprite_42}"
             ).convert_alpha()
 
     @classmethod
