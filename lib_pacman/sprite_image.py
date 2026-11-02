@@ -119,3 +119,27 @@ class SpEyes(SpGhost):
     sps1: str = "eyes_1.png"
     spw0: str = "eyes_0.png"
     spw1: str = "eyes_1.png"
+
+class SpBomb(SpriteImage):
+    sp0: str = "bomb_0.png"
+    sp1: str = "bomb_1.png"
+    sp2: str = "bomb_2.png"
+    sp3: str = "bomb_3.png"
+    sp4: str = "bomb_4.png"
+    sp5: str = "bomb_5.png"
+    sp6: str = "bomb_6.png"
+    sp7: str = "bomb_7.png"
+    nb_anim: int = 8
+
+class SpExplosion(SpriteImage):
+    sp0: str = "explosion_0.png"
+    sp1: str = "explosion_1.png"
+    sp2: str = "explosion_2.png"
+    sp3: str = "explosion_3.png"
+    sp4: str = "explosion_4.png"
+    sp5: str = "explosion_5.png"
+    sp6: str = "explosion_6.png"
+    sp7: str = "explosion_7.png"
+    sp8: str = "explosion_8.png"
+    sp9: str = "explosion_9.png"
+    nb_anim: int = 10

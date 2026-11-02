@@ -19,6 +19,7 @@ from pygame.locals import (
 from .config import Config
 from .pacman import Pacman
 from .ghost import Ghost, Blinky, Pinky, Inky, Clyde
+from .bomb import Bomb
 from .mood import Mood
 from .direction import Direction
 
@@ -35,7 +36,7 @@ class Game():
     joy: pygame.joystick
     player: Pacman
     ghosts: list[Ghost]
-    bombs: list[tuple[int, int]] = []
+    bombs: list[Bomb] = []
     resume:bool = False
 
     # A deplacer dans la classe qui gere le main menu et la partie
@@ -114,8 +115,8 @@ class Game():
 
             # display bombs
             for b in Game.bombs:
-                sprite = pygame.image.load(f"{Game.player.bomb()}").convert_alpha()
-                game_area.blit(sprite, b)
+                sprite = pygame.image.load(f"{b.sprite.file()}").convert_alpha()
+                game_area.blit(sprite, b.sprite_pos)
             # display ghosts
             for g in Game.ghosts:
                 g.move()
@@ -184,7 +185,7 @@ class Game():
                         Game.player.turbo()
                     elif getattr(event, "key", None) == K_x \
                         or getattr(event, "button", None) == 1:
-                        Game.bombs.append(Game.player.sprite_pos)
+                        Game.bombs.append(Bomb(Game.player.pos))
                     elif getattr(event, "key", None) == K_f \
                         or getattr(event, "button", None) == 3:
                         for g in Game.ghosts:

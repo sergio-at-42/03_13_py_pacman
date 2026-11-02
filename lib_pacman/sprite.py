@@ -1,6 +1,6 @@
 from datetime import datetime
 import pygame
-from .sprite_image import SpPacman, SpGhost, SpScared, SpEndScared, SpEyes
+from .sprite_image import SpPacman, SpGhost, SpScared, SpEndScared, SpEyes, SpBomb
 from.maze import Maze
 from .mood import Mood
 
@@ -57,4 +57,22 @@ class SpriteGhost(Sprite):
             sprite: SpGhost = self.ghost_images
         anim: int = (datetime.now().microsecond // 250000) % sprite.nb_anim
         file = f"{getattr(sprite, f"sp{self.ghost.direction.letter()}{str(anim)}")}"
+        return (f"{self.directory}{file}")
+
+
+class SpriteBomb(Sprite):
+    def __init__(self, bomb_images: type[SpBomb], bomb) -> None:
+        from .bomb import Bomb
+        super().__init__()
+        self.bomb_images: SpGhost = bomb_images()
+        self.bomb_images.nb_anim -= 1
+        self.bomb: Bomb = bomb
+        self.delay: int = self.bomb.delay * 60
+        self.remain: int = self.delay
+
+    def file(self) -> str:
+        anim: int = int(self.bomb_images.nb_anim - self.remain / self.delay * self.bomb_images.nb_anim)
+        if self.remain > 0:
+            self.remain -= 1
+        file = f"{getattr(self.bomb_images, f"sp{str(anim)}")}"
         return (f"{self.directory}{file}")
