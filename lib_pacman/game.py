@@ -20,6 +20,7 @@ from .config import Config
 from .pacman import Pacman
 from .ghost import Ghost, Blinky, Pinky, Inky, Clyde
 from .bomb import Bomb
+from .explosion import Explosion
 from .mood import Mood
 from .pacgum import Pacgum
 from .direction import Direction
@@ -41,6 +42,7 @@ class Game():
     resume:bool = False
 
     # A deplacer dans la classe qui gere le main menu et la partie
+    live: int = 3
     level:int = 0
     level_time:int = 0
     cheat: bool = True
@@ -89,12 +91,12 @@ class Game():
         Game.player.direction = Direction.STOP
 
         # initialise ghosts
-        Game.ghosts = [Blinky(), Pinky(), Inky(), Clyde()]
-        for g in Game.ghosts:
+        Ghost.ghosts = [Blinky(), Pinky(), Inky(), Clyde()]
+        for g in Ghost.ghosts:
             g.mood = Mood.CHASE
 
         # initialise pacgums
-        excluded = {Game.player.home_pos} | {g.home_pos for g in Game.ghosts}
+        excluded = {Game.player.home_pos} | {g.home_pos for g in Ghost.ghosts}
         Maze.pellets = Pacgum.place_pacgums(Maze.grid, excluded)
 
 
@@ -122,11 +124,15 @@ class Game():
             Maze.draw_maze(game_area)
 
             # display bombs
-            for b in Game.bombs:
-                sprite = pygame.image.load(f"{b.sprite.file()}").convert_alpha()
+            for b in list(Bomb.bombs.values()):
+                sprite = pygame.image.load(f"{b.file()}").convert_alpha()
                 game_area.blit(sprite, b.sprite_pos)
+            # display bombs
+            for e in list(Explosion.explosions.values()):
+                sprite = pygame.image.load(f"{e.file()}").convert_alpha()
+                game_area.blit(sprite, e.sprite_pos)
             # display ghosts
-            for g in Game.ghosts:
+            for g in Ghost.ghosts:
                 g.move()
                 sprite = pygame.image.load(f"{g.sprite.file()}").convert_alpha()
                 game_area.blit(sprite, g.sprite_pos)
@@ -193,30 +199,31 @@ class Game():
                         Game.player.turbo()
                     elif getattr(event, "key", None) == K_x \
                         or getattr(event, "button", None) == 1:
-                        Game.bombs.append(Bomb(Game.player.pos))
+                        # Game.bombs.append(Bomb(Game.player.pos))
+                        Bomb(Game.player.pos)
                     elif getattr(event, "key", None) == K_f \
                         or getattr(event, "button", None) == 3:
-                        for g in Game.ghosts:
+                        for g in Ghost.ghosts:
                             g.change_mood(Mood.SCARED)
                     elif getattr(event, "key", None) == K_d \
                         or getattr(event, "button", None) == 2:
-                        for g in Game.ghosts:
+                        for g in Ghost.ghosts:
                             g.change_mood(Mood.DEAD)
                     elif getattr(event, "key", None) == K_h \
                         or getattr(event, "button", None) == 6:
-                        for g in Game.ghosts:
+                        for g in Ghost.ghosts:
                             g.move(g.home_pos)
                     elif getattr(event, "key", None) == K_r \
                         or getattr(event, "button", None) == 7:
-                        for g in Game.ghosts:
+                        for g in Ghost.ghosts:
                             g.change_mood(Mood.RIDE)
                     elif getattr(event, "key", None) == K_s \
                         or getattr(event, "button", None) == 5:
-                        for g in Game.ghosts:
+                        for g in Ghost.ghosts:
                             g.change_mood(Mood.SLEEP)
                     elif getattr(event, "key", None) == K_c \
                         or getattr(event, "button", None) == 8:
-                        for g in Game.ghosts:
+                        for g in Ghost.ghosts:
                             g.change_mood(Mood.CHASE)
                 if event.type == pygame.JOYBUTTONDOWN:
                     Game.joy.rumble(0, 1, 100)

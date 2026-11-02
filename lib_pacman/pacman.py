@@ -1,5 +1,6 @@
 from .config import Config
 from .maze import Maze
+from .ghost import Ghost
 from .sprite import SpritePacman
 from .sprite_image import SpPacman
 from .direction import Direction
@@ -63,7 +64,7 @@ class Pacman():
                 self.score += Config.points_per_super_pacgum
                 Maze.pellets.super_pacgums.discard(self.pos)
                 Game.joy.rumble(1, 1, 1000)
-                for g in Game.ghosts:
+                for g in Ghost.ghosts:
                     g.change_mood(Mood.SCARED)
             if self.pos in Maze.pellets.pacgums:
                 self.score += Config.points_per_pacgum
@@ -73,7 +74,7 @@ class Pacman():
             #     self.score += Config.points_per_super_pacgum
             #     Maze.grid[row][col] -= 32
             #     Game.joy.rumble(1, 1, 1000)
-            #     for g in Game.ghosts:
+            #     for g in Ghost.ghosts:
             #         g.change_mood(Mood.SCARED)
             # if Maze.grid[row][col] & 16:
             #     self.score += Config.points_per_pacgum

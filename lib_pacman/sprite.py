@@ -61,18 +61,26 @@ class SpriteGhost(Sprite):
 
 
 class SpriteBomb(Sprite):
-    def __init__(self, bomb_images: type[SpBomb], bomb) -> None:
+    def __init__(self, bomb) -> None:
         from .bomb import Bomb
         super().__init__()
-        self.bomb_images: SpGhost = bomb_images()
-        self.bomb_images.nb_anim -= 1
         self.bomb: Bomb = bomb
-        self.delay: int = self.bomb.delay * 60
-        self.remain: int = self.delay
+        self.bomb.images.nb_anim -= 1
 
     def file(self) -> str:
-        anim: int = int(self.bomb_images.nb_anim - self.remain / self.delay * self.bomb_images.nb_anim)
-        if self.remain > 0:
-            self.remain -= 1
-        file = f"{getattr(self.bomb_images, f"sp{str(anim)}")}"
+        anim: int = int(self.bomb.images.nb_anim - self.bomb.remain / self.bomb.delay * self.bomb.images.nb_anim)
+        file = f"{getattr(self.bomb.images, f"sp{str(anim)}")}"
+        return (f"{self.directory}{file}")
+
+
+class SpriteExplosion(Sprite):
+    def __init__(self, explosion) -> None:
+        from .explosion import Explosion
+        super().__init__()
+        self.explosion: Explosion = explosion
+        self.explosion.images.nb_anim -= 1
+
+    def file(self) -> str:
+        anim: int = int(self.explosion.images.nb_anim - self.explosion.remain / self.explosion.delay * self.explosion.images.nb_anim)
+        file = f"{getattr(self.explosion.images, f"sp{str(anim)}")}"
         return (f"{self.directory}{file}")

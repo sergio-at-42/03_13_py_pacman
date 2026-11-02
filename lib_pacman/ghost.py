@@ -9,6 +9,8 @@ from .direction import Direction
 
 class Ghost():
 
+    ghosts: list[Ghost] = []
+
     def __init__(self) -> None:
         self.name: str = "Gogo"
         self.color: int = 0xffffff
