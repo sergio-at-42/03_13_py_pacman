@@ -101,3 +101,9 @@ class TimeLessThan0Error(Error):
     def __init__(self) -> None:
         super().__init__("[error]Time to small. Must be over 0 ! "
                          "Auto configurated times")
+
+
+class MazeLoadError(Error):
+    """Base class for maze loading related errors."""
+    def __init__(self) -> None:
+        super().__init__("[error]Failed to load maze.")

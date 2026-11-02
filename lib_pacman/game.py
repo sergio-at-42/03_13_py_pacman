@@ -34,7 +34,8 @@ class Game():
 
     def __init__(self) -> None:
         Config()
-        Maze()
+        excluded = {Game.player.home_pos} | {g.home_pos for g in Game.ghosts}
+        Maze(excluded)
         Game.surface_score_height = Maze.cell_size * 2
         Game.surface_game_height = Config.height * Maze.cell_size
         Game.window_width = Config.width * Maze.cell_size
@@ -57,7 +58,8 @@ class Game():
         score_area.fill((0, 0, 48))
         game_area.fill((0, 0, 0))
         
-
+        #load sprites
+        Maze.load_sprites()
         Game.player.sprite_pos = Game.player.sprite.convert_pos(Game.player.home_pos)
         Game.player.direction = Direction.STOP
         i = 0
