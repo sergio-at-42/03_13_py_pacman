@@ -37,8 +37,6 @@ class Game():
     screen:pygame.Surface
     joy: pygame.joystick
     player: Pacman
-    ghosts: list[Ghost]
-    bombs: list[Bomb] = []
     resume:bool = False
 
     # A deplacer dans la classe qui gere le main menu et la partie
