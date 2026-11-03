@@ -1,6 +1,6 @@
 from datetime import datetime
 import pygame
-from .sprite_image import SpPacman, SpGhost, SpScared, SpEndScared, SpEyes, SpBomb
+from .sprite_image import SpriteImage, SpPacman, SpGhost, SpScared, SpEndScared, SpEyes, SpBomb
 from.maze import Maze
 from .mood import Mood
 
@@ -15,7 +15,7 @@ class Sprite(pygame.sprite.Sprite):
        self.rect = self.image.get_rect()
 
     @classmethod
-    def convert_pos(self, grid_pos: tuple[int, int]) -> tuple[int, int]:
+    def convert_pos(cls, grid_pos: tuple[int, int]) -> tuple[int, int]:
         grid_x: int = 0
         grid_y: int = 0
         grid_x, grid_y = grid_pos
@@ -25,14 +25,15 @@ class SpritePacman(Sprite):
     def __init__(self, player_images: type[SpPacman], player) -> None:
         from .pacman import Pacman
         super().__init__()
-        self.player_images: SpGhost = player_images()
+        self.player_images: SpPacman = player_images()
         self.player: Pacman = player
 
     def file(self) -> str:
+        sprite: SpriteImage
         if self.player.dead:
-            sprite = SpEyes(self.player)
+            sprite = SpEyes()
         else:
-            sprite: SpPacman = self.player_images
+            sprite = self.player_images
         anim: int = (datetime.now().microsecond // 250000) % sprite.nb_anim
         file = f"{getattr(sprite, f"sp{self.player.direction.letter()}{str(anim)}")}"
         return (f"{self.directory}{file}")

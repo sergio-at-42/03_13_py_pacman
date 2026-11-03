@@ -1,4 +1,5 @@
 from random import randint, randrange
+import pygame
 from .config import Config
 from .maze import Maze
 from .sprite import SpriteGhost
@@ -10,6 +11,7 @@ from .direction import Direction
 class Ghost():
 
     ghosts: list[Ghost] = []
+    sprites: pygame.sprite.Group = pygame.sprite.Group()
 
     def __init__(self) -> None:
         self.name: str = "Gogo"
@@ -27,6 +29,7 @@ class Ghost():
         self.between_pos: float = 0
         self.sprite: SpriteGhost = SpriteGhost(SpGhost, self)
         self.sprite_pos: tuple[int, int] = (40, 40)
+        Ghost.sprites.add(self.sprite)
 
     def strategy(self) -> tuple[int, int]:
         from .game import Game
@@ -113,9 +116,15 @@ class Ghost():
             self.pos = self.next_pos
         # convertion of the cell position in sprite position for the ghost
         self.sprite_pos = self.convert_pos(self.pos)
+        px, py = self.convert_pos(self.pos)
+        self.sprite.rect.x = px
+        self.sprite.rect.y = py
         self.sprite_pos = (
             int(self.sprite_pos[0] + self.direction.move()[0] * self.between_pos),
             int(self.sprite_pos[1] + self.direction.move()[1] * self.between_pos))
+        self.sprite.rect.x = int(self.sprite.rect.x + self.direction.move()[0] * self.between_pos)
+        self.sprite.rect.y = int(self.sprite.rect.y + self.direction.move()[1] * self.between_pos)
+        print(id(self.sprite), ">>>>>>>>>>>>>>>>", self.sprite_pos, px, py, self.sprite.rect.x, self.sprite.rect.y)
 
     def bfs(self) -> None:
         next_cells: dict[tuple[int, int], Direction] = {}
@@ -189,9 +198,9 @@ class Blinky(Ghost):
         px, py = Game.player.pos
         gx, gy = self.pos
         if abs(px - gx) + abs(py - gy) <= 4:
-            self.speed = 2
+            self.speed = Game.player.normal_speed
         else:
-            remain_gum = (Maze.nb_gum + Maze.nb_sgum) / (Config.pacgum + Config.spacgum) 
+            remain_gum = (len(Maze.pellets.pacgums) + len(Maze.pellets.super_pacgums)) / (Config.pacgum + Config.spacgum) 
             if remain_gum > 0.2:
                 remain_gum = 0.3
             self.speed = self.normal_speed * (1.3 - remain_gum)
@@ -254,6 +263,10 @@ class Clyde(Ghost):
 
     def strategy(self) -> tuple[int, int]:
         from .game import Game
+        # if Game.player.speed == 0:
+        #     self.speed = 16
+        # else:
+        #     self.speed = self.normal_speed
         px, py = Game.player.pos
         gx, gy = self.pos
         if abs(px - gx) + abs(py - gy) > 8:

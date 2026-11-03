@@ -69,22 +69,13 @@ class Pacman():
             if self.pos in Maze.pellets.pacgums:
                 self.score += Config.points_per_pacgum
                 Maze.pellets.pacgums.discard(self.pos)
-            # col, row = self.pos
-            # if Maze.grid[row][col] & 32:
-            #     self.score += Config.points_per_super_pacgum
-            #     Maze.grid[row][col] -= 32
-            #     Game.joy.rumble(1, 1, 1000)
-            #     for g in Ghost.ghosts:
-            #         g.change_mood(Mood.SCARED)
-            # if Maze.grid[row][col] & 16:
-            #     self.score += Config.points_per_pacgum
-            #     Maze.grid[row][col] -= 16
-        # set new position in pixels
         px, py = Maze.convert_pos(self.pos)
         mx, my = self.direction.move()
         self.sprite_pos = (
             int(px + mx * self.between_pos),
             int(py + my * self.between_pos))
+        self.sprite.rect.x = int(px + mx * self.between_pos)
+        self.sprite.rect.y = int(py + my * self.between_pos)
 
     def turbo(self) -> None:
         self.turbo_time = 30

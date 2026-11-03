@@ -18,8 +18,6 @@ class Maze():
     wall_color = (64, 96, 255)
     ft_color = (0, 0, 127)
     sprites: dict[str, pygame.Surface] = {}
-    nb_gum: int = 0
-    nb_sgum: int = 0
 
     def __init__(self) -> None:
             Maze.grid = Maze.load_maze()

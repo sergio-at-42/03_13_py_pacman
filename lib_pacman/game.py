@@ -86,6 +86,7 @@ class Game():
         # initialise Pacman
         Game.player = Pacman()
         Game.player.sprite_pos = Game.player.sprite.convert_pos(Game.player.home_pos)
+        Game.player.sprite.rect.x, Game.player.sprite.rect.y = Game.player.sprite.convert_pos(Game.player.home_pos)
         Game.player.direction = Direction.STOP
 
         # initialise ghosts
@@ -97,7 +98,10 @@ class Game():
         excluded = {Game.player.home_pos} | {g.home_pos for g in Ghost.ghosts}
         Maze.pellets = Pacgum.place_pacgums(Maze.grid, excluded)
 
+        for g in Ghost.sprites.sprites():
+            print(g.ghost.name)
 
+        # START GAME LOOP
         clock = pygame.time.Clock()
         running = True
         while running:
@@ -125,7 +129,7 @@ class Game():
             for b in list(Bomb.bombs.values()):
                 sprite = pygame.image.load(f"{b.file()}").convert_alpha()
                 game_area.blit(sprite, b.sprite_pos)
-            # display bombs
+            # display explosions
             for e in list(Explosion.explosions.values()):
                 sprite = pygame.image.load(f"{e.file()}").convert_alpha()
                 game_area.blit(sprite, e.sprite_pos)
@@ -140,7 +144,13 @@ class Game():
             game_area.blit(sprite, Game.player.sprite_pos)
 
             # manage colisions between pacman and ghosts
-            # blocks_hit_list = pygame.sprite.spritecollide(player, block_list, False, pygame.sprite.collide_rect_ratio(0.75))
+            print("-----------------")
+            for g in Ghost.sprites:
+                print(id(g), g.ghost.name, g.rect)
+            print(Game.player.sprite.player.name, Game.player.sprite.rect)
+            ghosts_hit_list = pygame.sprite.spritecollide(Game.player.sprite, Ghost.sprites, False, pygame.sprite.collide_rect_ratio(1))
+            for g in ghosts_hit_list:
+                print(g.ghost.name, g.rect)
 
             # Display the 2 areas in the main window
             Game.screen.blit(score_area, (0, 0))

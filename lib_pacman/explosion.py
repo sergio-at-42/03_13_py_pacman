@@ -18,7 +18,10 @@ class Explosion():
         px, py = self.pos
         px -= 1
         py -= 1
-        self.sprite_pos: tuple[int, int] = Maze.convert_pos((px, py))
+        x, y = Maze.convert_pos((px, py))
+        self.sprite_pos: tuple[int, int] = (px, py)
+        self.sprite.rect.x = x
+        self.sprite.rect.y = y
         Explosion.explosions[self.pos] = self
         self.explosion_area: set[tuple[int, int]] = set()
         for x in range(px, px+3):
