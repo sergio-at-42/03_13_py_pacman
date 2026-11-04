@@ -84,10 +84,10 @@ class MenuEntry(Enum):
 class Menu:
     """Manage menu navigation and player options."""
 
-    def __init__(self) -> None:
+    def __init__(self, levels_count: int = 10) -> None:
         self.entries: list[MenuEntry] = list(MenuEntry)
         self.selected: int = 0
-        self.levels_count: int = max(1, 10)
+        self.levels_count: int = max(1, levels_count)
         self.level_input: str = ""
         self.cheat_mode: bool = False
 
@@ -112,6 +112,7 @@ class Menu:
 
     def type_char(self, char: str) -> None:
         """Add a digit to the level input if it is valid."""
+       
         if self.current() != MenuEntry.LEVEL:
             return
 
@@ -120,10 +121,7 @@ class Menu:
 
         candidate = self.level_input + char
 
-        if int(candidate) == 0:
-            return
-
-        if int(candidate) <= self.levels_count:
+        if 1 <= int(candidate) <= self.levels_count:
             self.level_input = candidate
 
     def backspace(self) -> None:
@@ -147,11 +145,11 @@ class Menu:
     def label(self, entry: MenuEntry) -> str:
         """Return the text displayed for a menu entry."""
         if entry == MenuEntry.LEVEL:
-            return f"Level: {self.level}" # a voir encore comment faire pour que le niveau soit pris en compte dans le jeu
+            return f"Level : " # a voir encore comment faire pour que le niveau soit pris en compte dans le jeu
 
         if entry == MenuEntry.CHEAT:
             status = "ON" if self.cheat_mode else "OFF"
-            return f"Cheat mode: {status}"
+            return f"Cheat Mode: {status}"
 
         return entry.value
 

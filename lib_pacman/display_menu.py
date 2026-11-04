@@ -15,9 +15,9 @@ class MenuView:
         self.background_color = pygame.Color("black")
         self.level_frame_color = pygame.Color("gray")
         self.hint_color = pygame.Color("gray")
-        
+
     def draw(self, surface: pygame.Surface, menu: Menu,
-             top_scores: list | None = None) -> None:
+             top_scores: list[int] | None = None) -> None:
         """Draw the complete main menu."""
         surface.fill(self.background_color)
 
@@ -35,8 +35,7 @@ class MenuView:
         # Centrer le texte horizontalement.
         width = surface.get_width()
         title_text = self.title_font.render("PAC-MAN", True, self.text_color)
-        title_rect = title_text.get_rect(center=(width // 2, 50))
-        surface.blit(title_text, title_rect)
+        draw_centered_text(surface, title_text, width // 2, 50)
 
     def draw_entries(self, surface: pygame.Surface, menu: Menu) -> None:
         """Draw the menu entries, highlighting the selected one."""
@@ -51,24 +50,23 @@ class MenuView:
             color = self.selection_color if index == menu.selected else self.text_color
 
             entry_text = self.entry_font.render(menu.label(entry), True, color)
+            
 
             # Position du texte
             y = 150 + index * 60
 
             if entry == MenuEntry.LEVEL:
-                entry_rect = entry_text.get_rect(
-                    center=(width // 2 - 70, y)
-                )
+                # draw_centered_text(surface, entry_text, width // 2, y)
+                entry_rect = entry_text.get_rect(midright=(width // 2 - 15, y))
                 surface.blit(entry_text, entry_rect)
+
 
                 # Afficher le champ de saisie à droite de LEVEL
                 self.draw_level_input(surface, menu, y - 20)
 
             else:
-                entry_rect = entry_text.get_rect(
-                    center=(width // 2, y)
-                )
-                surface.blit(entry_text, entry_rect)
+                draw_centered_text(surface, entry_text, width // 2, y)
+            
 
     def draw_level_input(self, surface: pygame.Surface,
                          menu: Menu, y: int) -> None:
@@ -82,7 +80,8 @@ class MenuView:
         if menu.entries[menu.selected] == MenuEntry.LEVEL
         else self.level_frame_color
     )
-        level_rect = pygame.Rect(width // 2 - 50, y, 100, 40)
+        # level_rect = pygame.Rect(width // 2 - 50, y, 100, 40)
+        level_rect = pygame.Rect(width // 2 + 5, y, 100, 40)
         pygame.draw.rect(surface, frame_color, level_rect, 2)
         level_text = self.entry_font.render(menu.level_input, True, self.text_color)
         level_text_rect = level_text.get_rect(center=level_rect.center)
@@ -90,14 +89,14 @@ class MenuView:
 
     def draw_hints(self, surface: pygame.Surface) -> None:
         """Draw the key hints at the bottom of the menu."""
-        hint_text = self.hint_font.render("UP / DOWN: Navigate  ENTER: Select",
+        hint_text = self.hint_font.render("UP / DOWN: Navigate     ENTER: Select",
         True,
         self.hint_color
         )
-        surface.blit(hint_text, (10, surface.get_height() - 30))
+        draw_centered_text(surface, hint_text, surface.get_width() // 2, surface.get_height() - 30)
 
     def draw_top_scores(self, surface: pygame.Surface,
-                        scores: list) -> None:
+                        scores: list[int] | None = None) -> None:
         """Draw the top scores on the menu."""
         # Dessiner les scores en haut à droite de l'écran.
         width = surface.get_width()
@@ -105,3 +104,13 @@ class MenuView:
             score_text = self.hint_font.render(f"{index + 1}. {score}", True, self.text_color)
             score_rect = score_text.get_rect(topright=(width - 20, 20 + index * 30))
             surface.blit(score_text, score_rect)
+
+# on peut la transmettre dans display utils sert a centrer le texte sur l'écran
+def draw_centered_text(surface: pygame.Surface,
+    text_surface: pygame.Surface,
+    center_x: int,
+    center_y: int) -> None:
+    """Draw a text surface centered at the given coordinates."""
+
+    text_rect = text_surface.get_rect(center=(center_x, center_y))
+    surface.blit(text_surface, text_rect)
