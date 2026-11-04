@@ -6,7 +6,7 @@ from .explosion import Explosion
 
 class Bomb():
 
-    bombs: dict[tuple[int, int], Bomb] = {}
+    bombs: set[Bomb] = set()
 
     def __init__(self, pos: tuple[int, int]) -> None:
         self.pos: tuple[int, int] = pos
@@ -14,17 +14,18 @@ class Bomb():
         self.remain: int = self.delay
         self.images: SpBomb = SpBomb()
         self.sprite: SpriteBomb = SpriteBomb(self)
-        self.sprite_pos: tuple[int, int] = Maze.convert_pos(self.pos)
-        Bomb.bombs[self.pos] = self
+        x, y = Maze.convert_pos(self.pos)
+        self.sprite.rect.x = x
+        self.sprite.rect.y = y
+        Bomb.bombs.add(self)
 
-    def file(self) -> str:
-        file_name: str = self.sprite.file()
+    def danger(self) -> None:
+        self.sprite.file()
         if self.remain > 0:
             self.remain -= 1
         else:
             self.explode()
-        return(file_name)
 
     def explode(self) -> None:
         Explosion((self.pos))
-        Bomb.bombs.pop(self.pos, None)
+        Bomb.bombs.discard(self)

@@ -1,6 +1,7 @@
 from random import randint, randrange
 import pygame
 from .config import Config
+from .pacman import Pacman
 from .maze import Maze
 from .sprite import SpriteGhost
 from .sprite_image import SpGhost, SpBlinky, SpPinky, SpInky, SpClyde
@@ -10,10 +11,14 @@ from .direction import Direction
 
 class Ghost():
 
-    ghosts: list[Ghost] = []
+    ghosts: set[Ghost] = set()
     sprites: pygame.sprite.Group = pygame.sprite.Group()
 
     def __init__(self) -> None:
+        self.sprite: SpriteGhost = SpriteGhost(self)
+        Ghost.sprites.add(self.sprite)
+        Ghost.ghosts.add(self)
+        self.images: SpGhost = SpGhost()
         self.name: str = "Gogo"
         self.color: int = 0xffffff
         self.home_pos: tuple[int, int] = (0, 0)
@@ -24,16 +29,13 @@ class Ghost():
         self.direction: Direction = Direction.STOP
         self.speed: float = 1
         self.normal_speed: float = 1
-        self.mood: Mood = Mood.RIDE
+        self.mood: Mood = Mood.CHASE
         self.mood_time: int = randint(960, 1440)
         self.between_pos: float = 0
-        self.sprite: SpriteGhost = SpriteGhost(SpGhost, self)
-        self.sprite_pos: tuple[int, int] = (40, 40)
-        Ghost.sprites.add(self.sprite)
 
     def strategy(self) -> tuple[int, int]:
         from .game import Game
-        return (Game.player.pos)
+        return (Pacman.player.pos)
 
     def change_mood(self, new_mood: Mood) -> None:
         match new_mood:
@@ -88,7 +90,7 @@ class Ghost():
             elif self.mood is Mood.SCATTER:
                 self.target_pos = self.corner_pos
             elif self.mood is Mood.SCARED:
-                px, py = Game.player.pos
+                px, py = Pacman.player.pos
                 self.target_pos = (abs(Config.width - 1 - px), abs(Config.height - 1 - py))
             elif self.mood is Mood.DEAD:
                 self.target_pos = self.home_pos
@@ -115,16 +117,12 @@ class Ghost():
             self.between_pos = 0
             self.pos = self.next_pos
         # convertion of the cell position in sprite position for the ghost
-        self.sprite_pos = self.convert_pos(self.pos)
         px, py = self.convert_pos(self.pos)
         self.sprite.rect.x = px
         self.sprite.rect.y = py
-        self.sprite_pos = (
-            int(self.sprite_pos[0] + self.direction.move()[0] * self.between_pos),
-            int(self.sprite_pos[1] + self.direction.move()[1] * self.between_pos))
         self.sprite.rect.x = int(self.sprite.rect.x + self.direction.move()[0] * self.between_pos)
         self.sprite.rect.y = int(self.sprite.rect.y + self.direction.move()[1] * self.between_pos)
-        print(id(self.sprite), ">>>>>>>>>>>>>>>>", self.sprite_pos, px, py, self.sprite.rect.x, self.sprite.rect.y)
+        self.sprite.file()
 
     def bfs(self) -> None:
         next_cells: dict[tuple[int, int], Direction] = {}
@@ -143,9 +141,7 @@ class Ghost():
         search_pos: tuple[int, int] = list(next_cells.keys())[0]
         
         while search_pos != self.target_pos and len(next_cells) != 0:
-            # print(next_cells)
             visited_cells.add(search_pos)
-            # col, row = search_pos
             search_pos_exit = Maze.cell_exit(search_pos)
             if search_pos_exit & Direction.NORTH.value:
                 next_pos = Direction.NORTH.move_from(search_pos)
@@ -182,7 +178,9 @@ class Ghost():
 
 class Blinky(Ghost):
     def __init__(self) -> None:
+        self.sprite = SpriteGhost(self)
         super().__init__()
+        self.images: SpGhost = SpBlinky()
         self.name = "blinky"
         self.color: int = 0xff0000
         self.corner_pos: tuple[int, int] = (0, 0)
@@ -190,26 +188,29 @@ class Blinky(Ghost):
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.pos
         self.normal_speed = 1.5
-        self.sprite = SpriteGhost(SpBlinky, self)
+
+
 
     def strategy(self) -> tuple[int, int]:
         from .game import Game
         remain_gum: float = 1 # gum remaining percentage
-        px, py = Game.player.pos
+        px, py = Pacman.player.pos
         gx, gy = self.pos
         if abs(px - gx) + abs(py - gy) <= 4:
-            self.speed = Game.player.normal_speed
+            self.speed = Pacman.player.normal_speed
         else:
             remain_gum = (len(Maze.pellets.pacgums) + len(Maze.pellets.super_pacgums)) / (Config.pacgum + Config.spacgum) 
             if remain_gum > 0.2:
                 remain_gum = 0.3
             self.speed = self.normal_speed * (1.3 - remain_gum)
-        return (Game.player.pos)
+        return (Pacman.player.pos)
 
 
 class Pinky(Ghost):
     def __init__(self) -> None:
+        self.sprite = SpriteGhost(self)
         super().__init__()
+        self.images: SpGhost = SpPinky()
         self.name = "pinky"
         self.color: int = 0xffc0c0
         self.corner_pos: tuple[int, int] = (Config.width-1, 0)
@@ -217,12 +218,11 @@ class Pinky(Ghost):
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.pos
         self.normal_speed = 1
-        self.sprite = SpriteGhost(SpPinky, self)
 
     def strategy(self) -> tuple[int, int]:
         from .game import Game
-        px, py = Game.player.pos
-        dx, dy = Game.player.direction.move()
+        px, py = Pacman.player.pos
+        dx, dy = Pacman.player.direction.move()
         px = px + dx * 4
         py = py + dy * 4
         return (Maze.limit((px, py)))
@@ -230,7 +230,9 @@ class Pinky(Ghost):
 
 class Inky(Ghost):
     def __init__(self) -> None:
+        self.sprite = SpriteGhost(self)
         super().__init__()
+        self.images: SpGhost = SpInky()
         self.name = "inky"
         self.color: int = 0x0000ff
         self.corner_pos: tuple[int, int] = (Config.width-1, Config.height-1)
@@ -238,12 +240,11 @@ class Inky(Ghost):
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.pos
         self.normal_speed: float = 1
-        self.sprite = SpriteGhost(SpInky, self)
 
     def strategy(self) -> tuple[int, int]:
         from .game import Game
-        px, py = Game.player.pos
-        dx, dy = Game.player.direction.move()
+        px, py = Pacman.player.pos
+        dx, dy = Pacman.player.direction.move()
         px = px + dx * 2
         py = py + dy * 2
         return (Maze.limit((px, py)))
@@ -251,7 +252,9 @@ class Inky(Ghost):
 
 class Clyde(Ghost):
     def __init__(self) -> None:
+        self.sprite = SpriteGhost(self)
         super().__init__()
+        self.images: SpGhost = SpClyde()
         self.name = "clyde"
         self.color: int = 0xff7f00
         self.corner_pos: tuple[int, int] = (0, Config.height-1)
@@ -259,16 +262,15 @@ class Clyde(Ghost):
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.pos
         self.normal_speed = 1.3
-        self.sprite = SpriteGhost(SpClyde, self)
 
     def strategy(self) -> tuple[int, int]:
         from .game import Game
-        # if Game.player.speed == 0:
+        # if Pacman.player.speed == 0:
         #     self.speed = 16
         # else:
         #     self.speed = self.normal_speed
-        px, py = Game.player.pos
+        px, py = Pacman.player.pos
         gx, gy = self.pos
         if abs(px - gx) + abs(py - gy) > 8:
-            return (Game.player.pos)
+            return (Pacman.player.pos)
         return (self.corner_pos)

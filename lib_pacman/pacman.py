@@ -1,6 +1,5 @@
 from .config import Config
 from .maze import Maze
-from .ghost import Ghost
 from .sprite import SpritePacman
 from .sprite_image import SpPacman
 from .direction import Direction
@@ -9,7 +8,12 @@ from .mood import Mood
 
 class Pacman():
 
+    player: Pacman
+
     def __init__(self) -> None:
+        self.sprite: SpritePacman = SpritePacman(self)
+        Pacman.player = self
+        self.images: SpPacman = SpPacman()
         self.name: str = "Pacman"
         self.score: int = 0
         self.live: int = 0
@@ -25,11 +29,10 @@ class Pacman():
         self.turbo_time: int = 0
         self.dead: bool = False
         self.between_pos: float = 0
-        self.sprite: SpritePacman = SpritePacman(SpPacman, self)
-        self.sprite_pos: tuple[int, int] = (40, 40)
 
     def move(self) -> None:
         from .game import Game
+        from .ghost import Ghost
         # set speed
         self.speed = self.normal_speed
         if self.turbo_time:
@@ -71,14 +74,9 @@ class Pacman():
                 Maze.pellets.pacgums.discard(self.pos)
         px, py = Maze.convert_pos(self.pos)
         mx, my = self.direction.move()
-        self.sprite_pos = (
-            int(px + mx * self.between_pos),
-            int(py + my * self.between_pos))
         self.sprite.rect.x = int(px + mx * self.between_pos)
         self.sprite.rect.y = int(py + my * self.between_pos)
+        self.sprite.file()
 
     def turbo(self) -> None:
         self.turbo_time = 30
-
-    def bomb(self) -> str:
-        return ("lib_pacman/images/poop.png")
