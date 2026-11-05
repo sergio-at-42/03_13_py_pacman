@@ -97,10 +97,7 @@ class Game():
         # START GAME LOOP
         clock = pygame.time.Clock()
         while not Game.game_over and not Game.next_level:
-    
 
-            running = True
-            # while running:
             # display main game screen for background
             Game.screen.blit(background, (0, 0))
 
@@ -114,7 +111,7 @@ class Game():
             y += font.get_linesize()
 
             # poll for events
-            running = self.events()
+            self.events()
 
             # DISPLAY GAME AREA
             # fill the screen with a color to wipe away anything from last frame
@@ -142,6 +139,7 @@ class Game():
             for g in ghosts_hit_list:
                 if g.ghost.mood == Mood.SCARED:
                     g.ghost.change_mood(Mood.DEAD)
+                    Pacman.player.score += Config.points_per_ghost
                 else:
                     if g.ghost.mood != Mood.DEAD:
                         Pacman.player.dead = 1
@@ -155,28 +153,27 @@ class Game():
 
             # flip() the display to put your work on screen
             pygame.display.flip()
-            # waiting loop for resume
-            if Game.resume:
-                running = self.resume_loop()
 
-            if Game.game_over:
-                running = False
-
-            clock.tick(60)  # limits FPS to 60
-
+            # if Game Over, verify the number of lives left
             if Game.game_over and Pacman.player.live > 0:
                 Pacman.player.init_start_position()
                 Game.game_over = False
 
+            # waiting loop for resume
+            if Game.resume:
+                self.resume_loop()
+
+            clock.tick(60)  # limits FPS to 60
+
         pygame.quit()
 
-    def events(self) -> bool:
+    def events(self) -> None:
         # poll for events
         # pygame.QUIT event means the user clicked X to close your window
-        running:bool = True
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False
+                Pacman.player.live = 0
+                Game.game_over = True
             elif event.type == KEYDOWN \
                 or event.type == pygame.JOYHATMOTION \
                 or event.type == pygame.JOYAXISMOTION \
@@ -235,22 +232,16 @@ class Game():
                             g.change_mood(Mood.CHASE)
                 if event.type == pygame.JOYBUTTONDOWN and hasattr(Game, "joy"):
                     Game.joy.rumble(0, 1, 100)
-        return (running)
 
-    def resume_loop(self) -> bool:
-        running:bool = True
+    def resume_loop(self) -> None:
         key_down:bool = False
         Game.resume = False
-        while not key_down and running:
+        while not key_down:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    running = False
-                    Pacman.player.live = 0
+                    key_down = True
                     Game.game_over = True
                 elif event.type == KEYDOWN or event.type == pygame.JOYBUTTONDOWN:
                     key_down = True
                     if getattr(event, "key", None) == K_ESCAPE or getattr(event, "button", None) == 11:
-                        running = False
-                        Pacman.player.live = 0
                         Game.game_over = True
-        return (running)
