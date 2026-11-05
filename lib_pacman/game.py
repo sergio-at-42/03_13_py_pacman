@@ -39,13 +39,13 @@ class Game():
     resume:bool = False
 
     # A deplacer dans la classe qui gere le main menu et la partie
-    live: int = 3
     level:int = 0
     level_time:int = 0
+    next_level: bool = False
+    game_over: bool = False
     cheat: bool = True
 
     def __init__(self) -> None:
-        Config()
         Maze()
         Game.surface_score_height = Maze.cell_size * 2
         Game.surface_game_height = Config.height * Maze.cell_size
@@ -58,7 +58,8 @@ class Game():
         Game.screen = pygame.display.set_mode((Game.window_width, Game.window_height))
         # joystick init
         pygame.joystick.init()
-        Game.joy = pygame.joystick.Joystick(0)
+        if pygame.joystick.get_count() > 0:
+            Game.joy = pygame.joystick.Joystick(0)
         self.game_loop()
 
     def game_loop(self) -> None:
@@ -84,21 +85,22 @@ class Game():
 
         # initialise Pacman
         Pacman.player = Pacman()
-        # Pacman.player.sprite_pos = Pacman.player.sprite.convert_pos(Pacman.player.home_pos)
-        Pacman.player.sprite.rect.x, Pacman.player.sprite.rect.y = Pacman.player.sprite.convert_pos(Pacman.player.home_pos)
-        Pacman.player.direction = Direction.STOP
-
         # initialise ghosts
         Blinky(), Pinky(), Inky(), Clyde()
-    
         # initialise pacgums
         excluded = {Pacman.player.home_pos} | {g.home_pos for g in Ghost.ghosts}
         Maze.pellets = Pacgum.place_pacgums(Maze.grid, excluded)
 
+        # Initialise Pacman start position
+        Pacman.player.init_start_position()
+
         # START GAME LOOP
         clock = pygame.time.Clock()
-        running = True
-        while running:
+        while not Game.game_over and not Game.next_level:
+    
+
+            running = True
+            # while running:
             # display main game screen for background
             Game.screen.blit(background, (0, 0))
 
@@ -141,7 +143,8 @@ class Game():
                 if g.ghost.mood == Mood.SCARED:
                     g.ghost.change_mood(Mood.DEAD)
                 else:
-                    pass
+                    if g.ghost.mood != Mood.DEAD:
+                        Pacman.player.dead = 1
 
             # Display the 2 areas in the main window
             Game.screen.blit(score_area, (0, 0))
@@ -156,7 +159,14 @@ class Game():
             if Game.resume:
                 running = self.resume_loop()
 
+            if Game.game_over:
+                running = False
+
             clock.tick(60)  # limits FPS to 60
+
+            if Game.game_over and Pacman.player.live > 0:
+                Pacman.player.init_start_position()
+                Game.game_over = False
 
         pygame.quit()
 
@@ -223,7 +233,7 @@ class Game():
                         or getattr(event, "button", None) == 8:
                         for g in Ghost.ghosts:
                             g.change_mood(Mood.CHASE)
-                if event.type == pygame.JOYBUTTONDOWN:
+                if event.type == pygame.JOYBUTTONDOWN and hasattr(Game, "joy"):
                     Game.joy.rumble(0, 1, 100)
         return (running)
 
@@ -235,8 +245,12 @@ class Game():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                    Pacman.player.live = 0
+                    Game.game_over = True
                 elif event.type == KEYDOWN or event.type == pygame.JOYBUTTONDOWN:
                     key_down = True
                     if getattr(event, "key", None) == K_ESCAPE or getattr(event, "button", None) == 11:
                         running = False
+                        Pacman.player.live = 0
+                        Game.game_over = True
         return (running)

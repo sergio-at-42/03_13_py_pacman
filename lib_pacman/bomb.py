@@ -1,3 +1,4 @@
+from __future__ import annotations
 from .maze import Maze
 from .sprite import SpriteBomb
 from .sprite_image import SpBomb

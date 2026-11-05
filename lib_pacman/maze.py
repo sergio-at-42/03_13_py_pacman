@@ -21,8 +21,6 @@ class Maze():
 
     def __init__(self) -> None:
             Maze.grid = Maze.load_maze()
-            # rng = random.Random(Config.seed)
-            # Maze.pellets = Pacgum.place_pacgums(Maze.grid, Config.pacgum, excluded, rng)
        
     @classmethod
     def load_maze(cls) -> list[list[int]]:

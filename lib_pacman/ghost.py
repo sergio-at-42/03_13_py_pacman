@@ -1,3 +1,4 @@
+from __future__ import annotations
 from random import randint, randrange
 import pygame
 from .config import Config

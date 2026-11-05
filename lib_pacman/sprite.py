@@ -1,6 +1,6 @@
 from datetime import datetime
 import pygame
-from .sprite_image import SpriteImage, SpPacman, SpGhost, SpScared, SpEndScared, SpEyes, SpBomb
+from .sprite_image import SpriteImage, SpPacman, SpGhost, SpScared, SpEndScared, SpEyes, SpBomb, SpPacmanExplosion
 from.maze import Maze
 from .mood import Mood
 
@@ -29,12 +29,19 @@ class SpritePacman(Sprite):
 
     def file(self) -> None:
         sprite: SpriteImage
-        if self.player.dead:
-            sprite = SpEyes()
-        else:
+        anim: int = 0
+        if self.player.dead == 0:
             sprite = self.player.images
-        anim: int = (datetime.now().microsecond // 250000) % sprite.nb_anim
-        file = f"{getattr(sprite, f"sp{self.player.direction.letter()}{str(anim)}")}"
+            anim = (datetime.now().microsecond // 250000) % sprite.nb_anim
+            file = f"{getattr(sprite, f"sp{self.player.direction.letter()}{str(anim)}")}"
+        else:
+            sprite = SpPacmanExplosion()
+            anim = int((self.player.dead - 1) // (60 / sprite.nb_anim))
+            if anim >= sprite.nb_anim:
+                anim = sprite.nb_anim - 1
+            self.rect.x = self.rect.x - Maze.cell_size
+            self.rect.y = self.rect.y - Maze.cell_size
+            file = f"{getattr(sprite, f"sp{str(anim)}")}"
         self.image = pygame.image.load(f"{self.directory}{file}").convert_alpha()
 
 
