@@ -35,38 +35,41 @@ class Config():
         self.config_read_file()
 
     def config_read_file(self) -> None:
-        self.file_from_argv()
+        Config.file_from_argv()
         config_file: dict[str, Any] = {}
         try:
-            with open(self.config_file_name, "r") as config_json_file:
+            with open(Config.config_file_name, "r") as config_json_file:
                 config_file = json.load(config_json_file)
-                self.set_values(config_file)
+                Config.set_values(config_file)
         except FileNotFoundError:
             Error("[error]No configuration file found.")
         except json.decoder.JSONDecodeError:
             Error("[error]JSON config file corrupted.")
 
-    def file_from_argv(self) -> None:
+    @classmethod
+    def file_from_argv(cls) -> None:
         try:
-            with open(self.argv[1], "r"):
-                self.config_file_name = self.argv[1]
+            with open(Config.argv[1], "r"):
+                Config.config_file_name = Config.argv[1]
         except IndexError:
             Error("[error]No configuration file provide. "
-                f"Usage: {self.argv[0].rpartition("/")[2]} <conf_file>. "
+                f"Usage: {Config.argv[0].rpartition("/")[2]} <conf_file>. "
                 "Default values used to create the Pac-Man.")
         except FileNotFoundError:
-            Error(f"[error]<{self.argv[1]}> is not a configuration file. "
-                f"Usage: {self.argv[0].rpartition("/")[2]} <conf_file>. "
+            Error(f"[error]<{Config.argv[1]}> is not a configuration file. "
+                f"Usage: {Config.argv[0].rpartition("/")[2]} <conf_file>. "
                 "Default values used to create the Pac-Man.")
 
-    def set_values(self, config_file: dict[str, Any]) -> None:
+    @classmethod
+    def set_values(cls, config_file: dict[str, Any]) -> None:
         for key, value in config_file.items():
-            if hasattr(self, key):
-                if isinstance(value, type(getattr(self, key))):
-                    if self.verify_value(key, value):
-                        setattr(self, key, value)
+            if hasattr(Config, key):
+                if isinstance(value, type(getattr(Config, key))):
+                    if Config.verify_value(key, value):
+                        setattr(Config, key, value)
 
-    def verify_value(self, key: str, value: Any) -> bool:
+    @classmethod
+    def verify_value(cls, key: str, value: Any) -> bool:
         value_ok = True
         try:
             match key:
@@ -86,6 +89,27 @@ class Config():
                 case "level_max_time":
                     if value < 0:
                         raise TimeLessThan0Error
+                case "pacgum":
+                    if value < 0:
+                        raise WidthLessThan2Error
+                case "spacgum":
+                    if value < 0:
+                        raise WidthLessThan2Error
+                case "points_per_pacgum":
+                    if value < 0:
+                        raise WidthLessThan2Error
+                case "points_per_super_pacgum":
+                    if value < 0:
+                        raise WidthLessThan2Error
+                case "points_per_ghost":
+                    if value < 0:
+                        raise WidthLessThan2Error
+                case "seed":
+                    if value < 0:
+                        raise WidthLessThan2Error
+                case "level_max_time":
+                    if value < 0:
+                        raise WidthLessThan2Error
                 case _:
                     value_ok = False
         except Error:

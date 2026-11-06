@@ -20,6 +20,8 @@ from .config import Config
 from .pacman import Pacman
 from .ghost import Ghost, Blinky, Pinky, Inky, Clyde
 from .bomb import Bomb
+from .explosion import Explosion
+from .sprite_image import SpriteImage, SpPacman
 from .mood import Mood
 from .pacgum import Pacgum
 from .direction import Direction
@@ -35,18 +37,17 @@ class Game():
     window_height:int = 0
     screen:pygame.Surface
     joy: pygame.joystick
-    player: Pacman
-    ghosts: list[Ghost]
-    bombs: list[Bomb] = []
     resume:bool = False
+    remain_time: float = 0
 
     # A deplacer dans la classe qui gere le main menu et la partie
     level:int = 0
-    level_time:int = 0
+    level_time:int = 90
+    next_level: bool = False
+    game_over: bool = False
     cheat: bool = True
 
     def __init__(self) -> None:
-        Config()
         Maze()
         Game.surface_score_height = Maze.cell_size * 2
         Game.surface_game_height = Config.height * Maze.cell_size
@@ -57,23 +58,27 @@ class Game():
         pygame.init()
         pygame.display.set_caption("Pac-Man since 1980")
         Game.screen = pygame.display.set_mode((Game.window_width, Game.window_height))
+        # Création des deux surfaces
+        Game.score_area = pygame.Surface((Game.window_width, Game.surface_score_height), pygame.SRCALPHA)
+        Game.game_area = pygame.Surface((Game.window_width, Game.surface_game_height), pygame.SRCALPHA)
         # joystick init
         pygame.joystick.init()
-        Game.joy = pygame.joystick.Joystick(0)
-        self.game_loop()
+        if pygame.joystick.get_count() > 0:
+            Game.joy = pygame.joystick.Joystick(0)
 
-    def game_loop(self) -> None:
+        Game.remain_time = Game.level_time
+        Game.game_loop()
+
+    @classmethod
+    def game_loop(cls) -> None:
         line_score: str = ""
 
         # set main game screen background
         background = pygame.image.load(f"{Config.game_area_bg}")
 
-        # Création des deux surfaces
-        score_area = pygame.Surface((Game.window_width, Game.surface_score_height), pygame.SRCALPHA)
-        game_area = pygame.Surface((Game.window_width, Game.surface_game_height), pygame.SRCALPHA)
-
         #load sprites
         Maze.load_sprites()
+
         # RESUME Area creation
         resume_area = pygame.Surface((Game.window_width, Game.surface_game_height), pygame.SRCALPHA)
         resume_area.fill((0, 0, 128, 192))
@@ -84,84 +89,91 @@ class Game():
         resume_area.blit(text, (Game.window_width // 6, Game.surface_game_height // 4 * 2))
 
         # initialise Pacman
-        Game.player = Pacman()
-        Game.player.sprite_pos = Game.player.sprite.convert_pos(Game.player.home_pos)
-        Game.player.direction = Direction.STOP
-
+        Pacman.player = Pacman()
         # initialise ghosts
-        Game.ghosts = [Blinky(), Pinky(), Inky(), Clyde()]
-        for g in Game.ghosts:
-            g.mood = Mood.CHASE
-
+        Blinky(), Pinky(), Inky(), Clyde()
         # initialise pacgums
-        excluded = {Game.player.home_pos} | {g.home_pos for g in Game.ghosts}
+        excluded = {Pacman.player.home_pos} | {g.home_pos for g in Ghost.ghosts}
         Maze.pellets = Pacgum.place_pacgums(Maze.grid, excluded)
 
+        # Initialise Pacman start position
+        Pacman.player.init_start_position()
 
+        # START GAME LOOP
         clock = pygame.time.Clock()
-        running = True
-        while running:
+        while not Game.game_over and not Game.next_level:
+
             # display main game screen for background
             Game.screen.blit(background, (0, 0))
 
-            # DISPLAY SCORE AREA
-            score_area.fill((0, 0, 48, 0))
-            y=8
-            font = pygame.font.Font(None, 32)
-            line_score = f"SCORE {Game.player.score}"
-            text = font.render(line_score, True, (255, 255, 0))
-            score_area.blit(text, (Game.window_width // 4, y))
-            y += font.get_linesize()
+            # update score arera
+            Game.update_score_area()
 
             # poll for events
-            running = self.events()
+            Game.events()
 
             # DISPLAY GAME AREA
             # fill the screen with a color to wipe away anything from last frame
-            game_area.fill((0, 0, 48, 127))
-            Maze.draw_maze(game_area)
+            Game.game_area.fill((0, 0, 48, 127))
+            Maze.draw_maze(Game.game_area)
 
             # display bombs
-            for b in Game.bombs:
-                sprite = pygame.image.load(f"{b.sprite.file()}").convert_alpha()
-                game_area.blit(sprite, b.sprite_pos)
+            for b in list(Bomb.bombs):
+                b.danger()
+                Game.game_area.blit(b.sprite.image, b.sprite.rect)
+            # display explosions
+            for e in list(Explosion.explosions):
+                e.boum()
+                Game.game_area.blit(e.sprite.image, e.sprite.rect)
             # display ghosts
-            for g in Game.ghosts:
+            for g in Ghost.ghosts:
                 g.move()
-                sprite = pygame.image.load(f"{g.sprite.file()}").convert_alpha()
-                game_area.blit(sprite, g.sprite_pos)
+                Game.game_area.blit(g.sprite.image, g.sprite.rect)
             # display pacman
-            Game.player.move()
-            sprite = pygame.image.load(f"{Game.player.sprite.file()}").convert_alpha()
-            game_area.blit(sprite, Game.player.sprite_pos)
+            Pacman.player.move()
+            Game.game_area.blit(Pacman.player.sprite.image, Pacman.player.sprite.rect)
 
             # manage colisions between pacman and ghosts
-            # blocks_hit_list = pygame.sprite.spritecollide(player, block_list, False, pygame.sprite.collide_rect_ratio(0.75))
+            ghosts_hit_list = pygame.sprite.spritecollide(Pacman.player.sprite, Ghost.sprites, False, pygame.sprite.collide_rect_ratio(0.75))
+            for g in ghosts_hit_list:
+                if g.ghost.mood == Mood.SCARED:
+                    g.ghost.change_mood(Mood.DEAD)
+                    Pacman.player.score += Config.points_per_ghost
+                else:
+                    if g.ghost.mood != Mood.DEAD:
+                        Pacman.player.dead = 1
 
             # Display the 2 areas in the main window
-            Game.screen.blit(score_area, (0, 0))
-            Game.screen.blit(game_area, (0, Game.surface_score_height))
+            Game.screen.blit(Game.score_area, (0, 0))
+            Game.screen.blit(Game.game_area, (0, Game.surface_score_height))
             # Display the resume area
             if Game.resume:
                 Game.screen.blit(resume_area, (0, Game.surface_score_height))
 
             # flip() the display to put your work on screen
             pygame.display.flip()
+
+            # if Game Over, verify the number of lives left
+            if Game.game_over and Pacman.player.live > 0:
+                Pacman.player.init_start_position()
+                Game.game_over = False
+
             # waiting loop for resume
             if Game.resume:
-                running = self.resume_loop()
+                Game.resume_loop()
 
             clock.tick(60)  # limits FPS to 60
 
         pygame.quit()
 
-    def events(self) -> bool:
+    @classmethod
+    def events(cls) -> None:
         # poll for events
         # pygame.QUIT event means the user clicked X to close your window
-        running:bool = True
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False
+                Pacman.player.live = 0
+                Game.game_over = True
             elif event.type == KEYDOWN \
                 or event.type == pygame.JOYHATMOTION \
                 or event.type == pygame.JOYAXISMOTION \
@@ -173,65 +185,100 @@ class Game():
                 elif getattr(event, "key", None) == K_UP \
                     or (getattr(event, "hat", None) == 0 and getattr(event, "value", None) == (0, 1)) \
                     or (getattr(event, "axis", None) == 1 and getattr(event, "value", None) < -0.9):
-                    Game.player.next_direction = Direction.NORTH
+                    Pacman.player.next_direction = Direction.NORTH
                 elif getattr(event, "key", None) == K_DOWN \
                     or (getattr(event, "hat", None) == 0 and getattr(event, "value", None) == (0, -1)) \
                     or (getattr(event, "axis", None) == 1 and getattr(event, "value", None) > 0.9):
-                    Game.player.next_direction = Direction.SOUTH
+                    Pacman.player.next_direction = Direction.SOUTH
                 elif getattr(event, "key", None) == K_LEFT \
                     or (getattr(event, "hat", None) == 0 and getattr(event, "value", None) == (-1, 0)) \
                     or (getattr(event, "axis", None) == 0 and getattr(event, "value", None) < -0.9):
-                    Game.player.next_direction = Direction.WEST
+                    Pacman.player.next_direction = Direction.WEST
                 elif getattr(event, "key", None) == K_RIGHT \
                     or (getattr(event, "hat", None) == 0 and getattr(event, "value", None) == (1, 0)) \
                     or (getattr(event, "axis", None) == 0 and getattr(event, "value", None) > 0.9):
-                    Game.player.next_direction = Direction.EST
+                    Pacman.player.next_direction = Direction.EST
                 # events with cheat mode activated
                 if Game.cheat:
                     if getattr(event, "key", None) == K_SPACE \
                         or getattr(event, "button", None) == 0:
-                        Game.player.turbo()
+                        Pacman.player.turbo()
                     elif getattr(event, "key", None) == K_x \
                         or getattr(event, "button", None) == 1:
-                        Game.bombs.append(Bomb(Game.player.pos))
+                        Bomb(Pacman.player.pos)
                     elif getattr(event, "key", None) == K_f \
                         or getattr(event, "button", None) == 3:
-                        for g in Game.ghosts:
+                        for g in Ghost.ghosts:
                             g.change_mood(Mood.SCARED)
                     elif getattr(event, "key", None) == K_d \
                         or getattr(event, "button", None) == 2:
-                        for g in Game.ghosts:
+                        for g in Ghost.ghosts:
                             g.change_mood(Mood.DEAD)
                     elif getattr(event, "key", None) == K_h \
                         or getattr(event, "button", None) == 6:
-                        for g in Game.ghosts:
+                        for g in Ghost.ghosts:
                             g.move(g.home_pos)
                     elif getattr(event, "key", None) == K_r \
                         or getattr(event, "button", None) == 7:
-                        for g in Game.ghosts:
+                        for g in Ghost.ghosts:
                             g.change_mood(Mood.RIDE)
                     elif getattr(event, "key", None) == K_s \
                         or getattr(event, "button", None) == 5:
-                        for g in Game.ghosts:
+                        for g in Ghost.ghosts:
                             g.change_mood(Mood.SLEEP)
                     elif getattr(event, "key", None) == K_c \
                         or getattr(event, "button", None) == 8:
-                        for g in Game.ghosts:
+                        for g in Ghost.ghosts:
                             g.change_mood(Mood.CHASE)
-                if event.type == pygame.JOYBUTTONDOWN:
+                if event.type == pygame.JOYBUTTONDOWN and hasattr(Game, "joy"):
                     Game.joy.rumble(0, 1, 100)
-        return (running)
 
-    def resume_loop(self) -> bool:
-        running:bool = True
+    @classmethod
+    def resume_loop(cls) -> None:
         key_down:bool = False
         Game.resume = False
-        while not key_down and running:
+        while not key_down:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    running = False
+                    key_down = True
+                    Game.game_over = True
                 elif event.type == KEYDOWN or event.type == pygame.JOYBUTTONDOWN:
                     key_down = True
                     if getattr(event, "key", None) == K_ESCAPE or getattr(event, "button", None) == 11:
-                        running = False
-        return (running)
+                        Game.game_over = True
+
+    @classmethod
+    def update_score_area(cls) -> None:
+        Game.score_area.fill((0, 0, 48, 0))
+        # display first line
+        font_size: int = 64
+        font = pygame.font.Font(None, font_size)
+        y = 8
+        text = font.render("SCORE", True, (255, 255, 0))
+        Game.score_area.blit(text, (Game.window_width // 4 - text.get_width() // 2, y))
+        text = font.render("TIME", True, (255, 255, 0))
+        Game.score_area.blit(text, (Game.window_width // 2 - text.get_width() // 2, y))
+        font = pygame.font.Font(None, font_size - 32)
+        text = font.render("HI-SCORE", True, (255, 255, 0))
+        Game.score_area.blit(text, (Game.window_width * 3 // 4 - text.get_width() // 2, y))
+        # y += font.get_linesize() + 16
+        # display second line
+        font = pygame.font.Font(None, font_size)
+        y = Game.surface_score_height - font.get_linesize()
+        text = font.render(f"{Pacman.player.score}", True, (255, 255, 0))
+        Game.score_area.blit(text, (Game.window_width // 4 - text.get_width() // 2, y))
+        text = font.render(f"{Game.remain_time}", True, (255, 255, 0))
+        Game.score_area.blit(text, (Game.window_width // 2 - text.get_width() // 2, y))
+        font = pygame.font.Font(None, font_size - 32)
+        text = font.render("0123456789", True, (255, 255, 0))
+        Game.score_area.blit(text, (Game.window_width * 3 // 4 - text.get_width() // 2, y - 12))
+        # display remaining lives
+        sprite: SpriteImage = SpPacman()
+        anim: int = (pygame.time.get_ticks() // 250000) % sprite.nb_anim
+        file = f"{getattr(sprite, f"spe{str(anim)}")}"
+        live_image = pygame.image.load(f"{SpriteImage.directory}{file}").convert_alpha()
+        x = Game.window_width - live_image.get_rect().width - 16
+        y = Game.surface_score_height - live_image.get_rect().height - 4
+        for _ in range(Pacman.player.live):
+            Game.score_area.blit(live_image, (x, y))
+            x -= live_image.get_rect().width + 16

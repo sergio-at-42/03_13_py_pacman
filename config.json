@@ -1,10 +1,10 @@
 {
 "highscore_filename": "highscores_from_file.json",
 "level array of multiple levels": ["???"],
-"width": 32,
+"width": 16,
 "height": 16,
 "lives": -3,
-"pacgum": 42,
+"pacgum": 2,
 "points_per_pacgum": 10,
 "points_per_super_pacgum": 50,
 "points_per_ghost": "200"
