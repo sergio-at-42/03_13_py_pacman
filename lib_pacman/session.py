@@ -1,11 +1,11 @@
-
+from __future__ import annotations
 from enum import Enum
 
 import pygame
 
+from .error import Error
 from lib_pacman.menu import Menu, MenuEntry
 from lib_pacman.display_menu import MenuView
-from lib_pacman.game import Game
 
 
 class SessionState(Enum):
@@ -16,21 +16,29 @@ class SessionState(Enum):
 
 
 class Session:
+
+    game_session: Session | None = None
+
     def __init__(self) -> None:
+        Session.game_session = self
         self.state = SessionState.MENU
         self.running = True
         self.menu = Menu(levels_count=10)
         self.menu_view = None
-        self.game = None
+        # self.game = None
         self.screen = None
         self.clock = None
+
+        self.next_level: bool = False
+        self.game_over: bool = False
+        self.cheat: bool = True
 
     def run(self) -> None:
         """Initialize Pygame and run the main loop."""
 
         pygame.init()
 
-        self.screen = pygame.display.set_mode((Game.window_width, Game.window_height))
+        self.screen = pygame.display.set_mode( (0, 0), pygame.FULLSCREEN)
         pygame.display.set_caption("Pac-Man")
 
         self.clock = pygame.time.Clock()
@@ -103,16 +111,24 @@ class Session:
 
     def on_menu_entry(self, entry: MenuEntry) -> None:
         """Translate a menu action into a session state change."""
+        from .game import Game
 
         if entry == MenuEntry.START:
             level = self.menu.level
-            cheat = self.menu.cheat_mode
 
+            # cheat = self.menu.cheat_mode
+            self.cheat = self.menu.cheat_mode
+
+            Error.write_log(f"Starting game: level={level}, cheat={self.cheat}") # write starting game in log file
+            print(f"Starting game: level={level}, cheat={self.cheat}")
+
+            self.game_over = False
+            while not self.game_over:
+                self.next_level = False
+                Game()
             # À connecter après le refactoring de Game
             # self.game = Game(level=level, cheat_mode=cheat)
             # self.state = SessionState.PLAYING
-
-            print(f"Starting game: level={level}, cheat={cheat}")
 
         elif entry == MenuEntry.HIGHSCORES:
             self.state = SessionState.HIGHSCORES

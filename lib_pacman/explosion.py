@@ -1,7 +1,9 @@
 from __future__ import annotations
+from .config import Config
 from .maze import Maze
 from .sprite import SpriteExplosion
 from .sprite_image import SpExplosion
+from .pacman import Pacman
 from .ghost import Ghost
 from .mood import Mood
 
@@ -31,8 +33,9 @@ class Explosion():
     def boum(self) -> None:
         self.sprite.file()
         for g in Ghost.ghosts:
-            if g.pos in self.explosion_area:
+            if g.pos in self.explosion_area and g.mood != Mood.DEAD:
                 g.change_mood(Mood.DEAD)
+                Pacman.player.score += Config.points_per_ghost
         if self.remain > 0:
             self.remain -= 1
         else:

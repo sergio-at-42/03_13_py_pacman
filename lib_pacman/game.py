@@ -17,6 +17,7 @@ from pygame.locals import (
     QUIT,
 )
 from .config import Config
+from .session import Session
 from .pacman import Pacman
 from .ghost import Ghost, Blinky, Pinky, Inky, Clyde
 from .bomb import Bomb
@@ -43,9 +44,9 @@ class Game():
     # A deplacer dans la classe qui gere le main menu et la partie
     level:int = 0
     level_time:int = 90
-    next_level: bool = False
-    game_over: bool = False
-    cheat: bool = True
+    # next_level: bool = False
+    # game_over: bool = False
+    # cheat: bool = True
 
     def __init__(self) -> None:
         Maze()
@@ -55,7 +56,7 @@ class Game():
         Game.window_height = Game.surface_score_height + Game.surface_game_height
 
         # pygame setup
-        pygame.init()
+        # pygame.init()
         pygame.display.set_caption("Pac-Man since 1980")
         Game.screen = pygame.display.set_mode((Game.window_width, Game.window_height))
         # Création des deux surfaces
@@ -71,7 +72,6 @@ class Game():
 
     @classmethod
     def game_loop(cls) -> None:
-        line_score: str = ""
 
         # set main game screen background
         background = pygame.image.load(f"{Config.game_area_bg}")
@@ -101,7 +101,7 @@ class Game():
 
         # START GAME LOOP
         clock = pygame.time.Clock()
-        while not Game.game_over and not Game.next_level:
+        while not Session.game_session.game_over and not Session.game_session.next_level:
 
             # display main game screen for background
             Game.screen.blit(background, (0, 0))
@@ -154,9 +154,9 @@ class Game():
             pygame.display.flip()
 
             # if Game Over, verify the number of lives left
-            if Game.game_over and Pacman.player.live > 0:
+            if Session.game_session.game_over and Pacman.player.live > 0:
                 Pacman.player.init_start_position()
-                Game.game_over = False
+                Session.game_session.game_over = False
 
             # waiting loop for resume
             if Game.resume:
@@ -164,7 +164,7 @@ class Game():
 
             clock.tick(60)  # limits FPS to 60
 
-        pygame.quit()
+        # pygame.quit()
 
     @classmethod
     def events(cls) -> None:
@@ -173,7 +173,7 @@ class Game():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 Pacman.player.live = 0
-                Game.game_over = True
+                Session.game_session.game_over = True
             elif event.type == KEYDOWN \
                 or event.type == pygame.JOYHATMOTION \
                 or event.type == pygame.JOYAXISMOTION \
@@ -199,7 +199,7 @@ class Game():
                     or (getattr(event, "axis", None) == 0 and getattr(event, "value", None) > 0.9):
                     Pacman.player.next_direction = Direction.EST
                 # events with cheat mode activated
-                if Game.cheat:
+                if Session.game_session.cheat:
                     if getattr(event, "key", None) == K_SPACE \
                         or getattr(event, "button", None) == 0:
                         Pacman.player.turbo()
@@ -241,11 +241,11 @@ class Game():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     key_down = True
-                    Game.game_over = True
+                    Session.game_session.game_over = True
                 elif event.type == KEYDOWN or event.type == pygame.JOYBUTTONDOWN:
                     key_down = True
                     if getattr(event, "key", None) == K_ESCAPE or getattr(event, "button", None) == 11:
-                        Game.game_over = True
+                        Session.game_session.game_over = True
 
     @classmethod
     def update_score_area(cls) -> None:

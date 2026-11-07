@@ -1,5 +1,6 @@
 from __future__ import annotations
 from .config import Config
+from .session import Session
 from .maze import Maze
 from .sprite import SpritePacman
 from .sprite_image import SpPacman
@@ -53,7 +54,7 @@ class Pacman():
             self.speed = 0
             self.dead += 1
             if self.dead >= 60:
-                Game.game_over = True
+                Session.game_session.game_over = True
         # determine the next position and the direction based on the next direction
         if self.between_pos == 0:
             if Maze.cell_exit(self.pos) & self.next_direction.value:
@@ -90,23 +91,12 @@ class Pacman():
                 self.score += Config.points_per_pacgum
                 Maze.pellets.pacgums.discard(self.pos)
             if len(Maze.pellets.pacgums) == 0 and len(Maze.pellets.super_pacgums) == 0:
-                Game.next_level = True
+                Session.game_session.next_level = True
         px, py = Maze.convert_pos(self.pos)
         mx, my = self.direction.move()
         self.sprite.rect.x = int(px + mx * self.between_pos)
         self.sprite.rect.y = int(py + my * self.between_pos)
         self.sprite.file()
-        # Pac-Man is dying
-        # else:
-        #     self.end()
 
     def turbo(self) -> None:
         self.turbo_time = 30
-
-    def end(self) -> None:
-        from .game import Game
-        self.sprite.file()
-        if self.dead < 60:
-            self.dead += 1
-        else:
-            Game.game_over = False
