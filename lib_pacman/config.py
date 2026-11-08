@@ -21,20 +21,25 @@ class Config():
     points_per_super_pacgum: int = 50
     points_per_ghost: int = 200
     seed: int = 42
-    level_max_time: int = 90
+    fps: int = 60
 
     sprite_42: str = "lib_pacman/images/tardis.png"
     sprite_pacgum: str = "lib_pacman/images/pacgum.png"
     sprite_super: str = "lib_pacman/images/super.png"
-    game_area_bg: str = "lib_pacman/images/pac-man-background.jpg"
+    game_bg_l: str = "lib_pacman/images/pac-man-background-l.jpg"
+    game_bg_r: str = "lib_pacman/images/pac-man-background-r.jpg"
+    menu_bg: str = "lib_pacman/images/pac-man-smile.png" 
+    # menu_bg: str = "lib_pacman/images/pac-man-ce1.jpg"
+    # menu_bg: str = "lib_pacman/images/pac-man-ce2.jpg"
     pm_icon : str = "\U0001F6BD"
     argv: list[str] = sys.argv
     config_file_name: str = ""
 
     def __init__(self) -> None:
-        self.config_read_file()
+        Config.config_read_file()
 
-    def config_read_file(self) -> None:
+    @classmethod
+    def config_read_file(cls) -> None:
         Config.file_from_argv()
         config_file: dict[str, Any] = {}
         try:

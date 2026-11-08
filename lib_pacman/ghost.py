@@ -52,6 +52,10 @@ class Ghost():
                 self.mood = Mood.SCARED
                 self.mood_time = 480
                 self.speed = 0.7
+            case Mood.HOME:
+                self.mood = Mood.HOME
+                self.mood_time = -1
+                self.speed = 20
             case Mood.DEAD:
                 self.mood = Mood.DEAD
                 self.mood_time = -1
@@ -80,6 +84,8 @@ class Ghost():
         self.mood_time -= 1
         if self.mood_time == 0:
             if self.mood != Mood.CHASE:
+                if self.mood == Mood.SCARED:
+                    Pacman.player.points_multiplier = 1
                 self.change_mood(Mood.CHASE)
             else:
                 self.change_mood(Mood.SCATTER)
@@ -90,6 +96,10 @@ class Ghost():
                 self.target_pos = self.strategy()
             elif self.mood is Mood.SCATTER:
                 self.target_pos = self.corner_pos
+            elif self.mood is Mood.HOME:
+                self.target_pos = self.home_pos
+                if self.pos == self.home_pos:
+                    self.mood_time = 1
             elif self.mood is Mood.SCARED:
                 px, py = Pacman.player.pos
                 self.target_pos = (abs(Config.width - 1 - px), abs(Config.height - 1 - py))
@@ -175,6 +185,11 @@ class Ghost():
         grid_y: int = 0
         grid_x, grid_y = grid_pos
         return ((grid_x * Maze.cell_size + 8, grid_y * Maze.cell_size + 8))
+
+    @classmethod
+    def move_ghosts_to_home_position(cls) -> None:
+        for g in Ghost.ghosts:
+            g.change_mood(Mood.HOME)
 
 
 class Blinky(Ghost):

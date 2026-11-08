@@ -1,4 +1,5 @@
 from lib_pacman.menu import Menu, MenuEntry
+from .config import Config
 import pygame
 
 
@@ -12,13 +13,15 @@ class MenuView:
 
         self.text_color = pygame.Color("white")
         self.selection_color = pygame.Color("yellow")
-        self.background_color = pygame.Color("black")
+        self.background_color = pygame.Color((0, 0, 0, 128))
         self.level_frame_color = pygame.Color("gray")
         self.hint_color = pygame.Color("gray")
 
     def draw(self, surface: pygame.Surface, menu: Menu,
              top_scores: list[int] | None = None) -> None:
         """Draw the complete main menu."""
+
+        # pygame.draw.rect(surface, self.background_color, surface.get_rect())
         surface.fill(self.background_color)
 
         self.draw_title(surface)

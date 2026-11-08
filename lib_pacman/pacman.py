@@ -18,9 +18,10 @@ class Pacman():
         self.images: SpPacman = SpPacman()
         self.name: str = "Pacman"
         self.score: int = 0
-        self.live: int = 3
+        self.points_multiplier: int = 1
+        self.lives: int = 3
         self.color: int = 0x00ffff
-        self.home_pos: tuple[int, int] = (Config.width // 2 - 1, Config.height // 2)
+        self.home_pos: tuple[int, int] = ((Config.width - 1) // 2 - 1, Config.height // 2)
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.pos
         self.direction: Direction = Direction.STOP
@@ -33,13 +34,13 @@ class Pacman():
         self.between_pos: float = 0
 
     def init_start_position(self) -> None:
+        self.home_pos: tuple[int, int] = ((Config.width + 1) // 2 - 1, Config.height // 2)
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.pos
         self.between_pos: float = 0
         self.direction: Direction = Direction.STOP
         self.next_direction: Direction = Direction.STOP
         # self.sprite.rect.x, Pacman.player.sprite.rect.y = Pacman.player.sprite.convert_pos(Pacman.player.pos)
-        self.live -= 1
         self.dead = 0
 
     def move(self) -> None:
@@ -54,7 +55,7 @@ class Pacman():
             self.speed = 0
             self.dead += 1
             if self.dead >= 60:
-                Session.game_session.game_over = True
+                Session.session.game_over = True
         # determine the next position and the direction based on the next direction
         if self.between_pos == 0:
             if Maze.cell_exit(self.pos) & self.next_direction.value:
@@ -91,7 +92,7 @@ class Pacman():
                 self.score += Config.points_per_pacgum
                 Maze.pellets.pacgums.discard(self.pos)
             if len(Maze.pellets.pacgums) == 0 and len(Maze.pellets.super_pacgums) == 0:
-                Session.game_session.next_level = True
+                Session.session.next_level = True
         px, py = Maze.convert_pos(self.pos)
         mx, my = self.direction.move()
         self.sprite.rect.x = int(px + mx * self.between_pos)

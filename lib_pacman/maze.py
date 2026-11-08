@@ -20,8 +20,12 @@ class Maze():
     sprites: dict[str, pygame.Surface] = {}
 
     def __init__(self) -> None:
-            Maze.grid = Maze.load_maze()
-       
+        self.new_maze()
+
+    @classmethod
+    def new_maze(self) -> None:
+        Maze.grid = Maze.load_maze()
+
     @classmethod
     def load_maze(cls) -> list[list[int]]:
         """Load a maze with the given seed."""
