@@ -19,9 +19,9 @@ class Pacman():
         self.name: str = "Pacman"
         self.score: int = 0
         self.points_multiplier: int = 1
-        self.live: int = 3
+        self.lives: int = 3
         self.color: int = 0x00ffff
-        self.home_pos: tuple[int, int] = (Config.width // 2 - 1, Config.height // 2)
+        self.home_pos: tuple[int, int] = ((Config.width - 1) // 2 - 1, Config.height // 2)
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.pos
         self.direction: Direction = Direction.STOP
@@ -34,13 +34,13 @@ class Pacman():
         self.between_pos: float = 0
 
     def init_start_position(self) -> None:
+        self.home_pos: tuple[int, int] = ((Config.width + 1) // 2 - 1, Config.height // 2)
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.pos
         self.between_pos: float = 0
         self.direction: Direction = Direction.STOP
         self.next_direction: Direction = Direction.STOP
         # self.sprite.rect.x, Pacman.player.sprite.rect.y = Pacman.player.sprite.convert_pos(Pacman.player.pos)
-        self.live -= 1
         self.dead = 0
 
     def move(self) -> None:

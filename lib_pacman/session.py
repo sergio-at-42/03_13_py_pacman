@@ -1,10 +1,12 @@
 from __future__ import annotations
+from random import randint, seed
 from enum import Enum
 
 import pygame
 
 from .error import Error
 from .config import Config
+from .maze import Maze
 from lib_pacman.menu import Menu, MenuEntry
 from lib_pacman.display_menu import MenuView
 
@@ -37,6 +39,7 @@ class Session:
         self.game_over: bool = False
         self.cheat: bool = True
         self.background_image = pygame.image.load(f"{Config.menu_bg}")
+        Maze()
 
     def run(self) -> None:
         """Initialize Pygame and run the main loop."""
@@ -89,8 +92,7 @@ class Session:
                     self.state = SessionState.MENU
 
         elif self.state == SessionState.PLAYING:
-            # À connecter après le refactoring de Game
-            pass
+            self.state = SessionState.MENU
 
     def handle_menu_input(self, event: pygame.event.Event) -> None:
         """Handle keyboard events in the menu."""
@@ -138,10 +140,7 @@ class Session:
     def update(self) -> None:
         """Update the active screen."""
 
-        if self.state == SessionState.PLAYING:
-            # start game
-            self.start_game()
-            self.state = SessionState.MENU
+    
 
     # def draw(self) -> None:
     #     """Draw the screen corresponding to the current state."""
@@ -175,8 +174,10 @@ class Session:
     #         # La vue des instructions sera ajoutée ici.
 
         elif self.state == SessionState.PLAYING:
-            pass
-        # tester instruction et highscores
+            # start game
+            self.game_session()
+            self.state = SessionState.MENU
+
     def draw_simple_screen(self, title):
         self.screen.fill("black")
 
@@ -202,20 +203,49 @@ class Session:
 
         self.screen.blit(hint_surface, hint_rect)
 
-    def start_game(self) -> None:
+    def game_session(self) -> None:
         from .game import Game
         from .pacman import Pacman
-
+        # initialise level
+        self.game_over = False
+        self.next_level = False
+        # self.level = 1
+        self.level_time = 90
         self.level = self.menu.level
         self.cheat = self.menu.cheat_mode
-        Error.write_log(f"Starting game: level={self.level}, cheat={self.cheat}") # write starting game in log file
-
-        self.game_over = False
+        Game.fps = Config.fps
+        # initialise Maze
+        if self.level == 1:
+            Config.config_read_file()
+            Maze.new_maze()
+        else:
+            self.new_level()
         # initialise Pacman
         Pacman.player = Pacman()
+        Pacman.player.lives -= 1
+        Error.write_log(f"Starting game: level={self.level}, cheat={self.cheat}") # write starting game in log file
         while not self.game_over:
-            self.next_level = False
             Game()
+            if self.next_level:
+                if self.level < 10:
+                    self.level += 1
+                    self.new_level()
+                    self.next_level = False
+                else:
+                    self.game_over = True
+
+    def new_level(self) -> None:
+        from .game import Game
+        seed()
+        Config.width = randint(9, 32)
+        Config.height = randint(9, 20)
+        Config.pacgum = randint(1, Config.width * Config.height - 22)
+        self.level_time = Config.pacgum // 2 + 60
+        if self.level >= 8:
+            Game.fps = int(Config.fps * 2)
+        elif self.level >= 5:
+            Game.fps = int(Config.fps * 1.5)
+        Maze.new_maze()
 
 
 if __name__ == "__main__":
