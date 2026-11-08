@@ -274,7 +274,7 @@ class Game():
     @classmethod
     def update_score_area(cls) -> None:
         # update score area display
-        Game.score_area.fill((0, 0, 48, 0))
+        Game.score_area.fill((0, 0, 48, 192))
         # display first line
         font_size: int = 64
         font = pygame.font.Font(None, font_size)
