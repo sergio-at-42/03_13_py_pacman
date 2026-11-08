@@ -32,55 +32,51 @@ from .maze import Maze
 
 class Game():
 
-    background: pygame.Surface
     background_cache: pygame.Surface
     window:pygame.Surface
+    background: pygame.Surface
+    main_area:pygame.Surface
     score_area:pygame
     game_area: pygame.Surface
     resume_area: pygame.Surface
     joy: pygame.joystick
 
-    background_size: tuple[int, int] = (0, 0)
-    background_width: int = 0
-    background_height: int = 0
-    surface_score_height:int = 0
-    surface_game_height:int = 0
-    window_width:int = 0
-    window_height:int = 0
-    window_center:int = 0
+    area_score_height:int = 0
+    area_game_height:int = 0
+    main_area_width:int = 0
+    main_area_height:int = 0
+    main_area_center:int = 0
     resume:bool = False
     remain_time: float = 0
     fps: int = 60
 
     def __init__(self) -> None:
         Maze()
-        Game.background_size = Session.session.window.get_size()
-        Game.background_width, Game.background_height = Game.background_size
-        Game.surface_score_height = Maze.cell_size * 2
-        Game.surface_game_height = Config.height * Maze.cell_size
-        Game.window_width = Config.width * Maze.cell_size
-        Game.window_height = Game.surface_score_height + Game.surface_game_height
-        Game.window_center = (
-            (Game.background_width - Game.window_width) // 2,
-            (Game.background_height - Game.window_height) // 2)
+        Game.window = pygame.display.set_mode( (0, 0), pygame.FULLSCREEN)
+        Game.area_score_height = Maze.cell_size * 2
+        Game.area_game_height = Config.height * Maze.cell_size
+        Game.main_area_width = Config.width * Maze.cell_size
+        Game.main_area_height = Game.area_score_height + Game.area_game_height
+        Game.main_area_center = (
+            (Game.window.get_width() - Game.main_area_width) // 2,
+            (Game.window.get_height() - Game.main_area_height) // 2)
 
         # pygame setup
         # pygame.init()
 
         pygame.display.set_caption("Pac-Man since 1980")
         # set main game window background
-        Game.background = pygame.Surface(Game.background_size, pygame.SRCALPHA)
+        Game.background = pygame.Surface(Game.window.get_size(), pygame.SRCALPHA)
         bg_l: pygame.image = pygame.image.load(f"{Config.game_bg_l}")
         bg_r: pygame.image = pygame.image.load(f"{Config.game_bg_r}")
         Game.background.blit(bg_l, (Game.background.get_width() // 2 - bg_l.get_width(), 0))
         Game.background.blit(bg_r, (Game.background.get_width() // 2, 0))
-        Game.background_cache = Game.background.copy()
 
-        # Game.window = pygame.display.set_mode((Game.window_width, Game.window_height))
-        Game.window = pygame.Surface((Game.window_width, Game.window_height), pygame.SRCALPHA)
+        # Game.main_area = pygame.display.set_mode((Game.main_area_width, Game.main_area_height))
+        Game.main_area = pygame.Surface((Game.main_area_width, Game.main_area_height), pygame.SRCALPHA)
         # Création des deux surfaces
-        Game.score_area = pygame.Surface((Game.window_width, Game.surface_score_height), pygame.SRCALPHA)
-        Game.game_area = pygame.Surface((Game.window_width, Game.surface_game_height), pygame.SRCALPHA)
+        Game.score_area = pygame.Surface((Game.main_area_width, Game.area_score_height), pygame.SRCALPHA)
+        Game.game_area = pygame.Surface((Game.main_area_width, Game.area_game_height), pygame.SRCALPHA)
 
 
         # joystick init
@@ -107,13 +103,13 @@ class Game():
         Maze.load_sprites()
 
         # RESUME Area creation
-        resume_area = pygame.Surface((Game.window_width, Game.surface_game_height), pygame.SRCALPHA)
+        resume_area = pygame.Surface((Game.main_area_width, Game.area_game_height), pygame.SRCALPHA)
         resume_area.fill((0, 0, 128, 192))
         font = pygame.font.Font(None, 48)
         text = font.render(f"Press < ESC > to exit the game", True, (255, 255, 0))
-        resume_area.blit(text, (Game.window_width // 6, Game.surface_game_height // 4))
+        resume_area.blit(text, (Game.main_area_width // 6, Game.area_game_height // 4))
         text = font.render(f"Press any other key to continue", True, (255, 255, 0))
-        resume_area.blit(text, (Game.window_width // 6, Game.surface_game_height // 4 * 2))
+        resume_area.blit(text, (Game.main_area_width // 6, Game.area_game_height // 4 * 2))
     
         # initialise pacgums
         excluded = {Pacman.player.home_pos} | {g.home_pos for g in Ghost.ghosts}
@@ -123,11 +119,9 @@ class Game():
         clock = pygame.time.Clock()
         while not Session.session.game_over and not Session.session.next_level:
 
-            # display main game window for background
-            Session.session.window.blit(Game.background, (0, 0))
-            Game.background.blit(Game.window, Game.window_center)
-            Game.window.fill((0, 0, 0, 0))
-            # Game.window.blit(Game.background, (0, 0))
+            # display background on main game window and initialise main area
+            Game.window.blit(Game.background, (0, 0))
+            Game.main_area.fill((0, 0, 0, 0))
 
             # poll for events
             Game.events()
@@ -172,15 +166,15 @@ class Game():
             # update score arera
             Game.update_score_area()
 
-            # Display the 2 areas in the main window
-            Game.window.blit(Game.score_area, (0, 0))
-            Game.window.blit(Game.game_area, (0, Game.surface_score_height))
+            # Display the 2 areas in the main area
+            Game.main_area.blit(Game.score_area, (0, 0))
+            Game.main_area.blit(Game.game_area, (0, Game.area_score_height))
             # Display the resume area
             if Game.resume:
-                Game.window.blit(resume_area, (0, Game.surface_score_height))
+                Game.main_area.blit(resume_area, (0, Game.area_score_height))
 
-            # flip() the display to put your work on screen
-            # Session.session.window.blit(Game.background_cache, Game.window_center)
+            # display the main area and flip() the display to put your work on screen
+            Game.window.blit(Game.main_area, Game.main_area_center)
             pygame.display.flip()
 
             # if Game Over, verify the number of lives left
@@ -192,7 +186,7 @@ class Game():
             if Game.resume:
                 Game.resume_loop()
 
-            clock.tick(60)  # limits FPS to 60
+            clock.tick(Game.fps)  # limits FPS to 60
 
         # pygame.quit()
 
@@ -286,30 +280,30 @@ class Game():
         font = pygame.font.Font(None, font_size)
         y = 8
         text = font.render("SCORE", True, (255, 255, 0))
-        Game.score_area.blit(text, (Game.window_width // 4 - text.get_width() // 2, y))
+        Game.score_area.blit(text, (Game.main_area_width // 4 - text.get_width() // 2, y))
         text = font.render("TIME", True, (255, 255, 0))
-        Game.score_area.blit(text, (Game.window_width // 2 - text.get_width() // 2, y))
+        Game.score_area.blit(text, (Game.main_area_width // 2 - text.get_width() // 2, y))
         font = pygame.font.Font(None, font_size - 32)
         text = font.render("HI-SCORE", True, (255, 255, 0))
-        Game.score_area.blit(text, (Game.window_width * 3 // 4 - text.get_width() // 2, y))
+        Game.score_area.blit(text, (Game.main_area_width * 3 // 4 - text.get_width() // 2, y))
         # y += font.get_linesize() + 16
         # display second line
         font = pygame.font.Font(None, font_size)
-        y = Game.surface_score_height - font.get_linesize()
+        y = Game.area_score_height - font.get_linesize()
         text = font.render(f"{Pacman.player.score}", True, (255, 255, 0))
-        Game.score_area.blit(text, (Game.window_width // 4 - text.get_width() // 2, y))
+        Game.score_area.blit(text, (Game.main_area_width // 4 - text.get_width() // 2, y))
         text = font.render(f"{int(Game.remain_time)}", True, (255, 255, 0))
-        Game.score_area.blit(text, (Game.window_width // 2 - text.get_width() // 2, y))
+        Game.score_area.blit(text, (Game.main_area_width // 2 - text.get_width() // 2, y))
         font = pygame.font.Font(None, font_size - 32)
         text = font.render("0123456789", True, (255, 255, 0))
-        Game.score_area.blit(text, (Game.window_width * 3 // 4 - text.get_width() // 2, y - 12))
+        Game.score_area.blit(text, (Game.main_area_width * 3 // 4 - text.get_width() // 2, y - 12))
         # display remaining lives
         sprite: SpriteImage = SpPacman()
         anim: int = (pygame.time.get_ticks() // 250000) % sprite.nb_anim
         file = f"{getattr(sprite, f"spe{str(anim)}")}"
         live_image = pygame.image.load(f"{SpriteImage.directory}{file}").convert_alpha()
-        x = Game.window_width - live_image.get_rect().width - 16
-        y = Game.surface_score_height - live_image.get_rect().height - 4
+        x = Game.main_area_width - live_image.get_rect().width - 16
+        y = Game.area_score_height - live_image.get_rect().height - 4
         for _ in range(Pacman.player.live):
             Game.score_area.blit(live_image, (x, y))
             x -= live_image.get_rect().width + 16
