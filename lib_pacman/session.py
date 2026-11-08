@@ -4,6 +4,7 @@ from enum import Enum
 import pygame
 
 from .error import Error
+from .config import Config
 from lib_pacman.menu import Menu, MenuEntry
 from lib_pacman.display_menu import MenuView
 
@@ -17,34 +18,42 @@ class SessionState(Enum):
 
 class Session:
 
-    game_session: Session | None = None
+    session: Session | None = None
 
     def __init__(self) -> None:
-        Session.game_session = self
+        Session.session = self
         self.state = SessionState.MENU
         self.running = True
         self.menu = Menu(levels_count=10)
         self.menu_view = None
         # self.game = None
+        self.window = None
         self.screen = None
         self.clock = None
 
+        self.level: int = 1
+        self.level_time:int = 90
         self.next_level: bool = False
         self.game_over: bool = False
         self.cheat: bool = True
+        self.background_image = pygame.image.load(f"{Config.menu_bg}")
 
     def run(self) -> None:
         """Initialize Pygame and run the main loop."""
 
         pygame.init()
-
-        self.screen = pygame.display.set_mode( (0, 0), pygame.FULLSCREEN)
+        self.window = pygame.display.set_mode( (0, 0), pygame.FULLSCREEN)
+        bg_center_x = int((self.window.get_width() - self.background_image.get_width()) / 2)
         pygame.display.set_caption("Pac-Man")
+        self.screen = pygame.Surface(self.window.get_size(), pygame.SRCALPHA)
 
         self.clock = pygame.time.Clock()
         self.menu_view = MenuView()
 
         while self.running:
+            # background display
+            self.window.blit(self.background_image, (bg_center_x, 0))
+
             for event in pygame.event.get():
                 self.handle_event(event)
             # Update the game state based on the current session state
@@ -53,6 +62,7 @@ class Session:
             # Draw the current state (menu, game, etc.)
             self.draw()
 
+            self.window.blit(self.screen, (0, 0))
             pygame.display.flip()
             self.clock.tick(60)
 
@@ -111,24 +121,10 @@ class Session:
 
     def on_menu_entry(self, entry: MenuEntry) -> None:
         """Translate a menu action into a session state change."""
-        from .game import Game
 
         if entry == MenuEntry.START:
-            level = self.menu.level
 
-            # cheat = self.menu.cheat_mode
-            self.cheat = self.menu.cheat_mode
-
-            Error.write_log(f"Starting game: level={level}, cheat={self.cheat}") # write starting game in log file
-            print(f"Starting game: level={level}, cheat={self.cheat}")
-
-            self.game_over = False
-            while not self.game_over:
-                self.next_level = False
-                Game()
-            # À connecter après le refactoring de Game
-            # self.game = Game(level=level, cheat_mode=cheat)
-            # self.state = SessionState.PLAYING
+            self.state = SessionState.PLAYING
 
         elif entry == MenuEntry.HIGHSCORES:
             self.state = SessionState.HIGHSCORES
@@ -143,8 +139,9 @@ class Session:
         """Update the active screen."""
 
         if self.state == SessionState.PLAYING:
-            # À connecter après le refactoring de Game
-            pass
+            # start game
+            self.start_game()
+            self.state = SessionState.MENU
 
     # def draw(self) -> None:
     #     """Draw the screen corresponding to the current state."""
@@ -204,6 +201,22 @@ class Session:
         )
 
         self.screen.blit(hint_surface, hint_rect)
+
+    def start_game(self) -> None:
+        from .game import Game
+        from .pacman import Pacman
+
+        self.level = self.menu.level
+        self.cheat = self.menu.cheat_mode
+        Error.write_log(f"Starting game: level={self.level}, cheat={self.cheat}") # write starting game in log file
+
+        self.game_over = False
+        # initialise Pacman
+        Pacman.player = Pacman()
+        while not self.game_over:
+            self.next_level = False
+            Game()
+
 
 if __name__ == "__main__":
     session = Session()

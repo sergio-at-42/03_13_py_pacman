@@ -26,7 +26,11 @@ class Config():
     sprite_42: str = "lib_pacman/images/tardis.png"
     sprite_pacgum: str = "lib_pacman/images/pacgum.png"
     sprite_super: str = "lib_pacman/images/super.png"
-    game_area_bg: str = "lib_pacman/images/pac-man-background.jpg"
+    game_bg_l: str = "lib_pacman/images/pac-man-background-l.jpg"
+    game_bg_r: str = "lib_pacman/images/pac-man-background-r.jpg"
+    menu_bg: str = "lib_pacman/images/pac-man-smile.png" 
+    # menu_bg: str = "lib_pacman/images/pac-man-ce1.jpg"
+    # menu_bg: str = "lib_pacman/images/pac-man-ce2.jpg"
     pm_icon : str = "\U0001F6BD"
     argv: list[str] = sys.argv
     config_file_name: str = ""

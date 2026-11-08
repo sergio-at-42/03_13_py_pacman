@@ -7,5 +7,6 @@ class Mood(Enum):
     RIDE = 2
     CHASE = 4
     SCATTER = 8
-    SCARED = 16
-    DEAD = 32
+    HOME = 16
+    SCARED = 32
+    DEAD = 64

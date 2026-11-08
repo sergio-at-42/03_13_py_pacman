@@ -18,6 +18,7 @@ class Pacman():
         self.images: SpPacman = SpPacman()
         self.name: str = "Pacman"
         self.score: int = 0
+        self.points_multiplier: int = 1
         self.live: int = 3
         self.color: int = 0x00ffff
         self.home_pos: tuple[int, int] = (Config.width // 2 - 1, Config.height // 2)
@@ -54,7 +55,7 @@ class Pacman():
             self.speed = 0
             self.dead += 1
             if self.dead >= 60:
-                Session.game_session.game_over = True
+                Session.session.game_over = True
         # determine the next position and the direction based on the next direction
         if self.between_pos == 0:
             if Maze.cell_exit(self.pos) & self.next_direction.value:
@@ -91,7 +92,7 @@ class Pacman():
                 self.score += Config.points_per_pacgum
                 Maze.pellets.pacgums.discard(self.pos)
             if len(Maze.pellets.pacgums) == 0 and len(Maze.pellets.super_pacgums) == 0:
-                Session.game_session.next_level = True
+                Session.session.next_level = True
         px, py = Maze.convert_pos(self.pos)
         mx, my = self.direction.move()
         self.sprite.rect.x = int(px + mx * self.between_pos)
