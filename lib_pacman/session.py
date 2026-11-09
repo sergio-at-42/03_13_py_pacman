@@ -6,6 +6,7 @@ import pygame
 
 from .error import Error
 from .config import Config
+from .hiscore import Hiscore
 from .maze import Maze
 from lib_pacman.menu import Menu, MenuEntry
 from lib_pacman.display_menu import MenuView
@@ -167,6 +168,8 @@ class Session:
 
         elif self.state == SessionState.HIGHSCORES:
             self.draw_simple_screen("HIGH SCORES") # pour tester
+            Hiscore.display()
+            self.state = SessionState.MENU
     #         # La vue des scores sera ajoutée ici.
 
 
