@@ -55,7 +55,7 @@ class Pacman():
             self.speed = 0
             self.dead += 1
             if self.dead >= 60:
-                Session.session.game_over = True
+                Game.loose = True
         # determine the next position and the direction based on the next direction
         if self.between_pos == 0:
             if Maze.cell_exit(self.pos) & self.next_direction.value:
