@@ -169,6 +169,7 @@ class Session:
         elif self.state == SessionState.HIGHSCORES:
             self.draw_simple_screen("HIGH SCORES") # pour tester
             Hiscore.display()
+            Hiscore.write_file()
             self.state = SessionState.MENU
     #         # La vue des scores sera ajoutée ici.
 

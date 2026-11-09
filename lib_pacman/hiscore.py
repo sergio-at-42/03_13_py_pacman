@@ -37,6 +37,21 @@ class Hiscore():
             Error("[error]JSON Hi-Score file corrupted.")
 
     @classmethod
+    def write_file(cls) -> None:
+        if Hiscore.file_name != "":
+            Hiscore.file_name = Config.highscore_file_name
+        try:
+            with open(Hiscore.file_name, "w") as hiscore_file:
+                hiscore_json: list[str, str | int] = []
+                for hs in Hiscore.all:
+                    hiscore_json.append({"player": hs.player, "score": hs.score, "date": hs.date})
+                json.dump(hiscore_json, hiscore_file, indent=4)
+        except FileNotFoundError:
+            Error("[error]No Hi-Score file found.")
+        except json.decoder.JSONDecodeError:
+            Error("[error]JSON Hi-Score file corrupted.")
+
+    @classmethod
     def set_file_name(cls) -> None:
         try:
             with open(Config.highscore_file_name, "r"):
