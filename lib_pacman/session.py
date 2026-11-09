@@ -32,6 +32,7 @@ class Session:
         self.window = None
         self.screen = None
         self.clock = None
+        self.fps: int = 60
 
         self.level: int = 1
         self.level_time:int = 90
@@ -209,20 +210,11 @@ class Session:
         # initialise level
         self.game_over = False
         self.next_level = False
-        # self.level = 1
-        self.level_time = 90
         self.level = self.menu.level
         self.cheat = self.menu.cheat_mode
-        Game.fps = Config.fps
-        # initialise Maze
-        if self.level == 1:
-            Config.config_read_file()
-            Maze.new_maze()
-        else:
-            self.new_level()
+        self.new_level()
         # initialise Pacman
         Pacman.player = Pacman()
-        Pacman.player.lives -= 1
         Error.write_log(f"Starting game: level={self.level}, cheat={self.cheat}") # write starting game in log file
         while not self.game_over:
             Game()
@@ -233,18 +225,24 @@ class Session:
                     self.next_level = False
                 else:
                     self.game_over = True
+        if Pacman.player.lives == 0:
+            print("Game over")
 
     def new_level(self) -> None:
-        from .game import Game
-        seed()
-        Config.width = randint(9, 32)
-        Config.height = randint(9, 20)
-        Config.pacgum = randint(1, Config.width * Config.height - 22)
-        self.level_time = Config.pacgum // 2 + 60
-        if self.level >= 8:
-            Game.fps = int(Config.fps * 2)
-        elif self.level >= 5:
-            Game.fps = int(Config.fps * 1.5)
+        if self.level == 1:
+            Config.config_read_file()
+            self.level_time = 90
+            self.fps = Config.fps
+        else:
+            seed()
+            Config.width = randint(9, 32)
+            Config.height = randint(9, 20)
+            Config.pacgum = randint(1, Config.width * Config.height - 22)
+            self.level_time = Config.pacgum // 2 + 60
+            if self.level >= 8:
+                self.fps = int(Config.fps * 2)
+            elif self.level >= 5:
+                self.fps = int(Config.fps * 1.5)
         Maze.new_maze()
 
 

@@ -33,13 +33,13 @@ from .maze import Maze
 
 class Game():
 
-    background_cache: pygame.Surface
     window:pygame.Surface
     background: pygame.Surface
     main_area:pygame.Surface
     score_area:pygame
     game_area: pygame.Surface
     resume_area: pygame.Surface
+    game_over_area: pygame.Surface
     joy: pygame.joystick
 
     area_score_height:int = 0
@@ -49,7 +49,8 @@ class Game():
     main_area_center:int = 0
     resume:bool = False
     remain_time: float = 0
-    fps: int = 60
+    loose: bool = False
+    fps: int = 60 # limits FPS to 60
 
     font_size: int = 64
     font: pygame.font
@@ -85,6 +86,21 @@ class Game():
             Game.font_size = 64
         Game.font = pygame.font.Font(None, Game.font_size)
 
+        # RESUME Area creation
+        Game.resume_area = pygame.Surface((Game.main_area_width, Game.area_game_height), pygame.SRCALPHA)
+        Game.resume_area.fill((0, 0, 128, 192))
+        font = pygame.font.Font(None, 48)
+        text = font.render(f"Press < ESC > to exit the game", True, (255, 255, 0))
+        Game.resume_area.blit(text, (Game.main_area_width // 6, Game.area_game_height // 4))
+        text = font.render(f"Press any other key to continue", True, (255, 255, 0))
+        Game.resume_area.blit(text, (Game.main_area_width // 6, Game.area_game_height // 4 * 2))
+
+        # GAME OVER Area creation
+        Game.game_over_area = pygame.Surface((Game.main_area_width, Game.area_game_height), pygame.SRCALPHA)
+        Game.game_over_area.fill((0, 0, 128, 192))
+        image = pygame.image.load(f"{Config.game_over}").convert_alpha()
+        Game.game_over_area.blit(image, ((Game.main_area_width - image.get_width()) // 2, (Game.area_game_height - image.get_height()) // 2))
+
         # joystick init
         pygame.joystick.init()
         if pygame.joystick.get_count() > 0:
@@ -99,7 +115,9 @@ class Game():
         # Initialise Pacman start position
         Pacman.player.init_start_position()
 
+        Game.fps = Session.session.fps
         # start game
+        Game.loose = False
         Game.game_loop()
 
     @classmethod
@@ -107,15 +125,6 @@ class Game():
 
         #load sprites
         Maze.load_sprites()
-
-        # RESUME Area creation
-        resume_area = pygame.Surface((Game.main_area_width, Game.area_game_height), pygame.SRCALPHA)
-        resume_area.fill((0, 0, 128, 192))
-        font = pygame.font.Font(None, 48)
-        text = font.render(f"Press < ESC > to exit the game", True, (255, 255, 0))
-        resume_area.blit(text, (Game.main_area_width // 6, Game.area_game_height // 4))
-        text = font.render(f"Press any other key to continue", True, (255, 255, 0))
-        resume_area.blit(text, (Game.main_area_width // 6, Game.area_game_height // 4 * 2))
     
         # initialise pacgums
         excluded = {Pacman.player.home_pos} | {g.home_pos for g in Ghost.ghosts}
@@ -168,32 +177,41 @@ class Game():
             # decrease time
             Game.remain_time -= 1 / Game.fps
             if Game.remain_time <= 0:
-                Session.session.game_over = True
+                Game.loose = True
             # update score arera
             Game.update_score_area()
 
             # Display the 2 areas in the main area
             Game.main_area.blit(Game.score_area, (0, 0))
             Game.main_area.blit(Game.game_area, (0, Game.area_score_height))
+
+            # if Game Over, verify the number of lives left
+            if Game.loose:
+                Pacman.player.lives -= 1
+                if Pacman.player.lives == 0:
+                    Session.session.game_over = True
+                    Game.main_area.blit(Game.game_over_area, (0, Game.area_score_height))
+                else:
+                    Pacman.player.init_start_position()
+                    Game.loose = False
+
             # Display the resume area
             if Game.resume:
-                Game.main_area.blit(resume_area, (0, Game.area_score_height))
+                Game.main_area.blit(Game.resume_area, (0, Game.area_score_height))
 
             # display the main area and flip() the display to put your work on screen
             Game.window.blit(Game.main_area, Game.main_area_center)
             pygame.display.flip()
 
+            # waiting loop for game over
+            if Pacman.player.lives == 0:
+                Game.waiting_loop()
+
             # waiting loop for resume
             if Game.resume:
                 Game.resume_loop()
 
-            # if Game Over, verify the number of lives left
-            if Session.session.game_over and Pacman.player.lives > 0:
-                Pacman.player.init_start_position()
-                Pacman.player.lives -= 1
-                Session.session.game_over = False
-
-            clock.tick(Game.fps)  # limits FPS to 60
+            clock.tick(Game.fps)
 
     @classmethod
     def events(cls) -> None:
@@ -201,7 +219,6 @@ class Game():
         # pygame.QUIT event means the user clicked X to close your window
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                Pacman.player.lives = 0
                 Session.session.game_over = True
             elif event.type == KEYDOWN \
                 or event.type == pygame.JOYHATMOTION \
@@ -260,7 +277,7 @@ class Game():
                         for g in Ghost.ghosts:
                             g.change_mood(Mood.CHASE)
                     elif getattr(event, "key", None) == K_l \
-                        or getattr(event, "button", None) == 9:
+                        or getattr(event, "button", None) == 10:
                         Session.session.next_level = True
                 if event.type == pygame.JOYBUTTONDOWN and hasattr(Game, "joy"):
                     Game.joy.rumble(0, 1, 100)
@@ -273,13 +290,23 @@ class Game():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     key_down = True
-                    Pacman.player.lives = 0
                     Session.session.game_over = True
                 elif event.type == KEYDOWN or event.type == pygame.JOYBUTTONDOWN:
                     key_down = True
                     if getattr(event, "key", None) == K_ESCAPE or getattr(event, "button", None) == 11:
-                        Pacman.player.lives = 0
                         Session.session.game_over = True
+
+    @classmethod
+    def waiting_loop(cls) -> None:
+        key_down:bool = False
+        while not key_down:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    key_down = True
+                    Session.session.game_over = True
+                elif event.type == KEYDOWN or event.type == pygame.JOYBUTTONDOWN:
+                    key_down = True
+
 
     @classmethod
     def update_score_area(cls) -> None:
@@ -320,6 +347,6 @@ class Game():
         live_image = pygame.image.load(f"{SpriteImage.directory}{file}").convert_alpha()
         x = Game.main_area_width - live_image.get_rect().width - 16
         y = Game.area_score_height - live_image.get_rect().height - 4
-        for _ in range(Pacman.player.lives):
+        for _ in range(Pacman.player.lives - 1):
             Game.score_area.blit(live_image, (x, y))
             x -= live_image.get_rect().width + 16
