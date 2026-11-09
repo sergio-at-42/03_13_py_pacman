@@ -55,8 +55,8 @@ class Game():
     font: pygame.font
 
     def __init__(self) -> None:
-        # Maze()
-        Game.window = pygame.display.set_mode( (0, 0), pygame.FULLSCREEN)
+        # Game.window = pygame.display.set_mode( (0, 0), pygame.FULLSCREEN)
+        Game.window = Session.session.window
         Game.area_score_height = Maze.cell_size * 2
         Game.area_game_height = Config.height * Maze.cell_size
         Game.main_area_width = Config.width * Maze.cell_size
