@@ -48,6 +48,10 @@ class Session:
         """Initialize Pygame and run the main loop."""
 
         pygame.init()
+        # joystick init
+        pygame.joystick.init()
+        if pygame.joystick.get_count() > 0:
+            joy = pygame.joystick.Joystick(0)
         self.window = pygame.display.set_mode( (0, 0), pygame.FULLSCREEN)
         bg_center_x = int((self.window.get_width() - self.background_image.get_width()) / 2)
         pygame.display.set_caption("Pac-Man")
@@ -100,29 +104,38 @@ class Session:
     def handle_menu_input(self, event: pygame.event.Event) -> None:
         """Handle keyboard events in the menu."""
 
-        if event.type != pygame.KEYDOWN:
+        if event.type != pygame.KEYDOWN \
+            and event.type != pygame.JOYHATMOTION \
+            and event.type != pygame.JOYAXISMOTION \
+            and event.type != pygame.JOYBUTTONDOWN:
             return
 
-        if event.key == pygame.K_ESCAPE:
+        if getattr(event, "key", None) == pygame.K_ESCAPE \
+            or getattr(event, "button", None) == 11:
             self.running = False
 
-        elif event.key == pygame.K_UP:
+        elif getattr(event, "key", None) == pygame.K_UP \
+            or (getattr(event, "hat", None) == 0 and getattr(event, "value", None) == (0, 1)) \
+            or (getattr(event, "axis", None) == 1 and getattr(event, "value", None) < -0.9):
             self.menu.up()
 
-        elif event.key == pygame.K_DOWN:
+        elif getattr(event, "key", None) == pygame.K_DOWN \
+            or (getattr(event, "hat", None) == 0 and getattr(event, "value", None) == (0, -1)) \
+            or (getattr(event, "axis", None) == 1 and getattr(event, "value", None) > 0.9):
             self.menu.down()
 
-        elif event.key == pygame.K_BACKSPACE:
+        elif getattr(event, "key", None) == pygame.K_BACKSPACE:
             self.menu.backspace()
 
-        elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
+        elif getattr(event, "key", None) in (pygame.K_RETURN, pygame.K_SPACE) \
+            or getattr(event, "button", None) == 0:
             action = self.menu.enter()
 
             if action is not None:
                 self.on_menu_entry(action)
 
         else:
-            self.menu.type_char(event.unicode)
+            self.menu.type_char(getattr(event, "unicode", ""))
 
     def on_menu_entry(self, entry: MenuEntry) -> None:
         """Translate a menu action into a session state change."""
