@@ -1,12 +1,62 @@
-{
-    "hightscores": [
-        {
+[
+    {
         "player": "Sergio",
-        "score": 1000000000
-        },
-        {
+        "score": 1000000000,
+        "date": "azerty"
+    },
+    {
+        "player": "Sergio",
+        "score": 1000000000,
+        "date": "azerty"
+    },
+    {
+        "player": "Sergio",
+        "score": 1000000000,
+        "date": "azerty"
+    },
+    {
+        "player": "Sergio",
+        "score": 1000000000,
+        "date": "azerty"
+    },
+    {
+        "player": "Sergio",
+        "score": 1000000000,
+        "date": "azerty"
+    },
+    {
+        "player": "Sergio",
+        "score": 1000000000,
+        "date": "azerty"
+    },
+    {
         "player": "Sana",
-        "score": 2
-        }
-    ]
-}
+        "score": 2,
+        "date": "qwerty"
+    },
+    {
+        "player": "Sana",
+        "score": 2,
+        "date": "qwerty"
+    },
+    {
+        "player": "Sana",
+        "score": 2,
+        "date": "qwerty"
+    },
+    {
+        "player": "Sana",
+        "score": 2,
+        "date": "qwerty"
+    },
+    {
+        "player": "Sana",
+        "score": 2,
+        "date": "qwerty"
+    },
+    {
+        "player": "Sana",
+        "score": 2,
+        "date": "qwerty"
+    }
+]

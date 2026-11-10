@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Any
 import sys
 import json
@@ -7,10 +8,9 @@ from .error import Error, \
     HeightLessThan2Error, WidthSmallFor42Error, \
     LivesLessThan1Error, TimeLessThan0Error
 
-
 class Config():
 
-    highscore_filename: str = "highscores.json"
+    highscore_file_name: str = "highscores.json"
     level: list[int] = []  # array of multiple levels ???
     width: int = 16
     height: int = 16
@@ -26,10 +26,11 @@ class Config():
     sprite_42: str = "lib_pacman/images/tardis.png"
     sprite_pacgum: str = "lib_pacman/images/pacgum.png"
     sprite_super: str = "lib_pacman/images/super.png"
+    game_over: str = "lib_pacman/images/game_over.png"
     game_bg_l: str = "lib_pacman/images/pac-man-background-l.jpg"
     game_bg_r: str = "lib_pacman/images/pac-man-background-r.jpg"
-    menu_bg: str = "lib_pacman/images/pac-man-smile.png"
-    game_over: str = "lib_pacman/images/game_over.png"
+    menu_bg: str = "lib_pacman/images/pac-man-smile.jpg"
+    hiscore_bg: str = "lib_pacman/images/pac-man-ce2.jpg"
     # menu_bg: str = "lib_pacman/images/pac-man-ce1.jpg"
     # menu_bg: str = "lib_pacman/images/pac-man-ce2.jpg"
     pm_icon : str = "\U0001F6BD"
