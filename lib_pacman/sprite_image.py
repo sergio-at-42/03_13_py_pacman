@@ -177,4 +177,5 @@ class SpExplosion(SpriteImage):
 class SpItem(SpriteImage):
     spgum: str = "pacgum.png"
     spsuper: str = "super.png"
+    splogo: str = "pacman-logo.png"
     nb_anim: int = 1
