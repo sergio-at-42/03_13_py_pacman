@@ -11,13 +11,17 @@ class Hiscore():
 
     file_name: str = "highscores.json"
     all: list[Hiscore] = []
-    window:pygame.Surface
+    window: pygame.Surface
     background: pygame.Surface
-    hiscore_area:pygame.Surface
+    hiscore_area: pygame.Surface
 
-    def __init__(self, player: str, score: int, date: str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")) -> None:
+    def __init__(self, player: str = "Hubert, OSS 117",
+                 score: int = 117,
+                 level: int = 1,
+                 date: str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")) -> None:
         self.player: str = player
         self.score: int = score
+        self.level: int = level
         self.date: str = date
         Hiscore.all.append(self)
 
@@ -29,7 +33,10 @@ class Hiscore():
                 hiscore_json = json.load(hiscore_file)
                 Hiscore.all.clear()
                 for hs in hiscore_json:
-                    Hiscore(hs["player"], hs["score"], hs["date"])
+                    Hiscore(hs.get("player", "Hubert, OSS 117"),
+                            hs.get("score", 117),
+                            hs.get("level", 1),
+                            hs.get("date", "1980-05-22 01:17:00"))
                 Hiscore.all.sort(key=lambda player: player.score, reverse=True)
         except FileNotFoundError:
             Error("[error]No Hi-Score file found.")
@@ -44,7 +51,7 @@ class Hiscore():
             with open(Hiscore.file_name, "w") as hiscore_file:
                 hiscore_json: list[str, str | int] = []
                 for hs in Hiscore.all:
-                    hiscore_json.append({"player": hs.player, "score": hs.score, "date": hs.date})
+                    hiscore_json.append({"player": hs.player, "score": hs.score, "level": hs.level, "date": hs.date})
                 json.dump(hiscore_json, hiscore_file, indent=4)
         except FileNotFoundError:
             Error("[error]No Hi-Score file found.")
@@ -74,25 +81,36 @@ class Hiscore():
 
         Hiscore.hiscore_area = pygame.Surface((864, 896), pygame.SRCALPHA)
         Hiscore.hiscore_area.fill((0, 0, 48, 192))
+        font_96 = pygame.font.Font(None, 96)
+        font_64 = pygame.font.Font(None, 64)
         # display first line
         y = 64
-        font = pygame.font.Font(None, 96)
-        text = font.render("H I - S C O R E S", True, (255, 127, 0))
+        text = font_96.render("H I - S C O R E S", True, (255, 127, 0))
         Hiscore.hiscore_area.blit(text, ((Hiscore.hiscore_area.get_width() - text.get_width()) // 2, y))
-        y = 224
-        line:int = 0
+
+        y += 128
+        text = font_64.render("Player", True, (255, 255, 0))
+        Hiscore.hiscore_area.blit(text, (Hiscore.hiscore_area.get_width() // 2 - 400, y))
+        text = font_64.render("Level", True, (255, 255, 0))
+        Hiscore.hiscore_area.blit(text, ((Hiscore.hiscore_area.get_width() - text.get_width()) // 2, y))
+        text = font_64.render("Score", True, (255, 255, 0))
+        Hiscore.hiscore_area.blit(text, (Hiscore.hiscore_area.get_width() // 2 + 400 - text.get_width(), y))
+
+        y += 64
         for hs in Hiscore.all[0:10]:
-            pygame.draw.line(Hiscore.hiscore_area, (255, 127, 0), (32, y + 64 * line - 12), (832, y + 64 * line - 12), 2)
-            font = pygame.font.Font(None, 64)
-            text = font.render(f"{hs.player}", True, (255, 255, 0))
-            Hiscore.hiscore_area.blit(text, (Hiscore.hiscore_area.get_width() // 2 - 400, y + 64 * line))
-            text = font.render(f"{hs.score}", True, (255, 255, 0))
-            Hiscore.hiscore_area.blit(text, (Hiscore.hiscore_area.get_width() // 2 + 400 - text.get_width(), y + 64 * line))
-            line += 1
-        # pygame.draw.line(Hiscore.hiscore_area, (192, 192, 0), (400, y + 64 * line - 12), (800, y + 64 * line - 12), 4)
+            pygame.draw.line(Hiscore.hiscore_area, (255, 127, 0), (32, y - 12), (832, y - 12), 2)
+            text = font_64.render(f"{hs.player}", True, (255, 255, 0))
+            Hiscore.hiscore_area.blit(text, (Hiscore.hiscore_area.get_width() // 2 - 400, y))
+            text = font_64.render(f"{hs.level}", True, (255, 255, 0))
+            Hiscore.hiscore_area.blit(text, ((Hiscore.hiscore_area.get_width() - text.get_width()) // 2, y))
+            text = font_64.render(f"{hs.score}", True, (255, 255, 0))
+            Hiscore.hiscore_area.blit(text, (Hiscore.hiscore_area.get_width() // 2 + 400 - text.get_width(), y))
+            y += 64
+        # pygame.draw.line(Hiscore.hiscore_area, (192, 192, 0), (400, y - 12), (800, y - 12), 4)
 
         Hiscore.window.blit(Hiscore.background, (0, 0))
         Hiscore.window.blit(Hiscore.hiscore_area, ((Hiscore.window.get_width() - Hiscore.hiscore_area.get_width()) // 2, 64))
+
         pygame.display.flip()
         Game.waiting_loop()
 
@@ -111,22 +129,16 @@ class Hiscore():
 
         Hiscore.hiscore_area = pygame.Surface((800, 496), pygame.SRCALPHA)
         Hiscore.hiscore_area.fill((0, 0, 48, 240))
+        font_64 = pygame.font.Font(None, 64)
         # display first line
         y = 64
-        font = pygame.font.Font(None, 64) # 44 pixels
-        text = font.render("Y O U R   S C O R E", True, (255, 127, 0))
+        text = font_64.render("Y O U R   S C O R E", True, (255, 127, 0))
         Hiscore.hiscore_area.blit(text, ((Hiscore.hiscore_area.get_width() - text.get_width()) // 2, y))
         y = 172
-        font = pygame.font.Font(None, 64)
-        text = font.render(f"{Pacman.player.score}", True, (255, 255, 0))
+        text = font_64.render(f"{Pacman.player.score}", True, (255, 255, 0))
         Hiscore.hiscore_area.blit(text, ((Hiscore.hiscore_area.get_width() - text.get_width()) // 2, y))
         y = 280
-        font = pygame.font.Font(None, 64)
-        text = font.render("E N T E R   Y O U R   N A M E", True, (255, 127, 0))
-        Hiscore.hiscore_area.blit(text, ((Hiscore.hiscore_area.get_width() - text.get_width()) // 2, y))
-        y = 388
-        font = pygame.font.Font(None, 64)
-        text = font.render("<<< ZONE DE SAISIE >>>", True, (255, 255, 0))
+        text = font_64.render("E N T E R   Y O U R   N A M E", True, (255, 127, 0))
         Hiscore.hiscore_area.blit(text, ((Hiscore.hiscore_area.get_width() - text.get_width()) // 2, y))
 
         # Hiscore.window.blit(Hiscore.background, (0, 0))
@@ -134,5 +146,10 @@ class Hiscore():
                             ((Hiscore.window.get_width() - Hiscore.hiscore_area.get_width()) // 2,
                              (Hiscore.window.get_height() - Hiscore.hiscore_area.get_height()) // 2))
         pygame.display.flip()
-        Game.waiting_loop()
+                
+        y = (Hiscore.window.get_height() - Hiscore.hiscore_area.get_height()) // 2 + 388
+        input_area = pygame.Rect((Hiscore.window.get_width() - 400) // 2, y, 400, 64)
+        Hiscore(Game.input_loop(Hiscore.window, input_area, font_64),
+                Pacman.player.score, Session.session.level)
+        Hiscore.all.sort(key=lambda player: player.score, reverse=True)
         Hiscore.write_file()
