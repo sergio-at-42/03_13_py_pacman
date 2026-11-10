@@ -26,6 +26,7 @@ class Config():
     sprite_42: str = "lib_pacman/images/tardis.png"
     sprite_pacgum: str = "lib_pacman/images/pacgum.png"
     sprite_super: str = "lib_pacman/images/super.png"
+    logo: str = "lib_pacman/images/pacman-logo.png"
     game_over: str = "lib_pacman/images/game_over.png"
     game_bg_l: str = "lib_pacman/images/pac-man-background-l.jpg"
     game_bg_r: str = "lib_pacman/images/pac-man-background-r.jpg"

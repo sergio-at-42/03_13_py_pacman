@@ -7,13 +7,13 @@ class MenuView:
     def __init__(self) -> None:
         pygame.font.init()
 
-        self.title_font = pygame.font.Font(None, 80)
-        self.entry_font = pygame.font.Font(None, 50)
-        self.hint_font = pygame.font.Font(None, 28)
+        self.title_font = pygame.font.Font(None, 128)
+        self.entry_font = pygame.font.Font(None, 64)
+        self.hint_font = pygame.font.Font(None, 32)
 
         self.text_color = pygame.Color("white")
         self.selection_color = pygame.Color("yellow")
-        self.background_color = pygame.Color((0, 0, 0, 128))
+        self.background_color = pygame.Color((0, 0, 0, 192))
         self.level_frame_color = pygame.Color("gray")
         self.hint_color = pygame.Color("gray")
 
@@ -37,8 +37,11 @@ class MenuView:
         # Rendre le texte "PAC-MAN".
         # Centrer le texte horizontalement.
         width = surface.get_width()
-        title_text = self.title_font.render("PAC-MAN", True, self.text_color)
-        draw_centered_text(surface, title_text, width // 2, 50)
+        # title_text = self.title_font.render("PAC-MAN", True, self.text_color)
+        # draw_centered_text(surface, title_text, width // 2, 50)
+        # display logo
+        image = pygame.image.load(Config.logo).convert_alpha()
+        surface.blit(image, ((width - image.get_width()) // 2, 64))
 
     def draw_entries(self, surface: pygame.Surface, menu: Menu) -> None:
         """Draw the menu entries, highlighting the selected one."""
@@ -56,7 +59,7 @@ class MenuView:
             
 
             # Position du texte
-            y = 150 + index * 60
+            y = 288 + index * 72
 
             if entry == MenuEntry.LEVEL:
                 # draw_centered_text(surface, entry_text, width // 2, y)

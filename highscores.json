@@ -24,6 +24,12 @@
         "date": "2026-11-10 16:37:42"
     },
     {
+        "player": "Jean-Luc",
+        "score": 3560,
+        "level": 2,
+        "date": "2026-11-10 19:52:39"
+    },
+    {
         "player": "Sergio",
         "score": 2600,
         "level": 2,
@@ -40,6 +46,12 @@
         "score": 1210,
         "level": 2,
         "date": "2026-11-10 12:03:24"
+    },
+    {
+        "player": "TOTO",
+        "score": 930,
+        "level": 1,
+        "date": "2026-11-10 19:40:39"
     },
     {
         "player": "Hubert, OSS 117",
