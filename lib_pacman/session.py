@@ -169,7 +169,6 @@ class Session:
         elif self.state == SessionState.HIGHSCORES:
             self.draw_simple_screen("HIGH SCORES") # pour tester
             Hiscore.display()
-            Hiscore.write_file()
             self.state = SessionState.MENU
     #         # La vue des scores sera ajoutée ici.
 
@@ -229,8 +228,8 @@ class Session:
                     self.next_level = False
                 else:
                     self.game_over = True
-        if Pacman.player.lives == 0:
-            print("Game over")
+        if Pacman.player.lives == 0 or self.next_level:
+            Hiscore.input()
 
     def new_level(self) -> None:
         if self.level == 1:

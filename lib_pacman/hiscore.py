@@ -95,3 +95,44 @@ class Hiscore():
         Hiscore.window.blit(Hiscore.hiscore_area, ((Hiscore.window.get_width() - Hiscore.hiscore_area.get_width()) // 2, 64))
         pygame.display.flip()
         Game.waiting_loop()
+
+    @classmethod
+    def input(cls) -> None:
+        from .session import Session
+        from .game import Game
+        from .pacman import Pacman
+        if len(Hiscore.all) == 0:
+            Hiscore.read_file()
+ 
+        Hiscore.window = Session.session.window
+        # Hiscore.background = pygame.Surface(Hiscore.window.get_size(), pygame.SRCALPHA)
+        # bg: pygame.image = pygame.image.load(f"{Config.hiscore_bg}")
+        # Hiscore.background.blit(bg, ((Hiscore.background.get_width() - bg.get_width()) // 2, 0))
+
+        Hiscore.hiscore_area = pygame.Surface((800, 496), pygame.SRCALPHA)
+        Hiscore.hiscore_area.fill((0, 0, 48, 240))
+        # display first line
+        y = 64
+        font = pygame.font.Font(None, 64) # 44 pixels
+        text = font.render("Y O U R   S C O R E", True, (255, 127, 0))
+        Hiscore.hiscore_area.blit(text, ((Hiscore.hiscore_area.get_width() - text.get_width()) // 2, y))
+        y = 172
+        font = pygame.font.Font(None, 64)
+        text = font.render(f"{Pacman.player.score}", True, (255, 255, 0))
+        Hiscore.hiscore_area.blit(text, ((Hiscore.hiscore_area.get_width() - text.get_width()) // 2, y))
+        y = 280
+        font = pygame.font.Font(None, 64)
+        text = font.render("E N T E R   Y O U R   N A M E", True, (255, 127, 0))
+        Hiscore.hiscore_area.blit(text, ((Hiscore.hiscore_area.get_width() - text.get_width()) // 2, y))
+        y = 388
+        font = pygame.font.Font(None, 64)
+        text = font.render("<<< ZONE DE SAISIE >>>", True, (255, 255, 0))
+        Hiscore.hiscore_area.blit(text, ((Hiscore.hiscore_area.get_width() - text.get_width()) // 2, y))
+
+        # Hiscore.window.blit(Hiscore.background, (0, 0))
+        Hiscore.window.blit(Hiscore.hiscore_area,
+                            ((Hiscore.window.get_width() - Hiscore.hiscore_area.get_width()) // 2,
+                             (Hiscore.window.get_height() - Hiscore.hiscore_area.get_height()) // 2))
+        pygame.display.flip()
+        Game.waiting_loop()
+        Hiscore.write_file()
