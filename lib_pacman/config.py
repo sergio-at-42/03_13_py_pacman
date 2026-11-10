@@ -31,6 +31,7 @@ class Config():
     game_bg_r: str = "lib_pacman/images/pac-man-background-r.jpg"
     menu_bg: str = "lib_pacman/images/pac-man-smile.jpg"
     hiscore_bg: str = "lib_pacman/images/pac-man-ce2.jpg"
+    instruction_bg: str = "lib_pacman/images/pac-man-ce2.jpg"
     # menu_bg: str = "lib_pacman/images/pac-man-ce1.jpg"
     # menu_bg: str = "lib_pacman/images/pac-man-ce2.jpg"
     pm_icon : str = "\U0001F6BD"
