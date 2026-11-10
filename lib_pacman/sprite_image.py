@@ -173,3 +173,8 @@ class SpExplosion(SpriteImage):
     sp8: str = "explosion_8.png"
     sp9: str = "explosion_9.png"
     nb_anim: int = 10
+
+class SpItem(SpriteImage):
+    spgum: str = "pacgum.png"
+    spsuper: str = "super.png"
+    nb_anim: int = 1

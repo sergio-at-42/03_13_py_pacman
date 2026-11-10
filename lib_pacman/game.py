@@ -170,14 +170,16 @@ class Game():
                     Pacman.player.score += Config.points_per_ghost * Pacman.player.points_multiplier
                     Pacman.player.points_multiplier *= 2
                 else:
-                    if g.ghost.mood != Mood.DEAD:
+                    if g.ghost.mood != Mood.DEAD and Pacman.player.dead == 0:
                         Pacman.player.dead = 1
                         Ghost.move_ghosts_to_home_position()
 
             # decrease time
-            Game.remain_time -= 1 / Game.fps
             if Game.remain_time <= 0:
                 Game.loose = True
+            elif Pacman.player.dead == 0:
+                Game.remain_time -= 1 / Game.fps
+
             # update score arera
             Game.update_score_area()
 
@@ -188,7 +190,7 @@ class Game():
             # if Game Over, verify the number of lives left
             if Game.loose:
                 Pacman.player.lives -= 1
-                if Pacman.player.lives == 0:
+                if Pacman.player.lives == 0 or Game.remain_time <= 0:
                     Session.session.game_over = True
                     Game.main_area.blit(Game.game_over_area, (0, Game.area_score_height))
                 else:
@@ -204,7 +206,8 @@ class Game():
             pygame.display.flip()
 
             # waiting loop for game over
-            if Pacman.player.lives == 0:
+            # if Pacman.player.lives == 0 or Game.remain_time <= 0:
+            if Game.loose:
                 Game.waiting_loop()
 
             # waiting loop for resume
