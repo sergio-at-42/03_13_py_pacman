@@ -1,11 +1,15 @@
 import pygame
 from pygame.locals import (
+    QUIT,
+    KEYDOWN,
+    TEXTINPUT,
     K_UP,
     K_DOWN,
     K_LEFT,
     K_RIGHT,
+    K_RETURN,
     K_ESCAPE,
-    KEYDOWN,
+    K_BACKSPACE,
     K_SPACE,
     K_x,
     K_d,
@@ -15,7 +19,9 @@ from pygame.locals import (
     K_c,
     K_f,
     K_l,
-    QUIT,
+    JOYHATMOTION,
+    JOYAXISMOTION,
+    JOYBUTTONDOWN,
 )
 from .config import Config
 from .session import Session
@@ -221,12 +227,12 @@ class Game():
         # poll for events
         # pygame.QUIT event means the user clicked X to close your window
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+            if event.type == QUIT:
                 Session.session.game_over = True
             elif event.type == KEYDOWN \
-                or event.type == pygame.JOYHATMOTION \
-                or event.type == pygame.JOYAXISMOTION \
-                or event.type == pygame.JOYBUTTONDOWN:
+                or event.type == JOYHATMOTION \
+                or event.type == JOYAXISMOTION \
+                or event.type == JOYBUTTONDOWN:
                 # Was it the Escape key? If so, stop the loop.
                 if getattr(event, "key", None) == K_ESCAPE \
                     or getattr(event, "button", None) == 11:
@@ -282,7 +288,7 @@ class Game():
                     elif getattr(event, "key", None) == K_l \
                         or getattr(event, "button", None) == 10:
                         Session.session.next_level = True
-                if event.type == pygame.JOYBUTTONDOWN and hasattr(Game, "joy"):
+                if event.type == JOYBUTTONDOWN and hasattr(Game, "joy"):
                     Game.joy.rumble(0, 1, 100)
 
     @classmethod
@@ -291,10 +297,10 @@ class Game():
         Game.resume = False
         while not key_down:
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
+                if event.type == QUIT:
                     key_down = True
                     Session.session.game_over = True
-                elif event.type == KEYDOWN or event.type == pygame.JOYBUTTONDOWN:
+                elif event.type == KEYDOWN or event.type == JOYBUTTONDOWN:
                     key_down = True
                     if getattr(event, "key", None) == K_ESCAPE or getattr(event, "button", None) == 11:
                         Session.session.game_over = True
@@ -304,12 +310,43 @@ class Game():
         key_down:bool = False
         while not key_down:
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
+                if event.type == QUIT:
                     key_down = True
                     Session.session.game_over = True
-                elif event.type == KEYDOWN or event.type == pygame.JOYBUTTONDOWN:
+                elif event.type == KEYDOWN or event.type == JOYBUTTONDOWN:
                     key_down = True
 
+    @classmethod
+    def input_loop(cls, window: pygame.Surface, area: pygame.Rect, font: pygame.font, max_char: int = 16) -> str:
+        input_area = pygame.Surface(area.size, pygame.SRCALPHA)
+        input_str: str = ""
+        input_valid:bool = False
+        while not input_valid:
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    input_str = ""
+                    input_valid = True
+                elif event.type == TEXTINPUT:
+                    if len(input_str) < max_char:
+                        input_str += getattr(event, "text", "")
+                elif event.type == KEYDOWN or event.type == JOYBUTTONDOWN:
+                    if getattr(event, "key", None) == K_ESCAPE \
+                        or getattr(event, "button", None) == 11:
+                        input_str = ""
+                        input_valid = True
+                    elif getattr(event, "key", None) == K_RETURN \
+                        or getattr(event, "button", None) == 0:
+                        input_valid = True
+                    elif getattr(event, "key", None) == K_BACKSPACE:
+                        if len(input_str) > 0:
+                            input_str = input_str[:-1]
+            input_area.fill((255, 127, 0, 192))
+            text = font.render(input_str, True, (255, 255, 0))
+            input_area.blit(text, ((input_area.get_width() - text.get_width()) // 2, (input_area.get_height() - text.get_height()) // 2))
+            window.blit(input_area, area.topleft)
+            # pygame.display.flip()
+            pygame.display.update(area)
+        return (input_str.strip())
 
     @classmethod
     def update_score_area(cls) -> None:

@@ -38,14 +38,15 @@ class Instruction():
         from .session import Session
         from .game import Game
         Instruction.window = Session.session.window
+        # set background area
         Instruction.background = pygame.Surface(Instruction.window.get_size(), pygame.SRCALPHA)
         bg: pygame.image = pygame.image.load(f"{Config.instruction_bg}")
         Instruction.background.blit(bg, ((Instruction.background.get_width() - bg.get_width()) // 2, 0))
-
+        # set instruction area
         Instruction.instruction_area = pygame.Surface((864, 924), pygame.SRCALPHA)
-        Instruction.instruction_area.fill((0, 0, 48, 192))
+        Instruction.instruction_area.fill((0, 0, 48, 208))
         font_64 = pygame.font.Font(None, 64) # 44 pixels
-        font_32 = pygame.font.Font(None, 32) # 44 pixels
+        font_32 = pygame.font.Font(None, 32)
         # display title
         y = 36
         text = font_64.render(Instruction.title, True, (255, 127, 0))
@@ -75,7 +76,7 @@ class Instruction():
             text = font_32.render(cheat["description"], True, (255, 255, 0))
             Instruction.instruction_area.blit(text, (Instruction.instruction_area.get_width() // 2 + 400 - text.get_width(), y))
             y += 36
-
+        # display areas in window
         Instruction.window.blit(Instruction.background, (0, 0))
         Instruction.window.blit(Instruction.instruction_area, ((Instruction.window.get_width() - Instruction.instruction_area.get_width()) // 2, 64))
         pygame.display.flip()

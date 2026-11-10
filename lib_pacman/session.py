@@ -226,7 +226,7 @@ class Session:
                     self.next_level = False
                 else:
                     self.game_over = True
-        if Pacman.player.lives == 0 or self.next_level:
+        if Game.loose or self.next_level:
             Hiscore.input()
 
     def new_level(self) -> None:
