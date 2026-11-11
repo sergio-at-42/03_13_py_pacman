@@ -76,9 +76,7 @@ class Game():
         # set main game window background
         Game.background = pygame.Surface(Game.window.get_size(), pygame.SRCALPHA)
         bg: pygame.image = pygame.image.load(f"{Config.game_bg}")
-        # bg_r: pygame.image = pygame.image.load(f"{Config.game_bg_r}")
         Game.background.blit(bg, ((Game.background.get_width() - bg.get_width()) // 2, 0))
-        # Game.background.blit(bg_r, (Game.background.get_width() // 2, 0))
 
         # Game.main_area = pygame.display.set_mode((Game.main_area_width, Game.main_area_height))
         Game.main_area = pygame.Surface((Game.main_area_width, Game.main_area_height), pygame.SRCALPHA)

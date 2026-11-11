@@ -29,7 +29,6 @@ class Config():
     logo: str = "lib_pacman/images/pacman-logo.png"
     game_over: str = "lib_pacman/images/game_over.png"
     game_bg: str = "lib_pacman/images/pac-man-background.jpg"
-    game_bg_r: str = "lib_pacman/images/pac-man-background-r.jpg"
     menu_bg: str = "lib_pacman/images/pac-man-smile.jpg"
     hiscore_bg: str = "lib_pacman/images/pac-man-ce2.jpg"
     instruction_bg: str = "lib_pacman/images/pac-man-ce2.jpg"
