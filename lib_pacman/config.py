@@ -6,7 +6,10 @@ import json
 from .error import Error, \
     WidthLessThan2Error, WidthSmallFor42Error, \
     HeightLessThan2Error, WidthSmallFor42Error, \
-    LivesLessThan1Error, TimeLessThan0Error
+    LivesLessThan1Error, TimeLessThan0Error, \
+    PacGumLessThan0Error, SuperPacGumLessThan0Error, \
+    PointPerPacgumLessThan0Error, PointPerSuperPacgumLessThan0Error, \
+    PointPerGhostLessThan0Error, ConfigTypeError, ConfigKeyError
 
 class Config():
 
@@ -71,10 +74,19 @@ class Config():
     @classmethod
     def set_values(cls, config_file: dict[str, Any]) -> None:
         for key, value in config_file.items():
-            if hasattr(Config, key):
-                if isinstance(value, type(getattr(Config, key))):
-                    if Config.verify_value(key, value):
-                        setattr(Config, key, value)
+            try:
+                if hasattr(Config, key):
+                    config_key_type: type = type(getattr(Config, key))
+                    if isinstance(value, type(getattr(Config, key))):
+                        if Config.verify_value(key, value):
+                            setattr(Config, key, value)
+                    else:
+                        raise ConfigTypeError(key, value, config_key_type)
+                else:
+                    raise ConfigKeyError(key)
+            except Error:
+                pass
+
 
     @classmethod
     def verify_value(cls, key: str, value: Any) -> bool:
@@ -99,25 +111,19 @@ class Config():
                         raise TimeLessThan0Error
                 case "pacgum":
                     if value < 0:
-                        raise WidthLessThan2Error
+                        raise PacGumLessThan0Error
                 case "spacgum":
                     if value < 0:
-                        raise WidthLessThan2Error
+                        raise SuperPacGumLessThan0Error
                 case "points_per_pacgum":
                     if value < 0:
-                        raise WidthLessThan2Error
+                        raise PointPerPacgumLessThan0Error
                 case "points_per_super_pacgum":
                     if value < 0:
-                        raise WidthLessThan2Error
+                        raise PointPerSuperPacgumLessThan0Error
                 case "points_per_ghost":
                     if value < 0:
-                        raise WidthLessThan2Error
-                case "seed":
-                    if value < 0:
-                        raise WidthLessThan2Error
-                case "level_max_time":
-                    if value < 0:
-                        raise WidthLessThan2Error
+                        raise PointPerGhostLessThan0Error
                 case _:
                     value_ok = False
         except Error:
