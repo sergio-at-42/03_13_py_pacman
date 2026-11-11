@@ -35,6 +35,7 @@ package : $(VENV)
 # Remove temporary files or caches (e.g., __pycache__, .mypy_cache) to keep the activity environment clean.
 clean :
 	rm --force --recursive __pycache__
+	rm --force --recursive lib_pacman/__pycache__
 	rm --force --recursive .mypy_cache
 
 # Remove temporary files or caches and python virtual environment.
