@@ -1,7 +1,9 @@
 __version__ = "1.0.0"
 __author__ = "Sana and Serge"
 
-__all__ = ["PmGame", "PmConfig"]
+__all__ = ["Session", "Game", "Error", "Config"]
 
-from .pm_game import PmGame
-from .pm_config import PmConfig
+from .session import Session
+from .game import Game
+from .error import Error
+from .config import Config

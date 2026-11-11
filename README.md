@@ -18,6 +18,7 @@ make install   # install dependencies
 make run       # run with config.txt
 make debug     # run with pdb
 make clean     # remove caches
+make fclean     # remove caches
 make lint      # flake8 + mypy
 ```
 
@@ -26,15 +27,14 @@ Or directly:
 ```bash
 python3 -m venv venv_pacman
 source venv_pacman/bin/activate
-pip install -r requirements.txt
+pip install -r pacman_requirements.txt
 ```
 - Run the program:
 ```bash
-python3 pacman.py config.txt
+python3 pacman.py config.json
 ```
 
-`config.txt` can be replaced with any file following the format below.
-
+`config.json` can be replaced with any json file following the format below.
 
 ## Configuration file format
 
@@ -44,11 +44,7 @@ One `KEY=VALUE` pair per line. Lines starting with `#` are comments.
 |---------------|----------------------------------|-----------------------|
 | WIDTH         | Maze width (cells)               | `WIDTH=20`            |
 | HEIGHT        | Maze height (cells)              | `HEIGHT=15`           |
-| ENTRY         | Entry coordinates                | `ENTRY=0,0`           |
-| EXIT          | Exit coordinates                 | `EXIT=19,14`          |
-| OUTPUT_FILE   | Output filename                  | `OUTPUT_FILE=maze.txt`|
-| PERFECT       | Perfect maze mode (True/False)   | `PERFECT=False`       |
-| SEED          | Seed for reproducible generation | `SEED=42`             |
+
 
 ### Build the package from source
 ```bash
