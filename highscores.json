@@ -7,6 +7,12 @@
     },
     {
         "player": "Sergio",
+        "score": 6680,
+        "level": 1,
+        "date": "2026-11-11 11:34:19"
+    },
+    {
+        "player": "Sergio",
         "score": 6410,
         "level": 2,
         "date": "2026-11-10 16:37:42"
@@ -22,6 +28,12 @@
         "score": 5130,
         "level": 10,
         "date": "2026-11-10 16:37:42"
+    },
+    {
+        "player": "Sergio",
+        "score": 4910,
+        "level": 2,
+        "date": "2026-11-11 12:15:27"
     },
     {
         "player": "Jean-Luc",
@@ -88,6 +100,12 @@
         "score": 30,
         "level": 1,
         "date": "2026-11-10 11:42:55"
+    },
+    {
+        "player": "Titi",
+        "score": 30,
+        "level": 1,
+        "date": "2026-11-11 12:13:32"
     },
     {
         "player": "Hubert, OSS 117",

@@ -48,11 +48,11 @@ class Game():
     game_over_area: pygame.Surface
     joy: pygame.joystick
 
-    area_score_height:int = 0
-    area_game_height:int = 0
-    main_area_width:int = 0
-    main_area_height:int = 0
-    main_area_center:int = 0
+    area_score_height: int = 0
+    area_game_height: int = 0
+    main_area_width: int = 0
+    main_area_height: int = 0
+    main_area_center: tuple[int, int] = (0, 0)
     resume:bool = False
     remain_time: float = 0
     loose: bool = False
@@ -75,10 +75,10 @@ class Game():
         pygame.display.set_caption("Pac-Man since 1980")
         # set main game window background
         Game.background = pygame.Surface(Game.window.get_size(), pygame.SRCALPHA)
-        bg_l: pygame.image = pygame.image.load(f"{Config.game_bg_l}")
-        bg_r: pygame.image = pygame.image.load(f"{Config.game_bg_r}")
-        Game.background.blit(bg_l, (Game.background.get_width() // 2 - bg_l.get_width(), 0))
-        Game.background.blit(bg_r, (Game.background.get_width() // 2, 0))
+        bg: pygame.image = pygame.image.load(f"{Config.game_bg}")
+        # bg_r: pygame.image = pygame.image.load(f"{Config.game_bg_r}")
+        Game.background.blit(bg, ((Game.background.get_width() - bg.get_width()) // 2, 0))
+        # Game.background.blit(bg_r, (Game.background.get_width() // 2, 0))
 
         # Game.main_area = pygame.display.set_mode((Game.main_area_width, Game.main_area_height))
         Game.main_area = pygame.Surface((Game.main_area_width, Game.main_area_height), pygame.SRCALPHA)
