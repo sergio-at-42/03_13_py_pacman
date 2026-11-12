@@ -35,26 +35,12 @@ exe : $(VENV)
 	$(VENV)/bin/pyinstaller \
 		--onefile \
 		--name pacman \
-		--add-data "lib_pacman/images:lib_pacman/images" \
-		--add-data "config.json:config.json" \
+		--add-data "lib_pacman:./lib_pacman" \
+		--add-data "config.json:./config.json" \
+		--noconfirm \
 		pacman.py
-# 	cp config.json dist/
-# 	cp --recursive lib_pacman dist/
 	rm --force --recursive build
 	@echo "Exec file ready in dist directory (launch with : dist/pacman config.json)"
-
-boris: $(VENV)
-	$(PIP) install pyinstaller
-	rm -rf build dist
-	$(VENV)/bin/pyinstaller pacman.py
-	cp config.json dist/pacman/config.json
-	cp --recursive lib_pacman dist/pacman/
-	#cp .itch.toml dist/.itch.toml
-	#cp packaging/INSTRUCTIONS.txt dist/INSTRUCTIONS.txt
-	rm -rf build dist
-	@echo "Build pret dans dist (lancer avec: dist/pacman/pacman config.json)"
-
-
 
 # Remove temporary files or caches (e.g., __pycache__, .mypy_cache) to keep the activity environment clean.
 clean :

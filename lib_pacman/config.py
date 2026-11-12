@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Any
 import sys
+from pathlib import Path
 import json
 
 from .error import Error, \
@@ -27,24 +28,38 @@ class Config():
     seed: int = 42
     fps: int = 60
 
-    sprite_42: str = "lib_pacman/images/tardis.png"
-    sprite_pacgum: str = "lib_pacman/images/pacgum.png"
-    sprite_super: str = "lib_pacman/images/super.png"
-    logo: str = "lib_pacman/images/pacman-logo.png"
-    game_over: str = "lib_pacman/images/game_over.png"
-    victory: str = "lib_pacman/images/victory.png"
-    game_bg: str = "lib_pacman/images/pac-man-background.jpg"
-    menu_bg: str = "lib_pacman/images/pac-man-smile.jpg"
-    hiscore_bg: str = "lib_pacman/images/pac-man-ce2.jpg"
-    instruction_bg: str = "lib_pacman/images/pac-man-ce2.jpg"
-    # menu_bg: str = "lib_pacman/images/pac-man-ce1.jpg"
-    # menu_bg: str = "lib_pacman/images/pac-man-ce2.jpg"
+    image_directory: str = "lib_pacman/images/"
+    sprite_42: str = "tardis.png"
+    sprite_pacgum: str = "pacgum.png"
+    sprite_super: str = "super.png"
+    logo: str = "pacman-logo.png"
+    game_over: str = "game_over.png"
+    victory: str = "victory.png"
+    game_bg: str = "pac-man-background.jpg"
+    menu_bg: str = "pac-man-smile.jpg"
+    hiscore_bg: str = "pac-man-ce2.jpg"
+    instruction_bg: str = "pac-man-ce2.jpg"
+    # menu_bg: str = "pac-man-ce1.jpg"
+    # menu_bg: str = "pac-man-ce2.jpg"
     pm_icon : str = "\U0001F6BD"
     argv: list[str] = sys.argv
     config_file_name: str = ""
 
     def __init__(self) -> None:
         Config.config_read_file()
+        if getattr(sys, "frozen", False):
+            # Exécution depuis un exécutable PyInstaller
+            Config.image_directory = str(Path(sys._MEIPASS)) + "/" + Config.image_directory
+        Config.sprite_42 = Config.image_directory + Config.sprite_42
+        Config.sprite_pacgum = Config.image_directory + Config.sprite_pacgum
+        Config.sprite_super = Config.image_directory + Config.sprite_super
+        Config.logo = Config.image_directory + Config.logo
+        Config.game_over = Config.image_directory + Config.game_over
+        Config.victory = Config.image_directory + Config.victory
+        Config.game_bg = Config.image_directory + Config.game_bg
+        Config.menu_bg = Config.image_directory + Config.menu_bg
+        Config.hiscore_bg = Config.image_directory + Config.hiscore_bg
+        Config.instruction_bg = Config.image_directory + Config.instruction_bg
 
     @classmethod
     def config_read_file(cls) -> None:

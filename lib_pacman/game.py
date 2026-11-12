@@ -392,7 +392,7 @@ class Game():
         sprite: SpriteImage = SpPacman()
         anim: int = (pygame.time.get_ticks() // 250000) % sprite.nb_anim
         file = f"{getattr(sprite, f"spe{str(anim)}")}"
-        live_image = pygame.image.load(f"{SpriteImage.directory}{file}").convert_alpha()
+        live_image = pygame.image.load(f"{Config.image_directory}{file}").convert_alpha()
         x = Game.main_area_width - live_image.get_rect().width - 16
         y = Game.area_score_height - live_image.get_rect().height - 4
         for _ in range(Pacman.player.lives - 1):

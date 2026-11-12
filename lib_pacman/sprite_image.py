@@ -1,6 +1,8 @@
-class SpriteImage():
-    directory: str = "lib_pacman/images/"
+from .config import Config
 
+class SpriteImage():
+    sp: str = "tardis.png"
+    nb_anim: int = 1
 
 class SpPacman(SpriteImage):
     spx0: str = "pacman_x0.png"
@@ -175,6 +177,7 @@ class SpExplosion(SpriteImage):
     nb_anim: int = 10
 
 class SpItem(SpriteImage):
+    sptardis: str = "tardis.png"
     spgum: str = "pacgum.png"
     spsuper: str = "super.png"
     splogo: str = "pacman-logo.png"
