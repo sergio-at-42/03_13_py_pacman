@@ -22,6 +22,7 @@ class Instruction():
         {"image": f"{SpriteImage.directory}{SpItem.spsuper}", "label": "SuperPacgum", "description": "These allow Pac-Man to temporarily become\n the predator, enabling him to eat the ghosts."},
         {"image": f"{SpriteImage.directory}{SpBomb.sp0}", "label": "Bomb", "description": "Destroys all ghosts within a certain radius."},
     ]
+    cheat_title: str = "C H E A T   M O D E"
     cheats: list[dict[str, str]] = [
         {"key": "SPACE", "description": "Give a little speed boost to Pac-Man."},
         {"key": "X", "description": "Put a bomb to Pac-Man position."},
@@ -43,7 +44,7 @@ class Instruction():
         bg: pygame.image = pygame.image.load(f"{Config.instruction_bg}")
         Instruction.background.blit(bg, ((Instruction.background.get_width() - bg.get_width()) // 2, 0))
         # set instruction area
-        Instruction.instruction_area = pygame.Surface((864, 924), pygame.SRCALPHA)
+        Instruction.instruction_area = pygame.Surface((864, 960), pygame.SRCALPHA)
         Instruction.instruction_area.fill((0, 0, 48, 208))
         font_64 = pygame.font.Font(None, 64) # 44 pixels
         font_32 = pygame.font.Font(None, 32)
@@ -69,6 +70,9 @@ class Instruction():
                 Instruction.instruction_area.blit(text, (Instruction.instruction_area.get_width() // 2 + 400 - text.get_width(), y))
                 y += 36
         # display cheats
+        y += 36
+        text = font_32.render(Instruction.cheat_title, True, (255, 127, 0))
+        Instruction.instruction_area.blit(text, ((Instruction.instruction_area.get_width() - text.get_width()) // 2, y))
         y += 36
         for cheat in Instruction.cheats:
             text = font_32.render(f"< {cheat["key"]} >", True, (255, 255, 0))
