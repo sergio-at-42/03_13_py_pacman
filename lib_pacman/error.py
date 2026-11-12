@@ -129,12 +129,26 @@ class PacGumLessThan0Error(Error):
                          "Auto configurated number of PacGum")
 
 
+class PacGumTooBigError(Error):
+    """Base class for time related errors."""
+    def __init__(self) -> None:
+        super().__init__("[error]Number of PacGum too big for the maze. "
+                         "Auto configurated number of PacGum")
+
+
 class SuperPacGumLessThan0Error(Error):
     """Base class for time related errors."""
     def __init__(self) -> None:
         super().__init__("[error]Number of Super-PacGum to small. "
                          "Must be over 0 ! "
                          "Auto configurated number of Super-PacGum")
+
+
+class SuperPacGumTooBigError(Error):
+    """Base class for time related errors."""
+    def __init__(self) -> None:
+        super().__init__("[error]Number of Super-PacGum too big for the maze. "
+                         "Auto configurated number of PacGum")
 
 
 class PointPerPacgumLessThan0Error(Error):

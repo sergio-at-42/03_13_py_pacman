@@ -25,6 +25,7 @@ class Session:
     session: Session | None = None
 
     def __init__(self) -> None:
+        Config()
         Session.session = self
         self.state = SessionState.MENU
         self.running = True
@@ -229,7 +230,7 @@ class Session:
         self.new_level()
         # initialise Pacman
         Pacman.player = Pacman()
-        Error.write_log(f"Starting game: level={self.level}, cheat={self.cheat}") # write starting game in log file
+        Error.write_log(f"[info]Starting game: level={self.level}, cheat={self.cheat}") # write starting game in log file
         while not self.game_over:
             Game()
             if self.next_level:
@@ -248,7 +249,6 @@ class Session:
 
     def new_level(self) -> None:
         if self.level == 1:
-            Config.config_read_file()
             self.level_time = 90
             self.fps = Config.fps
         else:
@@ -262,8 +262,3 @@ class Session:
             elif self.level >= 5:
                 self.fps = int(Config.fps * 1.5)
         Maze.new_maze()
-
-
-if __name__ == "__main__":
-    session = Session()
-    session.run()

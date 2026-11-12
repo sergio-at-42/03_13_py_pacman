@@ -32,11 +32,16 @@ debug : $(VENV)
 exe : $(VENV)
 	$(PIP) install pyinstaller
 	rm --force --recursive build dist
-	$(PYTHON) pyinstaller --onefile \
-	--name pacman \
-	--add-data "lib_pacman/images:lib_pacman/images" \
-	--add-data "config.json:config.json" \
-	"pacman.py config.json"
+	$(VENV)/bin/pyinstaller \
+		--onefile \
+		--name pacman \
+		--add-data "lib_pacman/images:lib_pacman/images" \
+		--add-data "config.json:config.json" \
+		pacman.py
+# 	cp config.json dist/
+# 	cp --recursive lib_pacman dist/
+	rm --force --recursive build
+	@echo "Exec file ready in dist directory (launch with : dist/pacman config.json)"
 
 boris: $(VENV)
 	$(PIP) install pyinstaller
@@ -46,6 +51,7 @@ boris: $(VENV)
 	cp --recursive lib_pacman dist/pacman/
 	#cp .itch.toml dist/.itch.toml
 	#cp packaging/INSTRUCTIONS.txt dist/INSTRUCTIONS.txt
+	rm -rf build dist
 	@echo "Build pret dans dist (lancer avec: dist/pacman/pacman config.json)"
 
 

@@ -8,6 +8,7 @@ from .error import Error, \
     HeightLessThan2Error, WidthSmallFor42Error, \
     LivesLessThan1Error, TimeLessThan0Error, \
     PacGumLessThan0Error, SuperPacGumLessThan0Error, \
+    PacGumTooBigError , SuperPacGumTooBigError, \
     PointPerPacgumLessThan0Error, PointPerSuperPacgumLessThan0Error, \
     PointPerGhostLessThan0Error, ConfigTypeError, ConfigKeyError
 
@@ -119,9 +120,13 @@ class Config():
                 case "pacgum":
                     if value < 0:
                         raise PacGumLessThan0Error
+                    if value > (Config.width * Config.height - 22):
+                        raise PacGumTooBigError
                 case "spacgum":
                     if value < 0:
                         raise SuperPacGumLessThan0Error
+                    if value > (Config.width * Config.height - 22 - Config.pacgum):
+                        raise SuperPacGumTooBigError
                 case "points_per_pacgum":
                     if value < 0:
                         raise PointPerPacgumLessThan0Error
