@@ -31,6 +31,7 @@ class Config():
     sprite_super: str = "lib_pacman/images/super.png"
     logo: str = "lib_pacman/images/pacman-logo.png"
     game_over: str = "lib_pacman/images/game_over.png"
+    victory: str = "lib_pacman/images/victory.png"
     game_bg: str = "lib_pacman/images/pac-man-background.jpg"
     menu_bg: str = "lib_pacman/images/pac-man-smile.jpg"
     hiscore_bg: str = "lib_pacman/images/pac-man-ce2.jpg"

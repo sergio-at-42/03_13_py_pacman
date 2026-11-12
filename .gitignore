@@ -2,3 +2,6 @@ __pycache__/
 lib_pacman/__pycache__/
 *.log
 hiscores.json
+dist/
+build/
+*.spec

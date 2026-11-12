@@ -238,6 +238,10 @@ class Session:
                     self.new_level()
                     self.next_level = False
                 else:
+                    Game.main_area.blit(Game.victory_area, (0, Game.area_score_height))
+                    Game.window.blit(Game.main_area, Game.main_area_center)
+                    pygame.display.flip()
+                    Game.waiting_loop()
                     self.game_over = True
         if Game.loose or self.next_level:
             Hiscore.input()

@@ -24,6 +24,7 @@ from pygame.locals import (
     JOYBUTTONDOWN,
 )
 from .config import Config
+from .hiscore import Hiscore
 from .session import Session
 from .pacman import Pacman
 from .ghost import Ghost, Blinky, Pinky, Inky, Clyde
@@ -105,10 +106,19 @@ class Game():
         image = pygame.image.load(f"{Config.game_over}").convert_alpha()
         Game.game_over_area.blit(image, ((Game.main_area_width - image.get_width()) // 2, (Game.area_game_height - image.get_height()) // 2))
 
+        # GAME OVER Area creation
+        Game.victory_area = pygame.Surface((Game.main_area_width, Game.area_game_height), pygame.SRCALPHA)
+        Game.victory_area.fill((0, 0, 128, 192))
+        image = pygame.image.load(f"{Config.victory}").convert_alpha()
+        Game.victory_area.blit(image, ((Game.main_area_width - image.get_width()) // 2, (Game.area_game_height - image.get_height()) // 2))
+
         # joystick init
         pygame.joystick.init()
         if pygame.joystick.get_count() > 0:
             Game.joy = pygame.joystick.Joystick(0)
+
+        if len(Hiscore.all) == 0:
+            Hiscore.read_file()
 
         # initialise ghosts
         Ghost.ghosts.clear()
@@ -315,7 +325,7 @@ class Game():
                     key_down = True
 
     @classmethod
-    def input_loop(cls, window: pygame.Surface, area: pygame.Rect, font: pygame.font, max_char: int = 16) -> str:
+    def input_loop(cls, window: pygame.Surface, area: pygame.Rect, font: pygame.font, max_char: int = 10) -> str:
         input_area = pygame.Surface(area.size, pygame.SRCALPHA)
         input_str: str = ""
         input_valid:bool = False
@@ -376,7 +386,7 @@ class Game():
         Game.score_area.blit(text, (Game.main_area_width * 4 // 6 - text.get_width() // 2, y - 16))
         # display hi-score
         font = pygame.font.Font(None, int(Game.font_size // 2))
-        text = font.render("0123456789", True, (255, 255, 0))
+        text = font.render(f"{Hiscore.all[0].score if len(Hiscore.all) > 0 else "No Hi-Score"}", True, (255, 255, 0))
         Game.score_area.blit(text, (Game.main_area_width * 5 // 6 - text.get_width() // 2, y - 16))
         # display remaining lives
         sprite: SpriteImage = SpPacman()
