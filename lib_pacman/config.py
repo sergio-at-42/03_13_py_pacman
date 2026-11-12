@@ -47,11 +47,18 @@ class Config():
     @classmethod
     def config_read_file(cls) -> None:
         Config.file_from_argv()
-        config_file: dict[str, Any] = {}
+        config_dict: dict[str, Any] = {}
         try:
             with open(Config.config_file_name, "r") as config_json_file:
-                config_file = json.load(config_json_file)
-                Config.set_values(config_file)
+                config_json: str = ""
+                config_line: str = ""
+                config_line = config_json_file.readline()
+                while config_line:
+                    if not config_line.strip().startswith(("#", "//")):
+                        config_json += config_line
+                    config_line = config_json_file.readline()
+                config_dict = json.loads(config_json)
+                Config.set_values(config_dict)
         except FileNotFoundError:
             Error("[error]No configuration file found.")
         except json.decoder.JSONDecodeError:
@@ -86,7 +93,6 @@ class Config():
                     raise ConfigKeyError(key)
             except Error:
                 pass
-
 
     @classmethod
     def verify_value(cls, key: str, value: Any) -> bool:
