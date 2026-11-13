@@ -38,14 +38,14 @@ class Direction(Enum):
         return (lower_letter)
 
     def inverse(self) -> "Direction":
-        inverse_direction: Direction = Direction.STOP # 0
+        inverse_direction: Direction = Direction.STOP  # 0
         match self.value:
             case 1:
-                inverse_direction = Direction.SOUTH # 4
+                inverse_direction = Direction.SOUTH  # 4
             case 2:
-                inverse_direction = Direction.WEST # 8
+                inverse_direction = Direction.WEST  # 8
             case 4:
-                inverse_direction = Direction.NORTH # 1
+                inverse_direction = Direction.NORTH  # 1
             case 8:
-                inverse_direction = Direction.EST # 2
+                inverse_direction = Direction.EST  # 2
         return (inverse_direction)

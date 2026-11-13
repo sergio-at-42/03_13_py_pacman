@@ -40,10 +40,10 @@ from .maze import Maze
 
 class Game():
 
-    window:pygame.Surface
+    window: pygame.Surface
     background: pygame.Surface
-    main_area:pygame.Surface
-    score_area:pygame
+    main_area: pygame.Surface
+    score_area: pygame
     game_area: pygame.Surface
     resume_area: pygame.Surface
     game_over_area: pygame.Surface
@@ -54,16 +54,15 @@ class Game():
     main_area_width: int = 0
     main_area_height: int = 0
     main_area_center: tuple[int, int] = (0, 0)
-    resume:bool = False
+    resume: bool = False
     remain_time: float = 0
     loose: bool = False
-    fps: int = 60 # limits FPS to 60
+    fps: int = 60  # limits FPS to 60
 
     font_size: int = 64
     font: pygame.font
 
     def __init__(self) -> None:
-        # Game.window = pygame.display.set_mode( (0, 0), pygame.FULLSCREEN)
         Game.window = Session.session.window
         Game.area_score_height = Maze.cell_size * 2
         Game.area_game_height = Config.height * Maze.cell_size
@@ -75,15 +74,22 @@ class Game():
 
         pygame.display.set_caption("Pac-Man since 1980")
         # set main game window background
-        Game.background = pygame.Surface(Game.window.get_size(), pygame.SRCALPHA)
+        Game.background = pygame.Surface(Game.window.get_size(),
+                                         pygame.SRCALPHA)
         bg: pygame.image = pygame.image.load(f"{Config.game_bg}")
-        Game.background.blit(bg, ((Game.background.get_width() - bg.get_width()) // 2, 0))
+        Game.background.blit(bg, ((Game.background.get_width()
+                                   - bg.get_width()) // 2, 0))
 
-        # Game.main_area = pygame.display.set_mode((Game.main_area_width, Game.main_area_height))
-        Game.main_area = pygame.Surface((Game.main_area_width, Game.main_area_height), pygame.SRCALPHA)
+        Game.main_area = pygame.Surface((Game.main_area_width,
+                                        Game.main_area_height),
+                                        pygame.SRCALPHA)
         # Création des deux surfaces
-        Game.score_area = pygame.Surface((Game.main_area_width, Game.area_score_height), pygame.SRCALPHA)
-        Game.game_area = pygame.Surface((Game.main_area_width, Game.area_game_height), pygame.SRCALPHA)
+        Game.score_area = pygame.Surface(
+            (Game.main_area_width, Game. area_score_height),
+            pygame.SRCALPHA)
+        Game.game_area = pygame.Surface(
+            (Game.main_area_width, Game.area_game_height),
+            pygame.SRCALPHA)
         # initialise font for score area
         if Config.width < 13:
             Game.font_size = 48
@@ -92,25 +98,39 @@ class Game():
         Game.font = pygame.font.Font(None, Game.font_size)
 
         # RESUME Area creation
-        Game.resume_area = pygame.Surface((Game.main_area_width, Game.area_game_height), pygame.SRCALPHA)
+        Game.resume_area = pygame.Surface(
+            (Game.main_area_width, Game.area_game_height),
+            pygame.SRCALPHA)
         Game.resume_area.fill((0, 0, 128, 192))
         font = pygame.font.Font(None, 48)
-        text = font.render(f"Press < ESC > to exit the game", True, (255, 255, 0))
-        Game.resume_area.blit(text, (Game.main_area_width // 6, Game.area_game_height // 4))
-        text = font.render(f"Press any other key to continue", True, (255, 255, 0))
-        Game.resume_area.blit(text, (Game.main_area_width // 6, Game.area_game_height // 4 * 2))
+        text = font.render("Press < ESC > to exit the game", True,
+                           (255, 255, 0))
+        Game.resume_area.blit(text, (Game.main_area_width // 6,
+                                     Game.area_game_height // 4))
+        text = font.render("Press any other key to continue",
+                           True, (255, 255, 0))
+        Game.resume_area.blit(text, (Game.main_area_width // 6,
+                                     Game.area_game_height // 4 * 2))
 
         # GAME OVER Area creation
-        Game.game_over_area = pygame.Surface((Game.main_area_width, Game.area_game_height), pygame.SRCALPHA)
+        Game.game_over_area = pygame.Surface(
+            (Game.main_area_width, Game.area_game_height),
+            pygame.SRCALPHA)
         Game.game_over_area.fill((0, 0, 128, 192))
         image = pygame.image.load(f"{Config.game_over}").convert_alpha()
-        Game.game_over_area.blit(image, ((Game.main_area_width - image.get_width()) // 2, (Game.area_game_height - image.get_height()) // 2))
+        Game.game_over_area.blit(image, (
+            (Game.main_area_width - image.get_width()) // 2,
+            (Game.area_game_height - image.get_height()) // 2))
 
         # GAME OVER Area creation
-        Game.victory_area = pygame.Surface((Game.main_area_width, Game.area_game_height), pygame.SRCALPHA)
+        Game.victory_area = pygame.Surface(
+            (Game.main_area_width, Game.area_game_height),
+            pygame.SRCALPHA)
         Game.victory_area.fill((0, 0, 128, 192))
         image = pygame.image.load(f"{Config.victory}").convert_alpha()
-        Game.victory_area.blit(image, ((Game.main_area_width - image.get_width()) // 2, (Game.area_game_height - image.get_height()) // 2))
+        Game.victory_area.blit(image, (
+            (Game.main_area_width - image.get_width()) // 2,
+            (Game.area_game_height - image.get_height()) // 2))
 
         # joystick init
         pygame.joystick.init()
@@ -137,11 +157,12 @@ class Game():
     @classmethod
     def game_loop(cls) -> None:
 
-        #load sprites
+        # load sprites
         Maze.load_sprites()
-    
+
         # initialise pacgums
-        excluded = {Pacman.player.home_pos} | {g.home_pos for g in Ghost.ghosts}
+        excluded = {Pacman.player.home_pos} \
+            | {g.home_pos for g in Ghost.ghosts}
         Maze.pellets = Pacgum.place_pacgums(Maze.grid, excluded)
 
         # START GAME LOOP
@@ -156,7 +177,8 @@ class Game():
             Game.events()
 
             # DISPLAY GAME AREA
-            # fill the game area with a color to wipe away anything from last frame
+            # fill the game area with a color to wipe away
+            # anything from last frame
             Game.game_area.fill((0, 0, 48, 127))
             Maze.draw_maze(Game.game_area)
 
@@ -174,14 +196,18 @@ class Game():
                 Game.game_area.blit(g.sprite.image, g.sprite.rect)
             # display pacman
             Pacman.player.move()
-            Game.game_area.blit(Pacman.player.sprite.image, Pacman.player.sprite.rect)
+            Game.game_area.blit(Pacman.player.sprite.image,
+                                Pacman.player.sprite.rect)
 
             # manage colisions between pacman and ghosts
-            ghosts_hit_list = pygame.sprite.spritecollide(Pacman.player.sprite, Ghost.sprites, False, pygame.sprite.collide_rect_ratio(0.75))
+            ghosts_hit_list = pygame.sprite.spritecollide(
+                Pacman.player.sprite, Ghost.sprites, False,
+                pygame.sprite.collide_rect_ratio(0.75))
             for g in ghosts_hit_list:
                 if g.ghost.mood == Mood.SCARED:
                     g.ghost.change_mood(Mood.DEAD)
-                    Pacman.player.score += Config.points_per_ghost * Pacman.player.points_multiplier
+                    Pacman.player.score += Config.points_per_ghost \
+                        * Pacman.player.points_multiplier
                     Pacman.player.points_multiplier *= 2
                 else:
                     if g.ghost.mood != Mood.DEAD and Pacman.player.dead == 0:
@@ -206,16 +232,19 @@ class Game():
                 Pacman.player.lives -= 1
                 if Pacman.player.lives == 0 or Game.remain_time <= 0:
                     Session.session.game_over = True
-                    Game.main_area.blit(Game.game_over_area, (0, Game.area_score_height))
+                    Game.main_area.blit(Game.game_over_area,
+                                        (0, Game.area_score_height))
                 else:
                     Pacman.player.init_start_position()
                     Game.loose = False
 
             # Display the resume area
             if Game.resume:
-                Game.main_area.blit(Game.resume_area, (0, Game.area_score_height))
+                Game.main_area.blit(Game.resume_area,
+                                    (0, Game.area_score_height))
 
-            # display the main area and flip() the display to put your work on screen
+            # display the main area and flip() the display to put
+            #  your work on screen
             Game.window.blit(Game.main_area, Game.main_area_center)
             pygame.display.flip()
 
@@ -238,70 +267,78 @@ class Game():
             if event.type == QUIT:
                 Session.session.game_over = True
             elif event.type == KEYDOWN \
-                or event.type == JOYHATMOTION \
-                or event.type == JOYAXISMOTION \
-                or event.type == JOYBUTTONDOWN:
+                    or event.type == JOYHATMOTION \
+                    or event.type == JOYAXISMOTION \
+                    or event.type == JOYBUTTONDOWN:
                 # Was it the Escape key? If so, stop the loop.
                 if getattr(event, "key", None) == K_ESCAPE \
-                    or getattr(event, "button", None) == 11:
+                        or getattr(event, "button", None) == 11:
                     Game.resume = True
                 elif getattr(event, "key", None) == K_UP \
-                    or (getattr(event, "hat", None) == 0 and getattr(event, "value", None) == (0, 1)) \
-                    or (getattr(event, "axis", None) == 1 and getattr(event, "value", None) < -0.9):
+                    or (getattr(event, "hat", None) == 0
+                        and getattr(event, "value", None) == (0, 1)) \
+                    or (getattr(event, "axis", None) == 1
+                        and getattr(event, "value", 0) < -0.9):
                     Pacman.player.next_direction = Direction.NORTH
                 elif getattr(event, "key", None) == K_DOWN \
-                    or (getattr(event, "hat", None) == 0 and getattr(event, "value", None) == (0, -1)) \
-                    or (getattr(event, "axis", None) == 1 and getattr(event, "value", None) > 0.9):
+                    or (getattr(event, "hat", None) == 0
+                        and getattr(event, "value", None) == (0, -1)) \
+                    or (getattr(event, "axis", None) == 1
+                        and getattr(event, "value", 0) > 0.9):
                     Pacman.player.next_direction = Direction.SOUTH
                 elif getattr(event, "key", None) == K_LEFT \
-                    or (getattr(event, "hat", None) == 0 and getattr(event, "value", None) == (-1, 0)) \
-                    or (getattr(event, "axis", None) == 0 and getattr(event, "value", None) < -0.9):
+                    or (getattr(event, "hat", None) == 0
+                        and getattr(event, "value", None) == (-1, 0)) \
+                    or (getattr(event, "axis", None) == 0
+                        and getattr(event, "value", 0) < -0.9):
                     Pacman.player.next_direction = Direction.WEST
                 elif getattr(event, "key", None) == K_RIGHT \
-                    or (getattr(event, "hat", None) == 0 and getattr(event, "value", None) == (1, 0)) \
-                    or (getattr(event, "axis", None) == 0 and getattr(event, "value", None) > 0.9):
+                    or (getattr(event, "hat", None) == 0
+                        and getattr(event, "value", None) == (1, 0)) \
+                    or (getattr(event, "axis", None) == 0
+                        and getattr(event, "value", 0) > 0.9):
                     Pacman.player.next_direction = Direction.EST
                 # events with cheat mode activated
                 if Session.session.cheat:
                     if getattr(event, "key", None) == K_SPACE \
-                        or getattr(event, "button", None) == 0:
+                            or getattr(event, "button", None) == 0:
                         Pacman.player.turbo()
                     elif getattr(event, "key", None) == K_x \
-                        or getattr(event, "button", None) == 1:
+                            or getattr(event, "button", None) == 1:
                         Bomb(Pacman.player.pos)
                     elif getattr(event, "key", None) == K_f \
-                        or getattr(event, "button", None) == 3:
+                            or getattr(event, "button", None) == 3:
                         for g in Ghost.ghosts:
                             g.change_mood(Mood.SCARED)
                     elif getattr(event, "key", None) == K_d \
-                        or getattr(event, "button", None) == 2:
+                            or getattr(event, "button", None) == 2:
                         for g in Ghost.ghosts:
                             g.change_mood(Mood.DEAD)
                     elif getattr(event, "key", None) == K_h \
-                        or getattr(event, "button", None) == 6:
+                            or getattr(event, "button", None) == 6:
                         for g in Ghost.ghosts:
                             g.move(g.home_pos)
                     elif getattr(event, "key", None) == K_r \
-                        or getattr(event, "button", None) == 7:
+                            or getattr(event, "button", None) == 7:
                         for g in Ghost.ghosts:
                             g.change_mood(Mood.RIDE)
                     elif getattr(event, "key", None) == K_s \
-                        or getattr(event, "button", None) == 5:
+                            or getattr(event, "button", None) == 5:
                         for g in Ghost.ghosts:
                             g.change_mood(Mood.SLEEP)
                     elif getattr(event, "key", None) == K_c \
-                        or getattr(event, "button", None) == 8:
+                            or getattr(event, "button", None) == 8:
                         for g in Ghost.ghosts:
                             g.change_mood(Mood.CHASE)
                     elif getattr(event, "key", None) == K_l \
-                        or getattr(event, "button", None) == 10:
+                            or getattr(event, "button", None) == 10:
                         Session.session.next_level = True
                 if event.type == JOYBUTTONDOWN and hasattr(Game, "joy"):
                     Game.joy.rumble(0, 1, 100)
 
     @classmethod
     def resume_loop(cls) -> None:
-        key_down:bool = False
+        key_down: bool = False
         Game.resume = False
         while not key_down:
             for event in pygame.event.get():
@@ -310,12 +347,13 @@ class Game():
                     Session.session.game_over = True
                 elif event.type == KEYDOWN or event.type == JOYBUTTONDOWN:
                     key_down = True
-                    if getattr(event, "key", None) == K_ESCAPE or getattr(event, "button", None) == 11:
+                    if getattr(event, "key", None) == K_ESCAPE \
+                            or getattr(event, "button", None) == 11:
                         Session.session.game_over = True
 
     @classmethod
     def waiting_loop(cls) -> None:
-        key_down:bool = False
+        key_down: bool = False
         while not key_down:
             for event in pygame.event.get():
                 if event.type == QUIT:
@@ -325,10 +363,11 @@ class Game():
                     key_down = True
 
     @classmethod
-    def input_loop(cls, window: pygame.Surface, area: pygame.Rect, font: pygame.font, max_char: int = 10) -> str:
+    def input_loop(cls, window: pygame.Surface, area: pygame.Rect,
+                   font: pygame.font, max_char: int = 10) -> str:
         input_area = pygame.Surface(area.size, pygame.SRCALPHA)
         input_str: str = ""
-        input_valid:bool = False
+        input_valid: bool = False
         while not input_valid:
             for event in pygame.event.get():
                 if event.type == QUIT:
@@ -339,18 +378,20 @@ class Game():
                         input_str += getattr(event, "text", "")
                 elif event.type == KEYDOWN or event.type == JOYBUTTONDOWN:
                     if getattr(event, "key", None) == K_ESCAPE \
-                        or getattr(event, "button", None) == 11:
+                            or getattr(event, "button", None) == 11:
                         input_str = ""
                         input_valid = True
                     elif getattr(event, "key", None) == K_RETURN \
-                        or getattr(event, "button", None) == 0:
+                            or getattr(event, "button", None) == 0:
                         input_valid = True
                     elif getattr(event, "key", None) == K_BACKSPACE:
                         if len(input_str) > 0:
                             input_str = input_str[:-1]
             input_area.fill((255, 127, 0, 192))
             text = font.render(input_str, True, (255, 255, 0))
-            input_area.blit(text, ((input_area.get_width() - text.get_width()) // 2, (input_area.get_height() - text.get_height()) // 2))
+            input_area.blit(text, (
+                (input_area.get_width() - text.get_width()) // 2,
+                (input_area.get_height() - text.get_height()) // 2))
             window.blit(input_area, area.topleft)
             # pygame.display.flip()
             pygame.display.update(area)
@@ -363,36 +404,48 @@ class Game():
         # display first line
         y = 8
         text = Game.font.render("SCORE", True, (255, 255, 0))
-        Game.score_area.blit(text, (Game.main_area_width // 4 - text.get_width() // 2, y))
+        Game.score_area.blit(text, (
+            Game.main_area_width // 4 - text.get_width() // 2, y))
         text = Game.font.render("TIME", True, (255, 255, 0))
-        Game.score_area.blit(text, (Game.main_area_width // 2 - text.get_width() // 2, y))
+        Game.score_area.blit(text, (
+            Game.main_area_width // 2 - text.get_width() // 2, y))
         font = pygame.font.Font(None, int(Game.font_size // 2))
         text = font.render("LEVEL", True, (255, 255, 0))
-        Game.score_area.blit(text, (Game.main_area_width * 4 // 6 - text.get_width() // 2, y))
+        Game.score_area.blit(text, (
+            Game.main_area_width * 4 // 6 - text.get_width() // 2, y))
         font = pygame.font.Font(None, int(Game.font_size // 2))
         text = font.render("HI-SCORE", True, (255, 255, 0))
-        Game.score_area.blit(text, (Game.main_area_width * 5 // 6 - text.get_width() // 2, y))
+        Game.score_area.blit(text, (
+            Game.main_area_width * 5 // 6 - text.get_width() // 2, y))
         # y += font.get_linesize() + 16
         # display second line
         # font = pygame.font.Font(None, Game.font_size)
         y = Game.area_score_height - Game.font.get_linesize()
         text = Game.font.render(f"{Pacman.player.score}", True, (255, 255, 0))
-        Game.score_area.blit(text, (Game.main_area_width // 4 - text.get_width() // 2, y))
-        text = Game.font.render(f"{int(Game.remain_time)}", True, (255, 255, 0))
-        Game.score_area.blit(text, (Game.main_area_width // 2 - text.get_width() // 2, y))
-         # display level
+        Game.score_area.blit(text, (
+            Game.main_area_width // 4 - text.get_width() // 2, y))
+        text = Game.font.render(
+            f"{int(Game.remain_time)}", True, (255, 255, 0))
+        Game.score_area.blit(text, (
+            Game.main_area_width // 2 - text.get_width() // 2, y))
+        # display level
         font = pygame.font.Font(None, int(Game.font_size // 2))
         text = font.render(f"{Session.session.level}", True, (255, 255, 0))
-        Game.score_area.blit(text, (Game.main_area_width * 4 // 6 - text.get_width() // 2, y - 16))
+        Game.score_area.blit(text, (
+            Game.main_area_width * 4 // 6 - text.get_width() // 2, y - 16))
         # display hi-score
         font = pygame.font.Font(None, int(Game.font_size // 2))
-        text = font.render(f"{Hiscore.all[0].score if len(Hiscore.all) > 0 else "No Hi-Score"}", True, (255, 255, 0))
-        Game.score_area.blit(text, (Game.main_area_width * 5 // 6 - text.get_width() // 2, y - 16))
+        text = font.render(
+            f"{Hiscore.all[0].score if len(Hiscore.all) > 0
+               else "No Hi-Score"}", True, (255, 255, 0))
+        Game.score_area.blit(text, (
+            Game.main_area_width * 5 // 6 - text.get_width() // 2, y - 16))
         # display remaining lives
         sprite: SpriteImage = SpPacman()
         anim: int = (pygame.time.get_ticks() // 250000) % sprite.nb_anim
         file = f"{getattr(sprite, f"spe{str(anim)}")}"
-        live_image = pygame.image.load(f"{Config.image_directory}{file}").convert_alpha()
+        live_image = pygame.image.load(
+            f"{Config.image_directory}{file}").convert_alpha()
         x = Game.main_area_width - live_image.get_rect().width - 16
         y = Game.area_score_height - live_image.get_rect().height - 4
         for _ in range(Pacman.player.lives - 1):
