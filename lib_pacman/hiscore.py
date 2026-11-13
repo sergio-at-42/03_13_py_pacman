@@ -1,5 +1,5 @@
 from __future__ import annotations
-import pygame
+import pygame  # type: ignore
 import json
 from datetime import datetime
 

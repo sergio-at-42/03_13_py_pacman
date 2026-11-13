@@ -82,4 +82,4 @@ class Menu:
             status = "ON" if self.cheat_mode else "OFF"
             return f"Cheat Mode: {status}"
 
-        return entry.value
+        return entry.value  # type: ignore

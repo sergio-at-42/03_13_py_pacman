@@ -1,5 +1,5 @@
 from __future__ import annotations
-import pygame
+import pygame  # type: ignore
 
 from .config import Config
 from .sprite_image import \
@@ -41,7 +41,7 @@ class Instruction():
     def display(cls) -> None:
         from .session import Session
         from .game import Game
-        Instruction.items: list[dict[str, str]] = [
+        Instruction.items = [
                 {"image": f"{Config.image_directory}{SpPacman.spe1}",
                  "label": "Pac-Man",
                  "description": "The great Pac-Man since 1980."},

@@ -1,6 +1,6 @@
 from lib_pacman.menu import Menu, MenuEntry
 from .config import Config
-import pygame
+import pygame  # type: ignore
 
 
 class MenuView:
@@ -103,7 +103,7 @@ class MenuView:
         """Draw the top scores on the menu."""
         # Dessiner les scores en haut à droite de l'écran.
         width = surface.get_width()
-        for index, score in enumerate(scores):
+        for index, score in enumerate(scores):  # type: ignore
             score_text = self.hint_font.render(f"{index + 1}. {score}",
                                                True, self.text_color)
             score_rect = score_text.get_rect(topright=(width - 20,

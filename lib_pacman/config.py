@@ -49,8 +49,10 @@ class Config():
         Config.config_read_file()
         if getattr(sys, "frozen", False):
             # Exécution depuis un exécutable PyInstaller
-            Config.image_directory = str(Path(sys._MEIPASS)) \
-                + "/" + Config.image_directory
+            Config.image_directory = str(
+                Path(getattr(sys, "_MEIPASS",
+                             Path(__file__).resolve().parent)))\
+                                + "/" + Config.image_directory
         Config.sprite_42 = Config.image_directory + Config.sprite_42
         Config.sprite_pacgum = Config.image_directory + Config.sprite_pacgum
         Config.sprite_super = Config.image_directory + Config.sprite_super

@@ -1,6 +1,6 @@
 from __future__ import annotations
 from random import randint, randrange
-import pygame
+import pygame  # type: ignore
 from .config import Config
 from .pacman import Pacman
 from .maze import Maze

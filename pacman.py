@@ -4,7 +4,7 @@ from lib_pacman import Session, Error
 
 
 class PacManGameSince1980():
-    def __init__(self):
+    def __init__(self) -> None:
         Error.log_new_pacman()
         session = Session()
         session.run()

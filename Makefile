@@ -40,7 +40,7 @@ exe : $(VENV)
 		--noconfirm \
 		pacman.py
 	rm --force --recursive build
-	@echo "Exec file ready in dist directory (launch with : dist/pacman config.json)"
+	@echo "Exec file ready in dist directory (launch with : ./dist/pacman config.json)"
 
 # Remove temporary files or caches (e.g., __pycache__, .mypy_cache) to keep the activity environment clean.
 clean :

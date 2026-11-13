@@ -1,5 +1,5 @@
 from datetime import datetime
-import pygame
+import pygame  # type: ignore
 from .config import Config
 from .sprite_image import SpriteImage, SpScared, SpEndScared, SpEyes, \
     SpPacmanExplosion, SpItem
@@ -7,7 +7,7 @@ from .maze import Maze
 from .mood import Mood
 
 
-class Sprite(pygame.sprite.Sprite):
+class Sprite(pygame.sprite.Sprite):  # type: ignore
     directory: str = Config.image_directory
 
     def __init__(self) -> None:
@@ -26,7 +26,7 @@ class Sprite(pygame.sprite.Sprite):
 
 
 class SpritePacman(Sprite):
-    def __init__(self, player) -> None:
+    def __init__(self, player) -> None:  # type: ignore
         from .pacman import Pacman
         super().__init__()
         self.player: Pacman = player
@@ -52,7 +52,7 @@ class SpritePacman(Sprite):
 
 
 class SpriteGhost(Sprite):
-    def __init__(self, ghost) -> None:
+    def __init__(self, ghost) -> None:  # type: ignore
         from .ghost import Ghost
         super().__init__()
         self.ghost: Ghost = ghost
@@ -77,7 +77,7 @@ class SpriteGhost(Sprite):
 
 
 class SpriteBomb(Sprite):
-    def __init__(self, bomb) -> None:
+    def __init__(self, bomb) -> None:  # type: ignore
         from .bomb import Bomb
         super().__init__()
         self.bomb: Bomb = bomb
@@ -92,7 +92,7 @@ class SpriteBomb(Sprite):
 
 
 class SpriteExplosion(Sprite):
-    def __init__(self, explosion) -> None:
+    def __init__(self, explosion) -> None:  # type: ignore
         from .explosion import Explosion
         super().__init__()
         self.explosion: Explosion = explosion

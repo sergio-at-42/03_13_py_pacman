@@ -2,7 +2,7 @@ from __future__ import annotations
 from random import randint, seed
 from enum import Enum
 
-import pygame
+import pygame  # type: ignore
 
 from .error import Error
 from .config import Config
@@ -43,6 +43,7 @@ class Session:
         self.game_over: bool = False
         self.cheat: bool = True
         self.background_image = pygame.image.load(f"{Config.menu_bg}")
+        self.joy: pygame.joystick
         Maze()
 
     def run(self) -> None:
@@ -51,8 +52,8 @@ class Session:
         pygame.init()
         # joystick init
         pygame.joystick.init()
-        # if pygame.joystick.get_count() > 0:
-        #     joy = pygame.joystick.Joystick(0)
+        if pygame.joystick.get_count() > 0:
+            self.joy = pygame.joystick.Joystick(0)
         self.window = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
         bg_center_x = int((
             self.window.get_width() - self.background_image.get_width()) / 2)
@@ -246,6 +247,7 @@ class Session:
             f"[info]Starting game: level={self.level}, cheat={self.cheat}")
         # write starting game in log file
         while not self.game_over:
+            self.joy.rumble(0, 1, 100)
             Game()
             if self.next_level:
                 if self.level < 10:

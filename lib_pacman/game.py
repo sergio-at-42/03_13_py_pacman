@@ -1,5 +1,5 @@
-import pygame
-from pygame.locals import (
+import pygame  # type: ignore
+from pygame.locals import (  # type: ignore
     QUIT,
     KEYDOWN,
     TEXTINPUT,
@@ -43,9 +43,10 @@ class Game():
     window: pygame.Surface
     background: pygame.Surface
     main_area: pygame.Surface
-    score_area: pygame
+    score_area: pygame.Surface
     game_area: pygame.Surface
     resume_area: pygame.Surface
+    victory_area: pygame.Surface
     game_over_area: pygame.Surface
     joy: pygame.joystick
 

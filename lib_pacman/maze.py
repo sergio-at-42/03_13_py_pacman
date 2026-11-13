@@ -3,8 +3,8 @@ from .config import Config
 from .direction import Direction
 from .pacgum import Pacgum
 
-from mazegenerator import MazeGenerator
-import pygame
+from mazegenerator import MazeGenerator  # type: ignore
+import pygame  # type: ignore
 
 
 class Maze():
@@ -31,7 +31,7 @@ class Maze():
         try:
             gen = MazeGenerator(size=(
                 Config.width, Config.height), perfect=False, seed=Config.seed)
-            return gen.maze
+            return gen.maze    # type: ignore
         except Exception as e:
             raise MazeLoadError() from e
 

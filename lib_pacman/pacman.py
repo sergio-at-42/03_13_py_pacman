@@ -35,13 +35,12 @@ class Pacman():
         self.between_pos: float = 0
 
     def init_start_position(self) -> None:
-        self.home_pos: tuple[int, int] = (
-            (Config.width + 1) // 2 - 1, Config.height // 2)
-        self.pos: tuple[int, int] = self.home_pos
-        self.next_pos: tuple[int, int] = self.pos
-        self.between_pos: float = 0
-        self.direction: Direction = Direction.STOP
-        self.next_direction: Direction = Direction.STOP
+        self.home_pos = ((Config.width + 1) // 2 - 1, Config.height // 2)
+        self.pos = self.home_pos
+        self.next_pos = self.pos
+        self.between_pos = 0
+        self.direction = Direction.STOP
+        self.next_direction = Direction.STOP
         self.dead = 0
 
     def move(self) -> None:
