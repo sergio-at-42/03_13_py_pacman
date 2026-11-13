@@ -1,136 +1,217 @@
-*This activity has been created as part of the 42 curriculum by [sansaidi], [sbeldjao].*
-
-# A COMPLETER (base sur le README.md de A_MAZE_ING)
+*This activity has been created as part of the 42 curriculum by sansaidi, sbeldjao.*
 
 # Pac-Man
 
 ## Description
 
-First released in 1980 by Namco, Pac-Man quickly became a cultural icon and one of the most influential video games of all time. Designed by Toru Iwatani, its goal was to create a game that could appeal to women and casual players, contrasting with the space shooters of the era. The game introduced the now-famous ghost AI, each with unique behaviors (Blinky chases, Pinky ambushes, Inky is unpredictable, and Clyde is. . . weird).  
-Pac-Man was also the first game to popularize the concept of a power-up — the Pacgum (or Power Pellets) that lets you eat the ghosts. The original arcade machine had 256 levels, but due to an integer overflow bug, level 256 was impossible to finish, known as the infamous “kill screen”.  
+Inspired by the classic arcade game released by Namco in 1980, this project is a Python implementation of Pac-Man using Pygame.
+
+The objective is to guide Pac-Man through randomly generated mazes, collect pacgums, avoid ghosts and achieve the highest possible score. The game features four ghosts with different behaviours, multiple levels, a high score system and an optional Cheat Mode.
 
 ## Instructions
 
-Requirements: Python 3.10+.
+### Requirements
+
+- Python 3
+- Pygame
+- The provided A-Maze-ing package wheel
+
+### Installation
+
+Create a virtual environment and install the dependencies:
 
 ```bash
-make install   # install dependencies
-make run       # run with config.txt
-make debug     # run with pdb
-make clean     # remove caches
-make fclean     # remove caches
-make lint      # flake8 + mypy
+make install
 ```
 
-Or directly:
-- Create a virtual environment and install dependencies:
+### Run the game
+
 ```bash
-python3 -m venv venv_pacman
-source venv_pacman/bin/activate
-pip install -r pacman_requirements.txt
+make run
 ```
-- Run the program:
+
+This launches the game using `config.json`.
+
+To launch the game without explicitly providing a configuration file:
+
+```bash
+make noconfig
+```
+
+### Debug
+
+```bash
+make debug
+```
+
+### Additional Makefile commands
+
+| Command | Description |
+|---|---|
+| `make exe` | Build a standalone executable using PyInstaller. |
+| `make lint` | Run code quality checks. |
+| `make lint-strict` | Run stricter code quality checks. |
+| `make clean` | Remove Python cache files. |
+| `make fclean` | Remove cache files and the virtual environment. |
+
+## Configuration
+
+The game accepts an optional JSON configuration file as a command-line argument:
+
 ```bash
 python3 pacman.py config.json
 ```
 
-`config.json` can be replaced with any json file following the format below.
+If no file is provided or the configuration cannot be loaded, the game uses its default values.
 
-## Configuration file format
+Full-line comments beginning with `#` or `//` are supported and removed before parsing the JSON content.
 
-One `KEY=VALUE` pair per line. Lines starting with `#` are comments.
+The following parameters can be configured:
 
-| Key           | Description                     | Example              |
-|---------------|----------------------------------|-----------------------|
-| WIDTH         | Maze width (cells)               | `WIDTH=20`            |
-| HEIGHT        | Maze height (cells)              | `HEIGHT=15`           |
+| Parameter | Default | Description |
+|---|---:|---|
+| `width` | `16` | Maze width. |
+| `height` | `16` | Maze height. |
+| `pacgum` | `42` | Number of regular pacgums. |
+| `spacgum` | `4` | Number of super pacgums. |
+| `points_per_pacgum` | `10` | Points for collecting a regular pacgum. |
+| `points_per_super_pacgum` | `50` | Points for collecting a super pacgum. |
+| `points_per_ghost` | `200` | Points for eating a ghost. |
 
+Configuration values are checked for valid types and ranges. Invalid or unknown parameters are reported, and their default values are retained.
 
-### Build the package from source
-```bash
-# In a virtualenv, from the root of the repository
-python3 -m venv build_venv
-source build_venv/bin/activate
-pip install build
-python -m build
-# Output files will be in dist/
-cp dist/mazegen-1.0.0-py3-none-any.whl .
-cp dist/mazegen-1.0.0.tar.gz .
-```
+## Gameplay and Implementation
 
-### Install the package
-```bash
-pip install mazegen-1.0.0-py3-none-any.whl
-# or
-pip install mazegen-1.0.0.tar.gz
-```
+### Player and Ghosts
 
-## Maze generation algorithm
+The player controls Pac-Man using the keyboard or a compatible joystick. The `Pacman` class manages movement, speed, lives, scoring and interactions with collectibles.
 
-We used an **iterative depth-first search (recursive backtracker)**, with
-each cell stored as a 4-bit integer (one bit per wall: N/E/S/W). Breaking a
-wall is a simple bitwise operation, applied to both neighbouring cells at
-once to guarantee consistent wall encoding.
+The game includes four ghosts, each with a different targeting strategy:
 
-We chose this algorithm because it maps directly onto the required output
-format — the internal grid representation *is* the hexadecimal encoding, no
-conversion step needed. It's also simple to reason about and to test in
-isolation.
+- **Blinky:** targets Pac-Man's current position.
+- **Pinky:** targets a position four cells ahead of Pac-Man.
+- **Inky:** targets a position two cells ahead.
+- **Clyde:** chases Pac-Man when far away and retreats towards its corner when nearby.
 
-For the playable (non-perfect) mode, we start from the perfect maze and
-"braid" it: open the four corners and the centre, add extra loops, then
-target and remove real dead-ends one by one — always checking that no 3x3
-area becomes fully open. The shortest path is found with a standard BFS,
-which works identically on both modes regardless of loops.
+Ghost behaviour is controlled by different mood states, such as `CHASE`, `SCATTER`, `SCARED`, `HOME` and `DEAD`. A BFS-based pathfinding algorithm helps them find their way through the maze.
 
-## Reusable module
+Collecting a super pacgum temporarily frightens the ghosts, allowing Pac-Man to eat them and earn extra points.
 
-All the generation and solving logic lives in `mazegen.py`, a single,
-dependency-free file built as `mazegen-*.whl` for later reuse via pip. It
-exposes the `MazeGenerator` class:
+### Maze Generation and Pacgum Placement
 
-```python
-from mazegen import MazeGenerator
+The project uses the provided **A-Maze-ing** package to generate the mazes. It is included in the `wheels/` directory and used without modifying its source code.
 
-generator = MazeGenerator(width=20, height=15, entry=(0, 0), exit=(19, 14),
-                           seed=42, perfect=False)
-generator.generate()
-path = generator.solution_path      # shortest path, as N/E/S/W letters
-```
+The `Maze` class manages maze generation and rendering. The maze is represented as a grid of integers, with bitwise values describing the walls in each cell.
 
-The rest of the project (`libmaze/`) handles config parsing and display, and
-depends on this module — not the other way around.
+The `Pacgum` class handles collectible placement. Regular pacgums are randomly distributed across eligible cells, excluding walls, special cells, corners and character starting positions. Four super pacgums are placed in the maze corners.
+
+A random seed is used to make maze and pacgum generation reproducible when the same inputs are provided.
+
+### Gameplay Features
+
+The `Game` class coordinates the gameplay loop, including movement, collisions, scoring, timers and graphical updates.
+
+The game includes:
+
+- Ten levels, with the possibility of choosing a starting level from the main menu.
+- Increasing difficulty through maze dimensions, time limits and game speed.
+- A pause screen and game-over and victory screens.
+- Keyboard and joystick support.
+- A score multiplier for eating successive frightened ghosts.
+- An optional Cheat Mode with additional commands.
+
+When all pacgums have been collected, the game advances to the next level. Completing the tenth level displays the victory screen.
+
+### Bomb Mechanics
+
+When Cheat Mode is enabled, pressing `X` places a bomb at Pac-Man's current position.
+
+After a two-second countdown, the bomb explodes in a 3 × 3 area. Ghosts caught in the explosion are switched to the `DEAD` state, and the player earns points for each affected ghost.
+
+### Controls
+
+**Main menu**
+
+| Key | Action |
+|---|---|
+| UP / DOWN | Navigate through menu entries. |
+| ENTER | Select an option. |
+| Digits | Enter a starting level. |
+| BACKSPACE | Delete the last digit. |
+| ESCAPE | Exit the game. |
+
+**During gameplay**
+
+- Arrow keys: move Pac-Man.
+- ESCAPE: pause or resume the game.
+
+A compatible joystick is also supported.
+
+**Cheat Mode**
+
+The following commands are available only when Cheat Mode is enabled:
+
+| Key | Action |
+|---|---|
+| SPACE | Temporarily increase Pac-Man's speed. |
+| X | Place a bomb. |
+| R | Make ghosts move towards random positions. |
+| F | Frighten all ghosts. |
+| D | Set ghosts to the `DEAD` state. |
+| H | Send ghosts back home. |
+| S | Put ghosts to sleep. |
+| C | Set ghosts to chase mode. |
+| L | Skip to the next level. |
+
+## High Score System
+
+The `Hiscore` class manages the game's high score records, which are stored in a JSON file named `hiscores.json`.
+
+Each record contains the player's name, score, level and date. At the end of a game, players can enter their names to save their results.
+
+Scores are sorted from highest to lowest, and the top 10 are displayed on the high score screen. This allows players to keep track of their best performances across different sessions.
+
+## General Software Architecture
+
+The project is organized around the main entry point `pacman.py` and the `lib_pacman` Python package.
+
+The main modules are:
+
+| Module | Responsibility |
+|---|---|
+| `session.py` | Manages application states, screens and level progression. |
+| `game.py` | Coordinates gameplay, collisions, scoring and display. |
+| `config.py` | Loads and validates configuration parameters. |
+| `maze.py` | Generates and renders the maze. |
+| `pacman.py` | Handles player movement and interactions. |
+| `ghost.py` / `mood.py` | Manage ghost behaviour and mood states. |
+| `pacgum.py` | Handles collectible placement. |
+| `bomb.py` / `explosion.py` | Manage bombs and explosions. |
+| `menu.py` / `display_menu.py` | Handle menu logic and display. |
+| `instruction.py` | Displays game instructions. |
+| `hiscore.py` | Manages high score records. |
+| `sprite.py` / `sprite_image.py` | Handle game sprites and graphical resources. |
+| `error.py` | Handles custom errors and logging. |
+
+The `Session` class connects the different components and controls the overall application flow. The `Game` class handles the active gameplay.
+
+## Error Handling and Logging
+
+The project includes a custom error-handling system for configuration, maze generation and other application errors.
+
+Events and errors are recorded in `pacman.log`, with timestamps to help identify and investigate issues.
+
+## Project Management
+
+The project was developed over three weeks of effective work by two team members: `sansaidi` and `sbeldjao`.
+
+Planning and task tracking documents, including the project timeline and final project summary, are available in the [`project_management/`](project_management/) directory.
 
 ## Resources
 
-- ["Generating a Maze with DFS"](https://makeschool.org/mediabook/oa/tutorials/trees-and-mazes/generating-a-maze-with-dfs/) — introduced us to the bitwise wall representation
-- Standard graph theory: spanning trees, BFS shortest path, cyclomatic number for counting independent loops
-- **AI usage**: we used Claude to discuss algorithm design choices (bitwise vs. object-based wall representation, DFS vs. braiding for the Pac-Man mode), to review and debug our code (import structure, state bugs across re-generation), and to design our pytest test suite. All code was written and understood by us; AI was not used to generate whole functions blindly.
+- [Pygame documentation](https://www.pygame.org/docs/)
+- [Python documentation](https://docs.python.org/3/)
+- The provided A-Maze-ing package and its documentation.
+- [Pac-Man – Namco](https://en.wikipedia.org/wiki/Pac-Man)
 
-## Team and project management
-
-- **sansaidi**: maze generation and solving algorithm, tests, packaging (mazegen), README
-- **sbeldjao**: config parsing, terminal display, Makefile
-
-**Planning**: initial plan was parsing/config → perfect maze generation →
-display → non-perfect (Pac-Man) mode → path solving. Work was split so each
-person owned one module (generator vs. display) and developed/tested it
-independently. In practice, the generator and display phases overlapped more
-than planned, since the display needed a working generator interface early to
-start testing, which pushed some interface decisions earlier than expected.
-
-**What worked well**: working on separate branches per module avoided merge
-conflicts, and keeping the generator and display fully independent (one only
-exposes data, the other only consumes it) made both parts testable in
-isolation.
-
-**What could be improved**: the interface between the two modules (parameter
-names, coordinate conventions, how to access the solution) should have been
-agreed on explicitly before starting, rather than discovered through
-integration bugs afterward — clearer upfront communication would have saved
-debugging time later.
-
-Tools used: `pytest` for unit/integration tests, `maze_analyzer.py`
-(provided) to cross-check maze validity independently of our own tests,
-`flake8`/`mypy` for linting. 
-
+**AI assistance:** we used Claude and Chatgpt to discuss project architecture and management, to review and debug our code and to design our pytest test suite. All code was written and understood by us; AI was not used to generate whole functions blindly.
