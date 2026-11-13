@@ -9,7 +9,7 @@ from .error import Error
 
 class Hiscore():
 
-    file_name: str = "highscores.json"
+    file_name: str = "hiscores.json"
     all: list[Hiscore] = []
     window: pygame.Surface
     background: pygame.Surface
@@ -46,7 +46,7 @@ class Hiscore():
     @classmethod
     def write_file(cls) -> None:
         if Hiscore.file_name != "":
-            Hiscore.file_name = Config.highscore_file_name
+            Hiscore.file_name = Config.hiscores_file_name
         try:
             with open(Hiscore.file_name, "w") as hiscore_file:
                 hiscore_json: list[str, str | int] = []
@@ -61,10 +61,10 @@ class Hiscore():
     @classmethod
     def set_file_name(cls) -> None:
         try:
-            with open(Config.highscore_file_name, "r"):
-                Hiscore.file_name = Config.highscore_file_name
+            with open(Config.hiscores_file_name, "r"):
+                Hiscore.file_name = Config.hiscores_file_name
         except FileNotFoundError:
-            Error(f"[error]<{Config.highscore_file_name}>  not found. "
+            Error(f"[error]<{Config.hiscores_file_name}>  not found. "
                 f"<{Hiscore.file_name}> used for Hi-Scores.")
 
     @classmethod

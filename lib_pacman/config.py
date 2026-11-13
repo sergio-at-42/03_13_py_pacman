@@ -15,7 +15,7 @@ from .error import Error, \
 
 class Config():
 
-    highscore_file_name: str = "highscores.json"
+    hiscores_file_name: str = "hiscores.json"
     level: list[int] = []  # array of multiple levels ???
     width: int = 16
     height: int = 16

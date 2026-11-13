@@ -1,8 +1,9 @@
 from datetime import datetime
 import pygame
 from .config import Config
-from .sprite_image import SpriteImage, SpPacman, SpGhost, SpScared, SpEndScared, SpEyes, SpBomb, SpPacmanExplosion, SpItem
-from.maze import Maze
+from .sprite_image import SpriteImage, SpScared, SpEndScared, SpEyes, \
+    SpPacmanExplosion, SpItem
+from .maze import Maze
 from .mood import Mood
 
 
@@ -11,9 +12,9 @@ class Sprite(pygame.sprite.Sprite):
 
     def __init__(self) -> None:
         # Call the parent class (Sprite) constructor
-       pygame.sprite.Sprite.__init__(self)
-       self.image = pygame.image.load(f"{Config.image_directory}{SpItem.sptardis}").convert_alpha()
-       self.rect = self.image.get_rect()
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load(f"{Config.image_directory}{SpItem.sptardis}").convert_alpha()
+        self.rect = self.image.get_rect()
 
     @classmethod
     def convert_pos(cls, grid_pos: tuple[int, int]) -> tuple[int, int]:
