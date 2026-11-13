@@ -1,8 +1,7 @@
-from .config import Config
-
 class SpriteImage():
     sp: str = "tardis.png"
     nb_anim: int = 1
+
 
 class SpPacman(SpriteImage):
     spx0: str = "pacman_x0.png"
@@ -163,6 +162,7 @@ class SpBomb(SpriteImage):
     sp7: str = "bomb_7.png"
     nb_anim: int = 8
 
+
 class SpExplosion(SpriteImage):
     sp0: str = "explosion_0.png"
     sp1: str = "explosion_1.png"
@@ -175,6 +175,7 @@ class SpExplosion(SpriteImage):
     sp8: str = "explosion_8.png"
     sp9: str = "explosion_9.png"
     nb_anim: int = 10
+
 
 class SpItem(SpriteImage):
     sptardis: str = "tardis.png"

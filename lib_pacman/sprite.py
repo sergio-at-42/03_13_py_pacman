@@ -13,7 +13,8 @@ class Sprite(pygame.sprite.Sprite):
     def __init__(self) -> None:
         # Call the parent class (Sprite) constructor
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load(f"{Config.image_directory}{SpItem.sptardis}").convert_alpha()
+        self.image = pygame.image.load(
+            f"{Config.image_directory}{SpItem.sptardis}").convert_alpha()
         self.rect = self.image.get_rect()
 
     @classmethod
@@ -22,6 +23,7 @@ class Sprite(pygame.sprite.Sprite):
         grid_y: int = 0
         grid_x, grid_y = grid_pos
         return ((grid_x * Maze.cell_size + 8, grid_y * Maze.cell_size + 8))
+
 
 class SpritePacman(Sprite):
     def __init__(self, player) -> None:
@@ -35,7 +37,8 @@ class SpritePacman(Sprite):
         if self.player.dead == 0:
             sprite = self.player.images
             anim = (datetime.now().microsecond // 250000) % sprite.nb_anim
-            file = f"{getattr(sprite, f"sp{self.player.direction.letter()}{str(anim)}")}"
+            file = f"{getattr(
+                sprite, f"sp{self.player.direction.letter()}{str(anim)}")}"
         else:
             sprite = SpPacmanExplosion()
             anim = int((self.player.dead - 1) // (60 / sprite.nb_anim))
@@ -44,7 +47,8 @@ class SpritePacman(Sprite):
             self.rect.x = self.rect.x - Maze.cell_size
             self.rect.y = self.rect.y - Maze.cell_size
             file = f"{getattr(sprite, f"sp{str(anim)}")}"
-        self.image = pygame.image.load(f"{Config.image_directory}{file}").convert_alpha()
+        self.image = pygame.image.load(
+            f"{Config.image_directory}{file}").convert_alpha()
 
 
 class SpriteGhost(Sprite):
@@ -56,7 +60,8 @@ class SpriteGhost(Sprite):
     def file(self) -> None:
         sprite: SpriteImage
         if self.ghost.mood == Mood.SCARED:
-            if self.ghost.mood_time <= 180 and (self.ghost.mood_time // 20) % 2 == 0:
+            if self.ghost.mood_time <= 180\
+                    and (self.ghost.mood_time // 20) % 2 == 0:
                 sprite = SpEndScared()
             else:
                 sprite = SpScared()
@@ -65,8 +70,10 @@ class SpriteGhost(Sprite):
         else:
             sprite = self.ghost.images
         anim: int = (datetime.now().microsecond // 250000) % sprite.nb_anim
-        file = f"{getattr(sprite, f"sp{self.ghost.direction.letter()}{str(anim)}")}"
-        self.image = pygame.image.load(f"{Config.image_directory}{file}").convert_alpha()
+        file = f"{getattr(
+            sprite, f"sp{self.ghost.direction.letter()}{str(anim)}")}"
+        self.image = pygame.image.load(
+            f"{Config.image_directory}{file}").convert_alpha()
 
 
 class SpriteBomb(Sprite):
@@ -77,9 +84,11 @@ class SpriteBomb(Sprite):
         self.bomb.images.nb_anim -= 1
 
     def file(self) -> None:
-        anim: int = int(self.bomb.images.nb_anim - self.bomb.remain / self.bomb.delay * self.bomb.images.nb_anim)
+        anim: int = int(self.bomb.images.nb_anim - self.bomb.remain
+                        / self.bomb.delay * self.bomb.images.nb_anim)
         file = f"{getattr(self.bomb.images, f"sp{str(anim)}")}"
-        self.image = pygame.image.load(f"{Config.image_directory}{file}").convert_alpha()
+        self.image = pygame.image.load(
+            f"{Config.image_directory}{file}").convert_alpha()
 
 
 class SpriteExplosion(Sprite):
@@ -90,6 +99,8 @@ class SpriteExplosion(Sprite):
         self.explosion.images.nb_anim -= 1
 
     def file(self) -> None:
-        anim: int = int(self.explosion.images.nb_anim - self.explosion.remain / self.explosion.delay * self.explosion.images.nb_anim)
+        anim: int = int(self.explosion.images.nb_anim - self.explosion.remain
+                        / self.explosion.delay * self.explosion.images.nb_anim)
         file = f"{getattr(self.explosion.images, f"sp{str(anim)}")}"
-        self.image = pygame.image.load(f"{Config.image_directory}{file}").convert_alpha()
+        self.image = pygame.image.load(
+            f"{Config.image_directory}{file}").convert_alpha()

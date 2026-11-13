@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from lib_pacman import Session, Config, Error
+from lib_pacman import Session, Error
 
 
 class PacManGameSince1980():
