@@ -22,7 +22,7 @@ class SessionState(Enum):
 
 class Session:
 
-    session: Session | None = None
+    session: Session
 
     def __init__(self) -> None:
         Config()

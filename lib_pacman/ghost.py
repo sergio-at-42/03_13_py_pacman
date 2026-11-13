@@ -35,18 +35,17 @@ class Ghost():
         self.between_pos: float = 0
 
     def strategy(self) -> tuple[int, int]:
-        from .game import Game
         return (Pacman.player.pos)
 
     def change_mood(self, new_mood: Mood) -> None:
         match new_mood:
             case Mood.CHASE:
                 self.mood = Mood.CHASE
-                self.mood_time = randint(960, 1440) # 16 to 24 seconds
+                self.mood_time = randint(960, 1440)  # 16 to 24 seconds
                 self.speed = self.normal_speed
             case Mood.SCATTER:
                 self.mood = Mood.SCATTER
-                self.mood_time = randint(600, 960) # 10 to 16 seconds
+                self.mood_time = randint(600, 960)  # 10 to 16 seconds
                 self.speed = self.normal_speed
             case Mood.SCARED:
                 self.mood = Mood.SCARED
@@ -74,7 +73,6 @@ class Ghost():
                 self.speed = 0
 
     def move(self, pos: tuple[int, int] = (-1, -1)) -> None:
-        from .game import Game
         # change mood to GO if a position is supplied
         if pos != (-1, -1):
             self.change_mood(Mood.GO)
@@ -89,7 +87,7 @@ class Ghost():
                 self.change_mood(Mood.CHASE)
             else:
                 self.change_mood(Mood.SCATTER)
-        
+
         # determine the target position based on the ghost's mood
         if self.pos == self.next_pos:
             if self.mood is Mood.CHASE:
@@ -102,15 +100,18 @@ class Ghost():
                     self.mood_time = 1
             elif self.mood is Mood.SCARED:
                 px, py = Pacman.player.pos
-                self.target_pos = (abs(Config.width - 1 - px), abs(Config.height - 1 - py))
+                self.target_pos = (abs(Config.width - 1 - px),
+                                   abs(Config.height - 1 - py))
             elif self.mood is Mood.DEAD:
                 self.target_pos = self.home_pos
                 if self.pos == self.home_pos:
                     self.mood_time = 1
             elif self.mood is Mood.RIDE:
-                self.target_pos = (randrange(Config.width), randrange(Config.height))
+                self.target_pos = (randrange(Config.width),
+                                   randrange(Config.height))
             # compute the next cell to go
-            next_directions: int = Maze.cell_exit(self.pos) - self.direction.inverse().value
+            next_directions: int = Maze.cell_exit(self.pos) \
+                - self.direction.inverse().value
             if next_directions in (1, 2, 4, 8):
                 self.direction = Direction(next_directions)
             elif next_directions == 0:
@@ -119,8 +120,9 @@ class Ghost():
                 self.bfs()
             self.next_pos = self.direction.move_from(self.pos)
 
-        # compute the position in pixel between the origin of the cell and the ghost position in the cell
-        self.between_pos = (self.between_pos 
+        # compute the position in pixel between the origin of the cell
+        # and the ghost position in the cell
+        self.between_pos = (self.between_pos
                             + abs(self.direction.move()[0] * self.speed)
                             + abs(self.direction.move()[1] * self.speed))
         # verify if the ghost enter in a new cell
@@ -131,8 +133,10 @@ class Ghost():
         px, py = self.convert_pos(self.pos)
         self.sprite.rect.x = px
         self.sprite.rect.y = py
-        self.sprite.rect.x = int(self.sprite.rect.x + self.direction.move()[0] * self.between_pos)
-        self.sprite.rect.y = int(self.sprite.rect.y + self.direction.move()[1] * self.between_pos)
+        self.sprite.rect.x = int(self.sprite.rect.x
+                                 + self.direction.move()[0] * self.between_pos)
+        self.sprite.rect.y = int(self.sprite.rect.y
+                                 + self.direction.move()[1] * self.between_pos)
         self.sprite.file()
 
     def bfs(self) -> None:
@@ -150,7 +154,7 @@ class Ghost():
             next_cells[Direction.WEST.move_from(self.pos)] = Direction.WEST
 
         search_pos: tuple[int, int] = list(next_cells.keys())[0]
-        
+
         while search_pos != self.target_pos and len(next_cells) != 0:
             visited_cells.add(search_pos)
             search_pos_exit = Maze.cell_exit(search_pos)
@@ -179,7 +183,7 @@ class Ghost():
             self.direction = self.direction.inverse()
         else:
             self.direction = next_cells[search_pos]
-            
+
     def convert_pos(self, grid_pos: tuple[int, int]) -> tuple[int, int]:
         grid_x: int = 0
         grid_y: int = 0
@@ -200,22 +204,21 @@ class Blinky(Ghost):
         self.name = "blinky"
         self.color: int = 0xff0000
         self.corner_pos: tuple[int, int] = (0, 0)
-        self.home_pos: tuple[int, int] = self.corner_pos #(Config.width // 2 - 3, Config.height // 2 - 2)
+        self.home_pos: tuple[int, int] = self.corner_pos
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.pos
         self.normal_speed = 1.5
 
-
-
     def strategy(self) -> tuple[int, int]:
-        from .game import Game
-        remain_gum: float = 1 # gum remaining percentage
+        remain_gum: float = 1  # gum remaining percentage
         px, py = Pacman.player.pos
         gx, gy = self.pos
         if abs(px - gx) + abs(py - gy) <= 4:
             self.speed = Pacman.player.normal_speed
         else:
-            remain_gum = (len(Maze.pellets.pacgums) + len(Maze.pellets.super_pacgums)) / (Config.pacgum + Config.spacgum) 
+            remain_gum = (len(Maze.pellets.pacgums)
+                          + len(Maze.pellets.super_pacgums)) \
+                            / (Config.pacgum + Config.spacgum)
             if remain_gum > 0.2:
                 remain_gum = 0.3
             self.speed = self.normal_speed * (1.3 - remain_gum)
@@ -230,13 +233,12 @@ class Pinky(Ghost):
         self.name = "pinky"
         self.color: int = 0xffc0c0
         self.corner_pos: tuple[int, int] = (Config.width-1, 0)
-        self.home_pos: tuple[int, int] = self.corner_pos #(Config.width // 2 - 2, Config.height // 2 - 2)
+        self.home_pos: tuple[int, int] = self.corner_pos
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.pos
         self.normal_speed = 1
 
     def strategy(self) -> tuple[int, int]:
-        from .game import Game
         px, py = Pacman.player.pos
         dx, dy = Pacman.player.direction.move()
         px = px + dx * 4
@@ -252,13 +254,12 @@ class Inky(Ghost):
         self.name = "inky"
         self.color: int = 0x0000ff
         self.corner_pos: tuple[int, int] = (Config.width-1, Config.height-1)
-        self.home_pos: tuple[int, int] = self.corner_pos #(Config.width // 2 + 0, Config.height // 2 - 2)
+        self.home_pos: tuple[int, int] = self.corner_pos
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.pos
         self.normal_speed: float = 1
 
     def strategy(self) -> tuple[int, int]:
-        from .game import Game
         px, py = Pacman.player.pos
         dx, dy = Pacman.player.direction.move()
         px = px + dx * 2
@@ -274,13 +275,12 @@ class Clyde(Ghost):
         self.name = "clyde"
         self.color: int = 0xff7f00
         self.corner_pos: tuple[int, int] = (0, Config.height-1)
-        self.home_pos: tuple[int, int] = self.corner_pos #(Config.width // 2 + 1, Config.height // 2 - 2)
+        self.home_pos: tuple[int, int] = self.corner_pos
         self.pos: tuple[int, int] = self.home_pos
         self.next_pos: tuple[int, int] = self.pos
         self.normal_speed = 1.3
 
     def strategy(self) -> tuple[int, int]:
-        from .game import Game
         # if Pacman.player.speed == 0:
         #     self.speed = 16
         # else:

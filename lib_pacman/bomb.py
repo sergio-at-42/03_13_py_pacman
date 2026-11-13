@@ -11,7 +11,7 @@ class Bomb():
 
     def __init__(self, pos: tuple[int, int]) -> None:
         self.pos: tuple[int, int] = pos
-        self.delay: int = 2 * 60 # delay in second * number of FPS
+        self.delay: int = 2 * 60  # delay in second * number of FPS
         self.remain: int = self.delay
         self.images: SpBomb = SpBomb()
         self.sprite: SpriteBomb = SpriteBomb(self)

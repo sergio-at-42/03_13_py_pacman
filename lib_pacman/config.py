@@ -5,13 +5,13 @@ from pathlib import Path
 import json
 
 from .error import Error, \
-    WidthLessThan2Error, WidthSmallFor42Error, \
-    HeightLessThan2Error, WidthSmallFor42Error, \
+    WidthLessThan2Error, HeightLessThan2Error, \
     LivesLessThan1Error, TimeLessThan0Error, \
     PacGumLessThan0Error, SuperPacGumLessThan0Error, \
-    PacGumTooBigError , SuperPacGumTooBigError, \
+    PacGumTooBigError, SuperPacGumTooBigError, \
     PointPerPacgumLessThan0Error, PointPerSuperPacgumLessThan0Error, \
     PointPerGhostLessThan0Error, ConfigTypeError, ConfigKeyError
+
 
 class Config():
 
@@ -41,7 +41,7 @@ class Config():
     instruction_bg: str = "pac-man-ce2.jpg"
     # menu_bg: str = "pac-man-ce1.jpg"
     # menu_bg: str = "pac-man-ce2.jpg"
-    pm_icon : str = "\U0001F6BD"
+    pm_icon: str = "\U0001F6BD"
     argv: list[str] = sys.argv
     config_file_name: str = ""
 
@@ -49,7 +49,8 @@ class Config():
         Config.config_read_file()
         if getattr(sys, "frozen", False):
             # Exécution depuis un exécutable PyInstaller
-            Config.image_directory = str(Path(sys._MEIPASS)) + "/" + Config.image_directory
+            Config.image_directory = str(Path(sys._MEIPASS)) \
+                + "/" + Config.image_directory
         Config.sprite_42 = Config.image_directory + Config.sprite_42
         Config.sprite_pacgum = Config.image_directory + Config.sprite_pacgum
         Config.sprite_super = Config.image_directory + Config.sprite_super
@@ -88,12 +89,12 @@ class Config():
                 Config.config_file_name = Config.argv[1]
         except IndexError:
             Error("[error]No configuration file provide. "
-                f"Usage: {Config.argv[0].rpartition("/")[2]} <conf_file>. "
-                "Default values used to create the Pac-Man.")
+                  f"Usage: {Config.argv[0].rpartition("/")[2]} <conf_file>. "
+                  "Default values used to create the Pac-Man.")
         except FileNotFoundError:
             Error(f"[error]<{Config.argv[1]}> is not a configuration file. "
-                f"Usage: {Config.argv[0].rpartition("/")[2]} <conf_file>. "
-                "Default values used to create the Pac-Man.")
+                  f"Usage: {Config.argv[0].rpartition("/")[2]} <conf_file>. "
+                  "Default values used to create the Pac-Man.")
 
     @classmethod
     def set_values(cls, config_file: dict[str, Any]) -> None:
@@ -140,7 +141,8 @@ class Config():
                 case "spacgum":
                     if value < 0:
                         raise SuperPacGumLessThan0Error
-                    if value > (Config.width * Config.height - 22 - Config.pacgum):
+                    if value > (Config.width * Config.height
+                                - 22 - Config.pacgum):
                         raise SuperPacGumTooBigError
                 case "points_per_pacgum":
                     if value < 0:

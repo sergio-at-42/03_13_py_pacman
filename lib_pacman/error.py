@@ -22,8 +22,8 @@ class Error(Exception):
                 msg_type, bracket, msg_text = log_msg.partition("]")
                 msg_type += bracket
                 log_file.write(f"{msg_type}"
-                    f"\t{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}"
-                    f"\t{msg_text}\n")
+                               f"\t{datetime.now().strftime(
+                                   "%Y-%m-%d %H:%M:%S")}\t{msg_text}\n")
                 write_ok = True
         except Exception:
             write_ok = False
@@ -67,12 +67,13 @@ class Error(Exception):
         except Exception:
             write_ok = False
         return (write_ok)
-    
+
 
 class ConfigTypeError(Error):
     """Base class for width for 42 related errors."""
     def __init__(self, key: str, value: Any, config_key_type) -> None:
-        super().__init__(f"[error]Submit key <{key}> with value <{value}> is type of <{type(key).__name__}>. "
+        super().__init__(f"[error]Submit key <{key}> with value <{value}> "
+                         "is type of <{type(key).__name__}>. "
                          f"<{config_key_type.__name__}> attended.")
 
 
