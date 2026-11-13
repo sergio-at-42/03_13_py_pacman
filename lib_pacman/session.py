@@ -30,15 +30,15 @@ class Session:
         self.state = SessionState.MENU
         self.running = True
         self.menu = Menu(levels_count=10)
-        self.menu_view = None
         # self.game = None
-        self.window = None
-        self.screen = None
-        self.clock = None
         self.fps: int = 60
+        self.menu_view: MenuView
+        self.window: pygame.Surface
+        self.screen: pygame.Surface
+        self.clock: pygame.time.ClockType
 
         self.level: int = 1
-        self.level_time:int = 90
+        self.level_time: int = 90
         self.next_level: bool = False
         self.game_over: bool = False
         self.cheat: bool = True
@@ -51,10 +51,11 @@ class Session:
         pygame.init()
         # joystick init
         pygame.joystick.init()
-        if pygame.joystick.get_count() > 0:
-            joy = pygame.joystick.Joystick(0)
-        self.window = pygame.display.set_mode( (0, 0), pygame.FULLSCREEN)
-        bg_center_x = int((self.window.get_width() - self.background_image.get_width()) / 2)
+        # if pygame.joystick.get_count() > 0:
+        #     joy = pygame.joystick.Joystick(0)
+        self.window = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+        bg_center_x = int((
+            self.window.get_width() - self.background_image.get_width()) / 2)
         pygame.display.set_caption("Pac-Man")
         self.screen = pygame.Surface(self.window.get_size(), pygame.SRCALPHA)
 
@@ -67,8 +68,6 @@ class Session:
 
             for event in pygame.event.get():
                 self.handle_event(event)
-            # Update the game state based on the current session state
-            self.update()
 
             # Draw the current state (menu, game, etc.)
             self.draw()
@@ -108,28 +107,63 @@ class Session:
         if event.type != pygame.KEYDOWN \
             and event.type != pygame.JOYHATMOTION \
             and event.type != pygame.JOYAXISMOTION \
-            and event.type != pygame.JOYBUTTONDOWN:
+                and event.type != pygame.JOYBUTTONDOWN:
             return
 
         if getattr(event, "key", None) == pygame.K_ESCAPE \
-            or getattr(event, "button", None) == 11:
+                or getattr(event, "button", None) == 11:
             self.running = False
 
-        elif getattr(event, "key", None) == pygame.K_UP \
-            or (getattr(event, "hat", None) == 0 and getattr(event, "value", None) == (0, 1)) \
-            or (getattr(event, "axis", None) == 1 and getattr(event, "value", None) < -0.9):
+        # elif getattr(event, "key", None) == pygame.K_UP \
+        #     or (getattr(
+        #         event, "hat", None) == 0 and getattr(
+        #             event, "value", None) == (0, 1)) or (getattr(
+        #                 event, "axis", None) == 1 and getattr(
+        #                     event, "value", None) < -0.9):
+        #     self.menu.up()
+
+        # elif getattr(event, "key", None) == pygame.K_DOWN \
+        #     or (getattr(event, "hat", None) == 0 and getattr(
+        #         event, "value", None) == (0, -1)) or (getattr(
+        #             event, "axis", None) == 1 and getattr(
+        #                 event, "value", None) > 0.9):
+        #     self.menu.down()
+
+        value = getattr(event, "value", None)
+
+        if (
+            getattr(event, "key", None) == pygame.K_UP
+            or (
+                getattr(event, "hat", None) == 0
+                and value == (0, 1)
+            )
+            or (
+                getattr(event, "axis", None) == 1
+                and isinstance(value, (int, float))
+                and value < -0.9
+            )
+        ):
             self.menu.up()
 
-        elif getattr(event, "key", None) == pygame.K_DOWN \
-            or (getattr(event, "hat", None) == 0 and getattr(event, "value", None) == (0, -1)) \
-            or (getattr(event, "axis", None) == 1 and getattr(event, "value", None) > 0.9):
+        elif (
+            getattr(event, "key", None) == pygame.K_DOWN
+            or (
+                getattr(event, "hat", None) == 0
+                and value == (0, -1)
+            )
+            or (
+                getattr(event, "axis", None) == 1
+                and isinstance(value, (int, float))
+                and value > 0.9
+            )
+        ):
             self.menu.down()
 
         elif getattr(event, "key", None) == pygame.K_BACKSPACE:
             self.menu.backspace()
 
         elif getattr(event, "key", None) in (pygame.K_RETURN, pygame.K_SPACE) \
-            or getattr(event, "button", None) == 0:
+                or getattr(event, "button", None) == 0:
             action = self.menu.enter()
 
             if action is not None:
@@ -154,30 +188,7 @@ class Session:
         elif entry == MenuEntry.EXIT:
             self.running = False
 
-    def update(self) -> None:
-        """Update the active screen."""
-
-    
-
-    # def draw(self) -> None:
-    #     """Draw the screen corresponding to the current state."""
-
-    #     if self.state == SessionState.MENU:
-    #         self.menu_view.draw(self.screen, self.menu)
-
-    #     elif self.state == SessionState.HIGHSCORES:
-    #         self.screen.fill("black")
-    #         # La vue des scores sera ajoutée ici.
-
-    #     elif self.state == SessionState.INSTRUCTIONS:
-    #         self.screen.fill("black")
-    #         # La vue des instructions sera ajoutée ici.
-
-    #     elif self.state == SessionState.PLAYING:
-    #         # À connecter après le refactoring de Game
-    #         pass
-
-    def draw(self):
+    def draw(self) -> None:
         if self.state == SessionState.MENU:
             self.menu_view.draw(self.screen, self.menu)
 
@@ -194,7 +205,7 @@ class Session:
             self.game_session()
             self.state = SessionState.MENU
 
-    def draw_simple_screen(self, title):
+    def draw_simple_screen(self, title: str) -> None:
         self.screen.fill("black")
 
         title_font = pygame.font.Font(None, 70)
@@ -214,7 +225,8 @@ class Session:
         )
 
         hint_rect = hint_surface.get_rect(
-            center=(self.screen.get_width() // 2, self.screen.get_height() - 50)
+            center=(
+                self.screen.get_width() // 2, self.screen.get_height() - 50)
         )
 
         self.screen.blit(hint_surface, hint_rect)
@@ -230,7 +242,9 @@ class Session:
         self.new_level()
         # initialise Pacman
         Pacman.player = Pacman()
-        Error.write_log(f"[info]Starting game: level={self.level}, cheat={self.cheat}") # write starting game in log file
+        Error.write_log(
+            f"[info]Starting game: level={self.level}, cheat={self.cheat}")
+        # write starting game in log file
         while not self.game_over:
             Game()
             if self.next_level:
@@ -239,7 +253,8 @@ class Session:
                     self.new_level()
                     self.next_level = False
                 else:
-                    Game.main_area.blit(Game.victory_area, (0, Game.area_score_height))
+                    Game.main_area.blit(
+                        Game.victory_area, (0, Game.area_score_height))
                     Game.window.blit(Game.main_area, Game.main_area_center)
                     pygame.display.flip()
                     Game.waiting_loop()
