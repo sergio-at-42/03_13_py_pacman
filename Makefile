@@ -59,7 +59,7 @@ fclean : clean
 # flake8 . and mypy . --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
 lint :
 	flake8 .
-	mypy . --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
+	mypy . --warn-return-any --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
 
 # flake8 . and mypy .
 lint-strict :

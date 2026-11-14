@@ -247,7 +247,8 @@ class Session:
             f"[info]Starting game: level={self.level}, cheat={self.cheat}")
         # write starting game in log file
         while not self.game_over:
-            self.joy.rumble(0, 1, 100)
+            if pygame.joystick.get_count() > 0:
+                self.joy.rumble(0, 1, 100)
             Game()
             if self.next_level:
                 if self.level < 10:
