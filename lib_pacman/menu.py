@@ -43,7 +43,7 @@ class Menu:
 
     def type_char(self, char: str) -> None:
         """Add a digit to the level input if it is valid."""
-       
+
         if self.current() != MenuEntry.LEVEL:
             return
 
@@ -69,7 +69,7 @@ class Menu:
             return None
 
         if entry == MenuEntry.LEVEL:
-            return None 
+            return None
 
         return entry
 
@@ -82,5 +82,4 @@ class Menu:
             status = "ON" if self.cheat_mode else "OFF"
             return f"Cheat Mode: {status}"
 
-        return entry.value
-
+        return entry.value  # type: ignore

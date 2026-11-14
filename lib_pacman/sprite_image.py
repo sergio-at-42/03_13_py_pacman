@@ -1,5 +1,6 @@
 class SpriteImage():
-    directory: str = "lib_pacman/images/"
+    sp: str = "tardis.png"
+    nb_anim: int = 1
 
 
 class SpPacman(SpriteImage):
@@ -161,6 +162,7 @@ class SpBomb(SpriteImage):
     sp7: str = "bomb_7.png"
     nb_anim: int = 8
 
+
 class SpExplosion(SpriteImage):
     sp0: str = "explosion_0.png"
     sp1: str = "explosion_1.png"
@@ -174,7 +176,9 @@ class SpExplosion(SpriteImage):
     sp9: str = "explosion_9.png"
     nb_anim: int = 10
 
+
 class SpItem(SpriteImage):
+    sptardis: str = "tardis.png"
     spgum: str = "pacgum.png"
     spsuper: str = "super.png"
     splogo: str = "pacman-logo.png"

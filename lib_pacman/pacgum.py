@@ -1,7 +1,6 @@
 from __future__ import annotations
 import random
 from .config import Config
-from .error import Error
 
 Pos = tuple[int, int]  # (col, row)
 
@@ -20,6 +19,7 @@ class Pacgum:
             return NotImplemented
         return (self.pacgums == other.pacgums
                 and self.super_pacgums == other.super_pacgums)
+
     # for the tests
     def __repr__(self) -> str:
         return (f"Pellets(pacgums={sorted(self.pacgums)}, "
@@ -38,10 +38,8 @@ class Pacgum:
             ]
 
     @classmethod
-    def eligible_cells(cls,
-        grid: list[list[int]],
-        excluded: set[Pos],
-        ) -> list[Pos]:
+    def eligible_cells(
+            cls, grid: list[list[int]], excluded: set[Pos]) -> list[Pos]:
         """Return cells eligible for regular pacgums, in row-major order."""
         height = len(grid)
         width = len(grid[0])
@@ -60,14 +58,16 @@ class Pacgum:
         return available
 
     @classmethod
-    def place_pacgums(cls, grid: list[list[int]], excluded: set[Pos]) -> Pacgum:
+    def place_pacgums(
+            cls, grid: list[list[int]], excluded: set[Pos]) -> Pacgum:
 
         count: int = Config.pacgum
         rng = random.Random(Config.seed)
 
         """Place regular pacgums and one super-pacgum per corner."""
         available = cls.eligible_cells(grid, excluded)
-        # check if count is negative or larger than the number of available cells (count = config.pacgum)
+        # check if count is negative or larger than the number
+        # of available cells (count = config.pacgum)
         if count < 0:
             count = 0
         if count > len(available):

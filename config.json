@@ -1,11 +1,18 @@
+// Configuration for Pac-Man
+// This configuration is used for the first level
+// Comments in JSON file are normally not allow, but there is some here because the 42's project...
+#  Comments can start with # or //
 {
-"highscore_filename": "highscores_from_file.json",
+"hiscores_filename": "hiscores.json",
 "level array of multiple levels": ["???"],
+// maze width 
 "width": 16,
-"height": 16,
+// maze height
+"height": "16",
 "lives": -3,
-"pacgum": 42,
+"pacgum": 42000,
 "points_per_pacgum": 10,
 "points_per_super_pacgum": 50,
-"points_per_ghost": "200"
+"points_per_ghost": "200",
+"toto": "juste pour tester"
 }

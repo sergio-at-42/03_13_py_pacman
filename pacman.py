@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 
-from lib_pacman import Session, Config, Error
+from lib_pacman import Session, Error
 
 
 class PacManGameSince1980():
-    def __init__(self):
+    def __init__(self) -> None:
         Error.log_new_pacman()
-        Config()
-        # Game()
         session = Session()
         session.run()
         Error.log_game_over()
