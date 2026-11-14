@@ -53,6 +53,7 @@ make debug
 | `make lint-strict` | Run stricter code quality checks. |
 | `make clean` | Remove Python cache files. |
 | `make fclean` | Remove cache files and the virtual environment. |
+| `make exe` | Create a unique executable file in dist directory. |
 
 ## Configuration
 
