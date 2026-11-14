@@ -40,6 +40,7 @@ exe : $(VENV)
 		--noconfirm \
 		pacman.py
 	rm --force --recursive build
+	rm --force pacman.spec
 	@echo "Exec file ready in dist directory (launch with : ./dist/pacman config.json)"
 
 # Remove temporary files or caches (e.g., __pycache__, .mypy_cache) to keep the activity environment clean.
@@ -51,6 +52,9 @@ clean :
 # Remove temporary files or caches and python virtual environment.
 fclean : clean
 	rm --force --recursive venv_pacman
+	rm --force --recursive dist
+	rm --force --recursive build
+	rm --force pacman.spec
 
 # flake8 . and mypy . --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
 lint :
