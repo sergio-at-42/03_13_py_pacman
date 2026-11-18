@@ -73,7 +73,7 @@ class ConfigTypeError(Error):
     """Base class for width for 42 related errors."""
     def __init__(self, key: str, value: Any, config_key_type: type) -> None:
         super().__init__(f"[error]Submit key <{key}> with value <{value}> "
-                         "is type of <{type(key).__name__}>. "
+                         f"is type of <{type(key).__name__}>. "
                          f"<{config_key_type.__name__}> attended.")
 
 
